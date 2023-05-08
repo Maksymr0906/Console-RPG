@@ -15,7 +15,7 @@ private:
     static constexpr const int def_min_damage = 5;
     static constexpr const int def_max_damage = 10;
     static constexpr const int def_exp = 0;
-    static constexpr const int def_exp_next = 100;
+    static constexpr const int def_exp_next = 100;  //refactor
     static constexpr const int def_level = 1;
     static constexpr const char *def_name = "Unnamed";
 protected:
@@ -48,4 +48,7 @@ public:
 
     void showInventory();
     bool isAlive() const;
+    int inflictDamage();
+    void initialize(const std::string &name);
+    void levelUp();
 };

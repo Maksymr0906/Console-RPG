@@ -7,6 +7,7 @@ int main() {
     srand(time(NULL));
     
     Game game;
+    Player p;
     game.backstory();
 
     while(game.getPlaying()) {

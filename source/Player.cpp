@@ -26,3 +26,32 @@ void Player::showInventory() {
 bool Player::isAlive() const {
     return health > 0 ? true : false; 
 }
+
+int Player::inflictDamage() {
+    int givenDamage{};
+
+    givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
+
+    return givenDamage;
+}
+
+void Player::initialize(const std::string &name) {
+    this->name = name;
+    this->health = def_health;
+    this->maxHealth = def_health;
+    this->minDamage = def_min_damage;
+    this->maxDamage = def_max_damage;
+    this->exp = def_exp;
+    this->expNext = def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5;
+    this->level = def_level;
+    this->inventory = std::vector<Item>(0);
+}
+
+void Player::levelUp() {
+    while(exp >= expNext) {
+        level++;
+        exp -= expNext;
+
+        expNext = def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5;
+    }
+}
