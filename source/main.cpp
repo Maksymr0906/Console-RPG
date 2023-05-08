@@ -14,5 +14,4 @@ int main() {
     while(game.getPlaying()) {
         game.mainMenu();
     }
-
 }
