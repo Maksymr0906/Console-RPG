@@ -6,7 +6,8 @@ Player::Player() {
     maxHealth = def_health;
     minDamage = def_min_damage;
     maxDamage = def_max_damage;
-    xp = def_xp;
+    exp = def_exp;
+    expNext = def_exp_next;
     level = def_level;
     inventory = std::vector<Item>(0);
 }
@@ -22,6 +23,6 @@ void Player::showInventory() {
     }
 }
 
-bool Player::isAlive() {
+bool Player::isAlive() const {
     return health > 0 ? true : false; 
 }
