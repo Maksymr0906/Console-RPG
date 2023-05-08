@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iomanip>
+#include <conio.h>
 
 #include "Option.hpp"
 
@@ -10,6 +11,8 @@ protected:
     Option option;
     bool playing;
 public:
+    bool getPlaying() {return playing;}
+
     void backstory();
     void mainMenu();
 };
@@ -21,6 +24,9 @@ void Game::backstory() {
               << "All you have in your pockets is a knife, Coca-Kolya, and a loaf of bread."                               << std::endl
               << "For now, all you need is to survive, and how to achieve this depends on you."                            << std::endl
               << "So get up and don't waste a single moment on empty thoughts, otherwise you simply won't survive."        << std::endl;
+    
+    std::cout << std::endl << "/*/*Press any key to continue/*/*" << std::endl;
+    _getch();
 }
 
 void Game::mainMenu() {
@@ -37,6 +43,7 @@ void Game::mainMenu() {
     
     switch (option) {
     case Option::Quit:
+        playing = false;
         break;
     case Option::EXPLORE_WORLD:
         break;
