@@ -21,16 +21,8 @@ public:
     int get_health() {return health;}
     
     void takeDamage(int damage) {health -= damage;}
-    int inflictDamage();
     bool isAlive();
 };
-
-int Zombie::inflictDamage() {
-    srand(time(0));
-
-    int damageFromAttack = std::rand() % damage + 1;
-    return damageFromAttack;
-}
 
 bool Zombie::isAlive() {
     return health > 0 ? true : false; 

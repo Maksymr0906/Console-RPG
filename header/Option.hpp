@@ -1,11 +1,14 @@
 #pragma once
+
 #include <iostream>
 
 enum class Option{
-    EXPLORE_WORLD = 1,
+    Quit = 1,
+    EXPLORE_WORLD,
+    SHOP,
+    VIEW_STATS,
     VIEW_INVENTORY,
-    QUIT
+    LEVEL_UP,
 };
 
-void backstory();
 Option getOption();

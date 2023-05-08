@@ -28,7 +28,6 @@ public:
     void set_damage(int damage) {this->damage = damage;}
 
     void takeDamage(int damage) {health -= damage;}
-    int inflictDamage();
 
     void showInventory();
     bool isAlive();
@@ -43,13 +42,6 @@ void Player::showInventory() {
     for(auto &item: inventory) {
         std::cout << "Name: " << item.get_name() << " Category: " << item.get_category() << std::endl;
     }
-}
-
-int Player::inflictDamage() {
-    srand(time(0));
-
-    int damageFromAttack = std::rand() % damage + 1;
-    return damageFromAttack;
 }
 
 bool Player::isAlive() {
