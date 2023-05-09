@@ -1,5 +1,9 @@
 #include "Game.hpp"
 
+Game::Game() {
+    playing = true;
+}
+
 void printMenu() {
     std::cout << std::endl << std::setw(20) << std::right << "Main Menu" << std::endl
                            << "(1) - Quit"                               << std::endl

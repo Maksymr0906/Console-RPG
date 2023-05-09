@@ -13,6 +13,9 @@ protected:
     bool playing;
     Player player;
 public:
+    Game();
+
+
     bool getPlaying() const {return playing;}
     //Option getOption() const {return option;}
 

@@ -50,6 +50,15 @@ public:
     int getExp() const {return exp;}
     int getExpNext() const {return expNext;}
     int getLevel() const {return level;}
+    int getStamina() const {return stamina;}
+    int getStaminaMax() const {return staminaMax;}
+    int getDefence() const {return defence;}
+    int getStrength() const {return strength;}
+    int getDexterity() const {return dexterity;}
+    int getIntelligence() const {return intelligence;}
+    int getLuck() const {return luck;}
+    int getStatPoints() const {return statPoints;}
+    int getSkillPoints() const {return skillPoints;}
     std::string getName() const {return name;}
 
     //Modifiers
@@ -60,6 +69,15 @@ public:
     void setExp(int exp) {this->exp = exp;}
     void setExpNext(int expNext) {this->expNext = expNext;}
     void setLevel(int level) {this->level = level;}
+    void setStamina(int stamina) {this->stamina = stamina;}
+    void setStaminaMax(int staminaMax) {this->staminaMax = staminaMax;}
+    void setDefence(int defence) {this->defence = defence;}
+    void setStrength(int strength) {this->strength = strength;}
+    void setDexterity(int dexterity) {this->dexterity = dexterity;}
+    void setIntelligence(int intelligence) {this->intelligence = intelligence;}
+    void setLuck(int luck) {this->luck = luck;}
+    void setStatPoints(int statPoints) {this->statPoints = statPoints;}
+    void setSkillPoints(int skillPoints) {this->skillPoints = skillPoints;}
     void setName(std::string name) {this->name = name;}
 
     void showInventory();
