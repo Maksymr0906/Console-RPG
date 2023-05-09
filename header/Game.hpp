@@ -4,12 +4,14 @@
 #include <conio.h>
 
 #include "Option.hpp"
+#include "Player.hpp"
 
 class Game {
 private:
 protected:
     Option option;
     bool playing;
+    Player player;
 public:
     bool getPlaying() const {return playing;}
     //Option getOption() const {return option;}
@@ -19,6 +21,7 @@ public:
 
     void backstory() const;
     void mainMenu();
+    void initialize();
 };
 
 void printMenu();

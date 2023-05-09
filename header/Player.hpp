@@ -10,17 +10,33 @@
 
 class Player {
 private:
-    static constexpr const int def_health = 100;
-    static constexpr const int def_max_health = 100;
+    static constexpr const int def_health = 10;
+    static constexpr const int def_max_health = 10;
     static constexpr const int def_min_damage = 5;
     static constexpr const int def_max_damage = 10;
     static constexpr const int def_exp = 0;
-    static constexpr const int def_exp_next = 100;  //refactor
+    static constexpr const int def_exp_next = 100;
     static constexpr const int def_level = 1;
     static constexpr const char *def_name = "Unnamed";
+    static constexpr const int def_stamina = 10;
+    static constexpr const int def_stamina_max = 10;
+    static constexpr const int def_defence = 1;
+    static constexpr const int def_strength = 5;
+    static constexpr const int def_dexterity = 5;
+    static constexpr const int def_intelligence = 5;
+    static constexpr const int def_luck = 1;
+    static constexpr const int def_stat_points = 0;
+    static constexpr const int def_skill_points = 0;
 protected:
     std::string name;
-    int health, maxHealth, minDamage, maxDamage, exp, expNext, level;
+    int health, maxHealth;
+    int minDamage, maxDamage;
+    int exp, expNext, level;
+    int stamina, staminaMax;
+    int defence;
+    int strength, dexterity, intelligence;
+    int luck; 
+    int statPoints, skillPoints;
     std::vector<Item> inventory;
 public:
     //Constructors
@@ -51,4 +67,5 @@ public:
     int inflictDamage();
     void initialize(const std::string &name);
     void levelUp();
+    void showStats();
 };

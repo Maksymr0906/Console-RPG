@@ -9,6 +9,15 @@ Player::Player() {
     exp = def_exp;
     expNext = def_exp_next;
     level = def_level;
+    stamina = def_stamina;
+    staminaMax = def_stamina_max;
+    defence = def_defence;
+    strength = def_strength;
+    dexterity = def_dexterity;
+    intelligence = def_intelligence;
+    luck = def_luck;
+    statPoints = def_stat_points;
+    skillPoints = def_skill_points;
     inventory = std::vector<Item>(0);
 }
 
@@ -42,8 +51,17 @@ void Player::initialize(const std::string &name) {
     this->minDamage = def_min_damage;
     this->maxDamage = def_max_damage;
     this->exp = def_exp;
-    this->expNext = def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5;
+    this->expNext = def_exp;
     this->level = def_level;
+    this->stamina = def_stamina;
+    this->staminaMax = def_stamina_max;
+    this->defence = def_defence;
+    this->strength = def_strength;
+    this->dexterity = def_dexterity;
+    this->intelligence = def_intelligence;
+    this->luck = def_luck;
+    this->statPoints = def_stat_points;
+    this->skillPoints = def_skill_points;
     this->inventory = std::vector<Item>(0);
 }
 
@@ -54,4 +72,23 @@ void Player::levelUp() {
 
         expNext = def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5;
     }
+}
+
+void Player::showStats() {
+    std::cout << std::endl << "/* Player stats */" << std::endl
+              << "Name: "                   << this->name << std::endl
+              << "Level: "                  << this->level << std::endl
+              << "XP: "                     << this->exp << " / " << this->expNext << std::endl
+              << "Health: "                 << this->health << " / " << this->maxHealth << std::endl
+              << "Stamina: "                << this->stamina << " / " << this->staminaMax << std::endl
+              << "Damage: "                 << this->minDamage << " - " << this->maxDamage << std::endl
+              << "Defence: "                << this->defence << std::endl
+              << std::endl
+              << "/* Player Atributtes */"  << std::endl
+              << "Strength: "               << this->strength << std::endl
+              << "Dexterity: "              << this->dexterity << std::endl
+              << "Intelligence: "           << this->intelligence << std::endl
+              << "Luck: "                   << this->luck << std::endl
+              << "Available stat points: "  << this->statPoints << std::endl
+              << "Available skill points: " << this->skillPoints << std::endl;
 }

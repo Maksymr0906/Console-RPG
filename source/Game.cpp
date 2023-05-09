@@ -21,7 +21,15 @@ void Game::backstory() const {
     _getch();
 }
 
+void Game::initialize() {
+    std::string name{};
+    std::cout << "Enter the name: "; 
+    getline(std::cin, name);
+    player.initialize(name);
+}
+
 void Game::mainMenu() {
+    initialize();
     printMenu();
     option = getOption();
     
@@ -34,6 +42,7 @@ void Game::mainMenu() {
     case Option::SHOP:
         break;
     case Option::VIEW_STATS:
+        player.showStats();
         break;
     case Option::VIEW_INVENTORY:
         break;
