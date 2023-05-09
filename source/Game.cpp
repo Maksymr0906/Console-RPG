@@ -9,8 +9,8 @@ void printMenu() {
                            << "(1) - Quit"                               << std::endl
                            << "(2) - Explore world"                      << std::endl
                            << "(3) - Visit Merchant"                     << std::endl
-                           << "(4) - View my stats"                      << std::endl
-                           << "(5) - View my inventory"                  << std::endl
+                           << "(4) - Player's characteristics"           << std::endl
+                           << "(5) - Player's inventory"                 << std::endl
                            << "(6) - Level up"                           << std::endl;
 }
 

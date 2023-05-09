@@ -1,24 +1,24 @@
 #include "Player.hpp"
 
-Player::Player() {
-    name = def_name;
-    health = def_health;
-    maxHealth = def_health;
-    minDamage = def_min_damage;
-    maxDamage = def_max_damage;
-    exp = def_exp;
-    expNext = def_exp_next;
-    level = def_level;
-    stamina = def_stamina;
-    staminaMax = def_stamina_max;
-    defence = def_defence;
-    strength = def_strength;
-    dexterity = def_dexterity;
-    intelligence = def_intelligence;
-    luck = def_luck;
-    statPoints = def_stat_points;
-    skillPoints = def_skill_points;
-    inventory = std::vector<Item>(0);
+Player::Player()
+:   name{def_name},
+    health{def_health},
+    maxHealth{def_health},
+    minDamage{def_min_damage},
+    maxDamage{def_max_damage},
+    exp{def_exp},
+    expNext{def_exp_next},
+    level{def_level},
+    stamina{def_stamina},
+    staminaMax{def_stamina_max},
+    defence{def_defence},
+    strength{def_strength},
+    dexterity{def_dexterity},
+    intelligence{def_intelligence},
+    luck{def_luck},
+    statPoints{def_stat_points},
+    skillPoints{def_skill_points},
+    inventory{std::vector<Item>(0)} {
 }
 
 void Player::showInventory() {
@@ -93,4 +93,38 @@ void Player::showStats() {
               << "Luck: "                    << this->luck << std::endl
               << "Available stats points: "  << this->statPoints << std::endl
               << "Available skill points: "  << this->skillPoints << std::endl;
+}
+
+void Player::increaseAttributes() {
+    if(this->statPoints > 0) {
+        this->statPoints--;
+        std::cout << "(1) - Strength" << std::endl
+                  << "(2) - Dexterity" << std::endl
+                  << "(3) - Intelligence" << std::endl
+                  << "(4) - Luck" << std::endl;
+        int choice = getNumber("Enter which attribute you want to increase: ");
+        if(choice == 1) {
+            this->strength++;
+        }
+        else if(choice == 2) {
+            this->dexterity++;
+        }
+        else if(choice == 3) {
+            this->intelligence++;
+        }
+        else if(choice == 4) {
+            this->luck++;
+        }
+    }
+    else {
+        std::cout << "You don't have enough stats points" << std::endl;
+    }
+}
+
+
+int getNumber(const std::string &message) {
+    int number{};
+    std::cout << message;
+    std::cin >> number;
+    return number;    
 }
