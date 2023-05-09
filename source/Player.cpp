@@ -66,13 +66,17 @@ void Player::initialize(const std::string &name) {
 }
 
 void Player::levelUp() {
-    while(exp >= expNext) {
+    if(exp >= expNext) {
         level++;
         exp -= expNext;
 
         expNext = def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5;
         skillPoints++;
         statPoints += 5;
+        std::cout << "Congratulations, you are now " << this->level << " level!" << std::endl;
+    }
+    else {
+        std::cout << "You don't have enough experience" << std::endl;
     }
 }
 
@@ -105,15 +109,26 @@ void Player::increaseAttributes() {
         int choice = getNumber("Enter which attribute you want to increase: ");
         if(choice == 1) {
             this->strength++;
+            this->health += 1;
+            this->maxHealth += 1;
+            this->staminaMax += 1;
+            this->stamina += 1;
         }
         else if(choice == 2) {
             this->dexterity++;
+            this->minDamage+=1;
+            this->maxDamage+=1;
         }
         else if(choice == 3) {
             this->intelligence++;
+            this->defence += 1;
         }
         else if(choice == 4) {
             this->luck++;
+            this->health -= 1;
+            this->maxHealth -= 1;
+            this->staminaMax += 2;
+            this->stamina += 2;
         }
     }
     else {

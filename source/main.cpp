@@ -5,9 +5,10 @@
 
 int main() {
     srand(time(NULL));
-    
+
     Game game;
-    game.backstory();;
+    game.backstory();
+    game.initialize();
     while(game.getPlaying()) {
         game.mainMenu();
     }

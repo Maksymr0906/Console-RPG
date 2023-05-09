@@ -33,10 +33,8 @@ void Game::initialize() {
 }
 
 void Game::mainMenu() {
-    initialize();
     printMenu();
     option = getOption();
-    
     switch (option) {
     case Option::Quit:
         playing = false;
@@ -51,6 +49,7 @@ void Game::mainMenu() {
     case Option::VIEW_INVENTORY:
         break;
     case Option::LEVEL_UP:
+        player.levelUp();
         break;
     default:
         std::cout << "Incorrect choice" << std::endl;
