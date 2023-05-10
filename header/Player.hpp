@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <memory>
 
 #include "Item.hpp"
 
@@ -37,7 +38,8 @@ protected:
     int strength, dexterity, intelligence;
     int luck; 
     int statPoints, skillPoints;
-    std::vector<Item> inventory;
+    //int radiation;
+    std::vector<std::unique_ptr<Item>> inventory;
 public:
     //Constructors
     Player();

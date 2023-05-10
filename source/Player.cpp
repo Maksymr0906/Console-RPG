@@ -18,7 +18,7 @@ Player::Player()
     luck{def_luck},
     statPoints{def_stat_points},
     skillPoints{def_skill_points},
-    inventory{std::vector<Item>(0)} {
+    inventory{std::vector<std::unique_ptr<Item>>(0)} {
 }
 
 void Player::showInventory() {
@@ -28,7 +28,7 @@ void Player::showInventory() {
     }
 
     for(auto &item: inventory) {
-        std::cout << "Name: " << item.get_name() << " Category: " << item.get_category() << std::endl;
+        std::cout << "Name: " << item->get_name() << " Category: " << item->get_category() << std::endl;
     }
 }
 
@@ -62,7 +62,7 @@ void Player::initialize(const std::string &name) {
     this->luck = def_luck;
     this->statPoints = def_stat_points;
     this->skillPoints = def_skill_points;
-    this->inventory = std::vector<Item>(0);
+    this->inventory = std::vector<std::unique_ptr<Item>>(0);
 }
 
 void Player::levelUp() {
@@ -100,40 +100,46 @@ void Player::showStats() {
 }
 
 void Player::increaseAttributes() {
-    if(this->statPoints > 0) {
-        this->statPoints--;
-        std::cout << "(1) - Strength" << std::endl
-                  << "(2) - Dexterity" << std::endl
-                  << "(3) - Intelligence" << std::endl
-                  << "(4) - Luck" << std::endl;
-        int choice = getNumber("Enter which attribute you want to increase: ");
-        if(choice == 1) {
-            this->strength++;
-            this->health += 1;
-            this->maxHealth += 1;
-            this->staminaMax += 1;
-            this->stamina += 1;
+    char choice{'n'};
+    do {
+        if(this->statPoints > 0) {
+            this->statPoints--;
+            std::cout << "(1) - Strength" << std::endl
+                      << "(2) - Dexterity" << std::endl
+                      << "(3) - Intelligence" << std::endl
+                      << "(4) - Luck" << std::endl;
+            int choice = getNumber("Enter which attribute you want to increase: ");
+            if(choice == 1) {
+                this->strength++;
+                this->health += 1;
+                this->maxHealth += 1;
+                this->staminaMax += 1;
+                this->stamina += 1;
+            }
+            else if(choice == 2) {
+                this->dexterity++;
+                this->minDamage+=1;
+                this->maxDamage+=1;
+            }
+            else if(choice == 3) {
+                this->intelligence++;
+                this->defence += 1;
+            }
+            else if(choice == 4) {
+                this->luck++;
+                this->health -= 1;
+                this->maxHealth -= 1;
+                this->staminaMax += 2;
+                this->stamina += 2;
+            }
         }
-        else if(choice == 2) {
-            this->dexterity++;
-            this->minDamage+=1;
-            this->maxDamage+=1;
+        else {
+            std::cout << "You don't have enough stats points" << std::endl;
         }
-        else if(choice == 3) {
-            this->intelligence++;
-            this->defence += 1;
-        }
-        else if(choice == 4) {
-            this->luck++;
-            this->health -= 1;
-            this->maxHealth -= 1;
-            this->staminaMax += 2;
-            this->stamina += 2;
-        }
-    }
-    else {
-        std::cout << "You don't have enough stats points" << std::endl;
-    }
+        std::cout << "You have " << this->statPoints << " points left.\n Do you want to continue? (y/n)";
+        std::cin >> choice;
+    } while(this->statPoints > 0 && choice != 'n');
+
 }
 
 

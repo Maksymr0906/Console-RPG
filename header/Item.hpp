@@ -7,6 +7,7 @@ private:
     static constexpr const char *def_name = "Unnamed";
     static constexpr const char *def_category = "Uncategoried"; 
 protected:
+    int itemID;
     std::string name, category;
 public:
     std::string get_name() {return name;}
