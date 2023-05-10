@@ -3,11 +3,9 @@
 #include <ctime>
 #include <cstdlib>
 #include <string>
-#include <vector>
 #include <iostream>
-#include <memory>
 
-#include "Item.hpp"
+#include "Inventory.hpp"
 
 class Player {
 private:
@@ -39,7 +37,7 @@ protected:
     int luck; 
     int statPoints, skillPoints;
     //int radiation;
-    std::vector<std::unique_ptr<Item>> inventory;
+    Inventory inventory;
 public:
     //Constructors
     Player();
@@ -62,6 +60,7 @@ public:
     int getStatPoints() const {return statPoints;}
     int getSkillPoints() const {return skillPoints;}
     std::string getName() const {return name;}
+    Inventory getInventory() const {return inventory;}
 
     //Modifiers
     void setHealth(int health) {this->health = health;}
@@ -81,8 +80,8 @@ public:
     void setStatPoints(int statPoints) {this->statPoints = statPoints;}
     void setSkillPoints(int skillPoints) {this->skillPoints = skillPoints;}
     void setName(std::string name) {this->name = name;}
+    void setInventory(Inventory Inventory) {this->inventory = inventory;}
 
-    void showInventory();
     bool isAlive() const;
     int inflictDamage();
     void initialize(const std::string &name);

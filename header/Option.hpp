@@ -3,7 +3,7 @@
 #include <iostream>
 
 enum class Option{
-    Quit = 1,
+    QUIT = 1,
     EXPLORE_WORLD,
     SHOP,
     VIEW_STATS,

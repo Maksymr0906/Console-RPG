@@ -17,19 +17,7 @@ Player::Player()
     intelligence{def_intelligence},
     luck{def_luck},
     statPoints{def_stat_points},
-    skillPoints{def_skill_points},
-    inventory{std::vector<std::unique_ptr<Item>>(0)} {
-}
-
-void Player::showInventory() {
-    if(inventory.empty()) {
-        std::cout << "Your inventory is empty." << std::endl;
-        return ;
-    }
-
-    for(auto &item: inventory) {
-        std::cout << "Name: " << item->get_name() << " Category: " << item->get_category() << std::endl;
-    }
+    skillPoints{def_skill_points} {
 }
 
 bool Player::isAlive() const {
@@ -62,7 +50,6 @@ void Player::initialize(const std::string &name) {
     this->luck = def_luck;
     this->statPoints = def_stat_points;
     this->skillPoints = def_skill_points;
-    this->inventory = std::vector<std::unique_ptr<Item>>(0);
 }
 
 void Player::levelUp() {

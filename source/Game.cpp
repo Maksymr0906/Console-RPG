@@ -36,7 +36,7 @@ void Game::mainMenu() {
     printMenu();
     option = getOption();
     switch (option) {
-    case Option::Quit:
+    case Option::QUIT:
         playing = false;
         break;
     case Option::EXPLORE_WORLD:
@@ -47,6 +47,7 @@ void Game::mainMenu() {
         player.showStats();
         break;
     case Option::VIEW_INVENTORY:
+    
         break;
     case Option::LEVEL_UP:
         player.levelUp();
