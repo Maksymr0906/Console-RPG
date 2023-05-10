@@ -60,7 +60,7 @@ public:
     int getStatPoints() const {return statPoints;}
     int getSkillPoints() const {return skillPoints;}
     std::string getName() const {return name;}
-    Inventory getInventory() const {return inventory;}
+    //Inventory getInventory() const {return inventory;}
 
     //Modifiers
     void setHealth(int health) {this->health = health;}
@@ -80,7 +80,7 @@ public:
     void setStatPoints(int statPoints) {this->statPoints = statPoints;}
     void setSkillPoints(int skillPoints) {this->skillPoints = skillPoints;}
     void setName(std::string name) {this->name = name;}
-    void setInventory(Inventory Inventory) {this->inventory = inventory;}
+    //void setInventory(Inventory Inventory) {this->inventory = inventory;}
 
     bool isAlive() const;
     int inflictDamage();
