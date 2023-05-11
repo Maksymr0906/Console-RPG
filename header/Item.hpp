@@ -9,7 +9,7 @@ private:
     static constexpr const int def_purchase_price = 100;
     static constexpr const int def_sale_price = 80;
 protected:
-    std::string name, category;
+    std::string name, category, status/*equiped or in inventory*/;
     int purchasePrice, salePrice;
 public:
     std::string getName() const {return name;}
