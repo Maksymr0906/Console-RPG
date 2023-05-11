@@ -1,11 +1,12 @@
 #include "Inventory.hpp"
 
-void Inventory::addItem(std::unique_ptr<Item> item) {
+void Inventory::addItem(std::unique_ptr<Item> &item) {
     if(inventory.size() < size) {
         inventory.push_back(std::move(item));
     }
     else {
-        std::cout << "Not enough space" << std::endl;
+        std::cout << "Not enough space in inventory for" << std::endl;
+        std::cout << *item << std::endl;
     }
 }
 
@@ -26,4 +27,12 @@ void Inventory::removeItem(int position) {
     else {
         inventory.erase(inventory.begin() + position);
     }
+}
+
+void Inventory::initialize() {
+    this->size = 10;
+}
+
+void Inventory::expand() {
+    
 }

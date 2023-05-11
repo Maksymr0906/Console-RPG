@@ -6,7 +6,7 @@
 
 int main() {
     srand(time(NULL));
-    
+
     Game game;
     game.backstory();
     game.initialize();

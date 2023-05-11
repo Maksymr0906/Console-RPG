@@ -50,6 +50,7 @@ void Player::initialize(const std::string &name) {
     this->luck = def_luck;
     this->statPoints = def_stat_points;
     this->skillPoints = def_skill_points;
+    inventory.initialize();
 }
 
 void Player::levelUp() {
