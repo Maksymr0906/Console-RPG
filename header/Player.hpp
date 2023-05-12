@@ -60,7 +60,7 @@ public:
     int getStatPoints() const {return statPoints;}
     int getSkillPoints() const {return skillPoints;}
     std::string getName() const {return name;}
-    //Inventory getInventory() const {return inventory;}
+    Inventory &getInventory() {return inventory;}
 
     //Modifiers
     void setHealth(int health) {this->health = health;}

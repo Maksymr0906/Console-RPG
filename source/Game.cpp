@@ -47,7 +47,7 @@ void Game::mainMenu() {
         player.showStats();
         break;
     case Option::VIEW_INVENTORY:
-    
+    player.getInventory().showInventory();
         break;
     case Option::LEVEL_UP:
         player.levelUp();

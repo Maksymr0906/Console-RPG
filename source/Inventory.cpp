@@ -13,6 +13,7 @@ void Inventory::addItem(std::unique_ptr<Item> &item) {
 void Inventory::showInventory() {
     if(this->inventory.empty()) {
         std::cout << "Inventory is empty" << std::endl;
+        return ;
     }
     std::cout << "INVENTORY" << std::endl;
     for(const auto &item: this->inventory) {
