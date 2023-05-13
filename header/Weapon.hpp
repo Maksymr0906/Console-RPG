@@ -19,4 +19,9 @@ public:
            int minDamage = def_min_damage, int maxDamage = def_max_damage)
     :Item{name, category, status, purchasePrice, salePrice}, minDamage{minDamage}, maxDamage{maxDamage} {};
     
+    virtual ~Weapon() {};
+
+    virtual void equip() override;
+    virtual void unequip() override;
+    virtual void print(std::ostream &os) const override;
 };
