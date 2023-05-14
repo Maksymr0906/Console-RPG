@@ -19,7 +19,7 @@ public:
            int minDamage = def_min_damage, int maxDamage = def_max_damage)
     :Item{name, category, status, purchasePrice, salePrice}, minDamage{minDamage}, maxDamage{maxDamage} {};
     
-    virtual ~Weapon() {};
+    virtual ~Weapon() = default;
 
     virtual void equip() override;
     virtual void unequip() override;

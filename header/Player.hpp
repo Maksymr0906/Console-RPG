@@ -45,8 +45,8 @@ public:
     Player();
 
     //Accessors
-    int get_health() const {return health;}
-    int get_maxHealth() const {return maxHealth;}
+    int getHealth() const {return health;}
+    int getMaxHealth() const {return maxHealth;}
     int getMinDamage() const {return minDamage;}
     int getMaxDamage() const {return maxDamage;}
     int getExp() const {return exp;}
@@ -97,3 +97,7 @@ public:
 
 
 int getNumber(const std::string &message);
+void shop(Player &p);
+void weaponShop(Player &p);
+void armorShop(Player &p);
+void potionShop(Player &p);

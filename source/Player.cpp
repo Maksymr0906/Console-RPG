@@ -150,3 +150,35 @@ void Player::buyItem(std::unique_ptr<Item> &item) {
         std::cout << "You don't have enough money to buy " << item->getName() << std::endl;
     }
 }
+
+void shop(Player &p) {
+    std::cout << "Welcome to the Golden street " << p.getName() << "!" << std::endl;
+    std::cout << "In this street you can buy (almost) everything you want" << std::endl;
+    std::cout << "What type of items you want to view?" << std::endl;
+    std::cout << "(1) - Weapons\n(2) - Armor\n(3) - Potions" << std::endl;
+    int choice = getNumber("Your choice: ");
+    if(choice == 1) {
+        weaponShop(p);
+    }
+    else if(choice == 2) {
+        armorShop(p);
+    }
+    else if(choice == 3) {
+        potionShop(p);
+    }
+    else {
+        std::cout << "Such things are not sold on this street" << std::endl;
+    }
+}
+
+void weaponShop(Player &p) {
+    
+}
+
+void armorShop(Player &p) {
+
+}
+
+void potionShop(Player &p) {
+
+}
