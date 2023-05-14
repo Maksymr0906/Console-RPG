@@ -17,7 +17,8 @@ Player::Player()
     intelligence{def_intelligence},
     luck{def_luck},
     statPoints{def_stat_points},
-    skillPoints{def_skill_points} {
+    skillPoints{def_skill_points},
+    money{def_money} {
 }
 
 bool Player::isAlive() const {
@@ -50,6 +51,7 @@ void Player::initialize(const std::string &name) {
     this->luck = def_luck;
     this->statPoints = def_stat_points;
     this->skillPoints = def_skill_points;
+    this->money = def_money;
     inventory.initialize();
 }
 
@@ -136,4 +138,15 @@ int getNumber(const std::string &message) {
     std::cout << message;
     std::cin >> number;
     return number;    
+}
+
+void Player::buyItem(std::unique_ptr<Item> &item) {
+    if(this->money >= item->getPurchasePrice()) {
+        std::cout << "You successfully bought a " << item->getName() << std::endl;
+        this->money -= item->getPurchasePrice();
+        this->inventory.addItem(item);
+    }
+    else {
+        std::cout << "You don't have enough money to buy " << item->getName() << std::endl;
+    }
 }

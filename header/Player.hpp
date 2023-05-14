@@ -26,6 +26,7 @@ private:
     static constexpr const int def_luck = 1;
     static constexpr const int def_stat_points = 0;
     static constexpr const int def_skill_points = 0;
+    static constexpr const int def_money = 30;
 protected:
     std::string name;
     int health, maxHealth;
@@ -36,6 +37,7 @@ protected:
     int strength, dexterity, intelligence;
     int luck; 
     int statPoints, skillPoints;
+    int money;
     //int radiation;
     Inventory inventory;
 public:
@@ -59,6 +61,7 @@ public:
     int getLuck() const {return luck;}
     int getStatPoints() const {return statPoints;}
     int getSkillPoints() const {return skillPoints;}
+    int getMoney() const {return money;}
     std::string getName() const {return name;}
     Inventory &getInventory() {return inventory;}
 
@@ -79,6 +82,7 @@ public:
     void setLuck(int luck) {this->luck = luck;}
     void setStatPoints(int statPoints) {this->statPoints = statPoints;}
     void setSkillPoints(int skillPoints) {this->skillPoints = skillPoints;}
+    void setMoney(int money) {this->money = money;}
     void setName(std::string name) {this->name = name;}
     //void setInventory(Inventory Inventory) {this->inventory = inventory;}
 
@@ -88,6 +92,7 @@ public:
     void levelUp();
     void showStats();
     void increaseAttributes();
+    void buyItem(std::unique_ptr<Item> &item);
 };
 
 
