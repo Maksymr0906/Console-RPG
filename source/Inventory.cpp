@@ -1,7 +1,7 @@
 #include "Inventory.hpp"
 
 void Inventory::addItem(std::unique_ptr<Item> &item) {
-    if(inventory.size() < size) {
+    if(inventory.size() < sizeOfInventory) {
         inventory.push_back(std::move(item));
     }
     else {
@@ -17,7 +17,7 @@ void Inventory::showInventory() {
     }
     std::cout << "INVENTORY" << std::endl;
     for(const auto &item: this->inventory) {
-        std::cout << item->getName() << " " << item->getCategory() << std::endl;
+        std::cout << *item << std::endl;
     }
 }
 
@@ -31,9 +31,9 @@ void Inventory::removeItem(int position) {
 }
 
 void Inventory::initialize() {
-    this->size = 10;
+    this->sizeOfInventory = 10;
 }
 
-void Inventory::expand() {
-    
+void Inventory::expand(int numberOfNewCells) {
+    this->sizeOfInventory += numberOfNewCells;
 }

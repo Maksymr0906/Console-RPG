@@ -10,11 +10,11 @@ class Inventory {
 private:
 protected:
     std::vector<std::unique_ptr<Item>> inventory;
-    int size;
+    int sizeOfInventory;
 public:
     void addItem(std::unique_ptr<Item> &item);
     void showInventory();
     void removeItem(int position);
-    void expand();
+    void expand(int numberOfNewCells);
     void initialize();
 };
