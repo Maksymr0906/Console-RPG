@@ -16,11 +16,11 @@ public:
     Game();
 
 
-    bool getPlaying() const {return playing;}
+    bool getPlaying() const { return playing; }
     //Option getOption() const {return option;}
 
-    void setPlaying(bool playing) {this->playing = playing;}
-    void setOption(Option option) {this->option = option;}
+    void setPlaying(bool playing) { this->playing = playing; }
+    void setOption(Option option) { this->option = option; }
 
     void backstory() const;
     void mainMenu();

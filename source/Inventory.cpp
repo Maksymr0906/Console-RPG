@@ -1,8 +1,9 @@
 #include "Inventory.hpp"
 
-void Inventory::addItem(std::unique_ptr<Item> &item) {
-    if(inventory.size() < sizeOfInventory) {
+void Inventory::addItem(std::shared_ptr<Item>& item) {
+    if (inventory.size() < sizeOfInventory) {
         inventory.push_back(std::move(item));
+        item.reset();
     }
     else {
         std::cout << "Not enough space in inventory for" << std::endl;
@@ -11,18 +12,18 @@ void Inventory::addItem(std::unique_ptr<Item> &item) {
 }
 
 void Inventory::showInventory() {
-    if(this->inventory.empty()) {
+    if (this->inventory.empty()) {
         std::cout << "\nYour inventory is empty" << std::endl;
-        return ;
+        return;
     }
     std::cout << "\nYour inventory" << std::endl;
-    for(size_t i = 0; i < this->inventory.size(); i++) {
-        std::cout << "(" << i+1 << ") - " << this->inventory.at(i)->getName() << std::endl; 
+    for (size_t i = 0; i < this->inventory.size(); i++) {
+        std::cout << "(" << i + 1 << ") - " << this->inventory.at(i)->getName() << std::endl;
     }
 }
 
 void Inventory::removeItem(int position) {
-    if(position < 0 || position >= inventory.size()) {
+    if (position < 0 || position >= inventory.size()) {
         std::cout << "Invalid position" << std::endl;
     }
     else {
