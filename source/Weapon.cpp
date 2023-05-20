@@ -1,14 +1,14 @@
 #include "Weapon.hpp"
 
 void Weapon::equip() {
-    status = "Equipped";
+    Item::equip();
 };
     
 void Weapon::unequip() {
-    status = "Unequipped";
+    Item::unequip();
 }
 
 void Weapon::print(std::ostream &os) const {
-    os << "Weapon name: " << this->name << " Category: " << this->category << " Min/Max Damage: " 
-       << this->minDamage << " / " << this->maxDamage << " Status: " << this->status;
+    os << "\nWeapon name: " << this->name << "\nCategory: " << this->category << "\nMin/Max Damage: " 
+       << this->minDamage << " / " << this->maxDamage << "\nStatus: " << this->status;
 }

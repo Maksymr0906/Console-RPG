@@ -12,6 +12,9 @@ protected:
     std::vector<std::unique_ptr<Item>> inventory;
     int sizeOfInventory;
 public:
+
+    std::vector<std::unique_ptr<Item>> &getInventory() {return inventory; }
+
     void addItem(std::unique_ptr<Item> &item);
     void showInventory();
     void removeItem(int position);

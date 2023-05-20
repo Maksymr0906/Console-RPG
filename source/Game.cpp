@@ -11,7 +11,7 @@ void printMenu() {
                            << "(3) - Visit Merchant"                     << std::endl
                            << "(4) - Player's characteristics"           << std::endl
                            << "(5) - Player's inventory"                 << std::endl
-                           << "(6) - Level up"                           << std::endl;
+                           << "(6) - Level up"                           << std::endl << std::endl;
 }
 
 void Game::backstory() const {
@@ -42,6 +42,7 @@ void Game::mainMenu() {
     case Option::EXPLORE_WORLD:
         break;
     case Option::SHOP:
+        shop(player);
         break;
     case Option::VIEW_STATS:
         player.showStats();

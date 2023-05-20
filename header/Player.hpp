@@ -6,7 +6,8 @@
 #include <iostream>
 
 #include "Inventory.hpp"
-
+#include "Weapon.hpp"
+#include "Armor.hpp"
 class Player {
 private:
     static constexpr const int def_health = 10;
@@ -93,6 +94,7 @@ public:
     void showStats();
     void increaseAttributes();
     void buyItem(std::unique_ptr<Item> &item);
+    void equipItem();
 };
 
 
