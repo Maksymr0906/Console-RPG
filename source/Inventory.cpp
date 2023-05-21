@@ -13,7 +13,6 @@ void Inventory::addItem(std::shared_ptr<Item>& item) {
 
 void Inventory::showInventory() {
     if (this->inventory.empty()) {
-        std::cout << "\nYour inventory is empty" << std::endl;
         return;
     }
     std::cout << "\nYour inventory" << std::endl;

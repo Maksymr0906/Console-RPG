@@ -12,8 +12,8 @@ class Player {
 private:
     static constexpr const int def_health = 10;
     static constexpr const int def_max_health = 10;
-    static constexpr const int def_min_damage = 5;
-    static constexpr const int def_max_damage = 10;
+    static constexpr const int def_min_damage = 2;
+    static constexpr const int def_max_damage = 5;
     static constexpr const int def_exp = 0;
     static constexpr const int def_exp_next = 100;
     static constexpr const int def_level = 1;
@@ -22,12 +22,15 @@ private:
     static constexpr const int def_stamina_max = 10;
     static constexpr const int def_defence = 1;
     static constexpr const int def_strength = 5;
+    static constexpr const int def_vitality = 5;
     static constexpr const int def_dexterity = 5;
     static constexpr const int def_intelligence = 5;
     static constexpr const int def_luck = 1;
     static constexpr const int def_stat_points = 0;
     static constexpr const int def_skill_points = 0;
     static constexpr const int def_money = 30;
+    const std::shared_ptr<Item> def_weapon = std::make_shared<Weapon>("None");
+    const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
 protected:
     std::string name;
     int health, maxHealth;
@@ -35,7 +38,7 @@ protected:
     int exp, expNext, level;
     int stamina, staminaMax;
     int defence;
-    int strength, dexterity, intelligence;
+    int strength, vitality, dexterity, intelligence;
     int luck;
     int statPoints, skillPoints;
     int money;
@@ -94,12 +97,13 @@ public:
 
     bool isAlive() const;
     int inflictDamage();
-    void initialize(const std::string& name);
+    void initialize(const std::string &name);
     void levelUp();
     void showStats();
     void increaseAttributes();
-    void buyItem(std::shared_ptr<Item>& item);
-    void equipItem();
+    void buyItem(std::shared_ptr<Item> &item);
+    void equipItem(std::shared_ptr<Item> &item);
+    void unequipItem(std::shared_ptr<Item> &item);
     void showInventory();
 };
 

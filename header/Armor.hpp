@@ -21,11 +21,12 @@ public:
         int purchasePrice = def_purchase_price, int salePrice = def_sale_price, int level = def_level, int rarity = def_rarity,
         int defence = def_defence, int type = def_type)
         :Item{ name, category, status, purchasePrice, salePrice, level, rarity }, defence{ defence }, type{ type } {};
-
+    Armor(const Armor &obj);
     virtual ~Armor() = default;
     virtual void equip() override;
     virtual void unequip() override;
     virtual void print(std::ostream& os) const override;
 
+    Armor clone();
     int getType() const { return type; }
 };
