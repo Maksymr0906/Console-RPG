@@ -2,13 +2,14 @@
 
 #include <iostream>
 
-enum class Option{
+enum class Option {
     QUIT = 1,
     EXPLORE_WORLD,
     SHOP,
     VIEW_STATS,
     VIEW_INVENTORY,
     LEVEL_UP,
+    UPGRADE_CHARACTERISTICS
 };
 
 Option getOption();

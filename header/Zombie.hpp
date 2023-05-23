@@ -23,7 +23,3 @@ public:
     void takeDamage(int damage) {health -= damage;}
     bool isAlive();
 };
-
-bool Zombie::isAlive() {
-    return health > 0 ? true : false; 
-}

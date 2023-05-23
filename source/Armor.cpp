@@ -18,7 +18,11 @@ Armor::Armor(const Armor &obj)
 }
 
 Armor Armor::clone() {
-    Armor armor = *this;
+    Armor clonedArmor = *this;
 
-    return armor;
+    return clonedArmor;
+}
+
+void Armor::use() {
+    std::cout << "Armor used" << std::endl;
 }

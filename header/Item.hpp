@@ -42,4 +42,5 @@ public:
 
     virtual void equip() = 0;
     virtual void unequip() = 0;
+    virtual void use() = 0;
 };

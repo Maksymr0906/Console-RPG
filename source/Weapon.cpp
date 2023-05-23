@@ -12,3 +12,7 @@ void Weapon::print(std::ostream& os) const {
     os << "\nWeapon name: " << this->name << "\nCategory: " << this->category << "\nMin/Max Damage: "
         << this->minDamage << " / " << this->maxDamage << "\nStatus: " << this->status;
 }
+
+void Weapon::use() {
+    std::cout << "Weapon used" << std::endl;
+}

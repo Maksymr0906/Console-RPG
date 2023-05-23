@@ -26,6 +26,7 @@ public:
     virtual void equip() override;
     virtual void unequip() override;
     virtual void print(std::ostream& os) const override;
+    virtual void use() override;
 
     Armor clone();
     int getType() const { return type; }

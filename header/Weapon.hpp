@@ -26,4 +26,7 @@ public:
     virtual void equip() override;
     virtual void unequip() override;
     virtual void print(std::ostream& os) const override;
+    virtual void use() override;
+    int getMinDamage() const { return minDamage; }
+    int getMaxDamage() const { return maxDamage; }
 };

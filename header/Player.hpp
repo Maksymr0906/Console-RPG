@@ -30,7 +30,7 @@ private:
     static constexpr const int def_skill_points = 0;
     static constexpr const int def_money = 30;
     const std::shared_ptr<Item> def_weapon = std::make_shared<Weapon>("None");
-    const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
+    const std::shared_ptr<Armor> def_armor = std::make_shared<Armor>("None");
 protected:
     std::string name;
     int health, maxHealth;
@@ -105,6 +105,7 @@ public:
     void equipItem(std::shared_ptr<Item> &item);
     void unequipItem(std::shared_ptr<Item> &item);
     void showInventory();
+    void updateCharacteristics();
 };
 
 

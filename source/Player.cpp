@@ -123,7 +123,6 @@ void Player::increaseAttributes() {
             int choice = getNumber("\nEnter which attribute you want to increase: ");
             if (choice == 1) {
                 this->strength++;
-             
             }
             else if(choice == 2) {
                 this->vitality++;
@@ -137,6 +136,7 @@ void Player::increaseAttributes() {
             else if (choice == 5) {
                 this->luck++;
             }
+            this->updateCharacteristics();
         }
         else {
             std::cout << "\nYou don't have enough stats points" << std::endl;
@@ -147,6 +147,15 @@ void Player::increaseAttributes() {
 
 }
 
+void Player::updateCharacteristics() {
+    this->maxHealth = def_max_health + (int)(strength / 2) - 2;
+    this->health = this->maxHealth;
+    this->minDamage = def_min_damage + (int)(strength / 4 + vitality / 4) - 2;
+    this->maxDamage = def_max_damage + (int)(strength / 4 + vitality / 4) - 2;
+    this->staminaMax = def_stamina_max + (int)(vitality / 2) - 2;
+    this->stamina = this->staminaMax;
+    this->defence = def_defence + (intelligence / 2) - 2;
+}
 
 int getNumber(const std::string& message) {
     int number{};
@@ -270,63 +279,45 @@ void potionShop(Player& p) {
 
 void Player::equipItem(std::shared_ptr<Item> &item) {
     if(item->getCategory() == "Weapon") {
-        if(weapon->getName() == "None") {
-            weapon = item;
-            weapon->setStatus("Equipped");
-        }
-        else {
+        if(weapon->getName() != "None") {
             unequipItem(weapon);
-            weapon = item;
-            weapon->setStatus("Equipped");
         }
+        weapon = item;
+        weapon->equip();
+        this->minDamage += std::dynamic_pointer_cast<Weapon>(item)->getMinDamage();
+        this->maxDamage += std::dynamic_pointer_cast<Weapon>(item)->getMaxDamage();
     }
     else if(item->getCategory() == "Armor"
             && std::dynamic_pointer_cast<Armor>(item)->getType() == 1) {
-        if(armorHead->getName() == "None") {
-            armorHead = item;
-            armorHead->setStatus("Equipped");
-        }
-        else {
+        if(armorHead->getName() != "None") {
             unequipItem(armorHead);
-            armorHead = item;
-            armorHead->setStatus("Equipped");
         }
+        armorHead = item;
+        armorHead->equip();
     }
     else if(item->getCategory() == "Armor"
             && std::dynamic_pointer_cast<Armor>(item)->getType() == 2) {
-        if(armorChest->getName() == "None") {
-            armorChest = item;
-            armorChest->setStatus("Equipped");
-        }
-        else {
+        if(armorChest->getName() != "None") {
             unequipItem(armorChest);
-            armorChest = item;
-            armorChest->setStatus("Equipped");
         }
+        armorChest = item;
+        armorChest->equip();
     }
     else if(item->getCategory() == "Armor"
             && std::dynamic_pointer_cast<Armor>(item)->getType() == 3) {
-        if(armorLeggs->getName() == "None") {
-            armorLeggs = item;
-            armorLeggs->setStatus("Equipped");
-        }
-        else {
+        if(armorLeggs->getName() != "None") {
             unequipItem(armorLeggs);
-            armorLeggs = item;
-            armorLeggs->setStatus("Equipped");
         }
+        armorLeggs = item;
+        armorLeggs->equip();
     }
     else if(item->getCategory() == "Armor"
             && std::dynamic_pointer_cast<Armor>(item)->getType() == 4) {
-        if(armorBoots->getName() == "None") {
-            armorBoots = item;
-            armorBoots->setStatus("Equipped");
-        }
-        else {
+        if(armorBoots->getName() != "None") {
             unequipItem(armorBoots);
-            armorBoots = item;
-            armorBoots->setStatus("Equipped");
         }
+        armorBoots = item;
+        armorBoots->equip();
     }
     else {
         std::cout << "Error: " << item->getName() << " is not a weapon or armor." << std::endl;
@@ -334,29 +325,23 @@ void Player::equipItem(std::shared_ptr<Item> &item) {
 }
 
 void Player::unequipItem(std::shared_ptr<Item> &item) {
+    item->unequip();
     if(weapon == item) {
-        item->setStatus("Unequipped");
+        this->minDamage -= std::dynamic_pointer_cast<Weapon>(item)->getMinDamage();
+        this->maxDamage -= std::dynamic_pointer_cast<Weapon>(item)->getMaxDamage();
         weapon = def_weapon;
     }
-    if(armorBoots == item) {
-        item->setStatus("Unequipped");
-        armorBoots = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-        armorBoots->setName("Boots");
+    else if(armorBoots == item) {
+        armorBoots = std::make_shared<Armor>(*def_armor);
     }
-    if(armorLeggs == item) {
-        item->setStatus("Unequipped");
-        armorLeggs = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-        armorLeggs->setName("Leggs");
+    else if(armorLeggs == item) {
+        armorLeggs = std::make_shared<Armor>(*def_armor);
     }
-    if(armorChest == item) {
-        item->setStatus("Unequipped");
-        armorChest = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-        armorChest->setName("Chest");
+    else if(armorChest == item) {
+        armorChest = std::make_shared<Armor>(*def_armor);
     }
-    if(armorHead == item) {
-        item->setStatus("Unequipped");
-        armorHead = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-        armorHead->setName("Head");
+    else if(armorHead == item) {
+        armorHead = std::make_shared<Armor>(*def_armor);
     }
 }
 
