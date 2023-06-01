@@ -7,3 +7,7 @@ void Item::equip() {
 void Item::unequip() {
     this->status = "Unequipped";
 }
+
+void Item::use() {
+    std::cout << "Item used" << std::endl;
+}

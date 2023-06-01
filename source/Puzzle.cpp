@@ -1,0 +1,35 @@
+#include "Puzzle.hpp"
+
+Puzzle::Puzzle(std::string fileName) {
+	std::ifstream file(fileName);
+
+	std::string answer{};
+	int numOfAnswers{};
+
+	if(file.is_open()) {
+		std::getline(file, question);
+		file >> numOfAnswers;
+		file.ignore();
+
+		for(size_t i = 0; i < numOfAnswers; i++) {
+			std::getline(file, answer);
+			this->answers.push_back(answer);
+		}
+
+		file >> indexOfCorrectAnswer;
+		file.ignore();
+	}
+
+	file.close();
+}
+
+std::string Puzzle::getAsString() {
+	std::string result{};
+	result += question + "\n\n";
+	
+	for(size_t i = 0; i < this->answers.size(); i++) {
+		result += std::to_string(i) + ' ' + answers[i] + '\n';
+	}
+
+	return result;
+}

@@ -5,6 +5,7 @@
 
 #include "Option.hpp"
 #include "Player.hpp"
+#include "Event.hpp"
 
 class Game {
 private:
@@ -25,6 +26,7 @@ public:
     void backstory() const;
     void mainMenu();
     void initialize();
+    void explore();
 };
 
 void printMenu();

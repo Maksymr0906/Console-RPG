@@ -2,6 +2,7 @@
 
 Game::Game() {
     playing = true;
+    option = Option::QUIT;
 }
 
 void printMenu() {
@@ -41,6 +42,7 @@ void Game::mainMenu() {
         playing = false;
         break;
     case Option::EXPLORE_WORLD:
+        explore();
         break;
     case Option::SHOP:
         shop(player);
@@ -56,9 +58,16 @@ void Game::mainMenu() {
         break;
     case Option::UPGRADE_CHARACTERISTICS:
         player.increaseAttributes();
+        break;
     default:
         std::cout << "Incorrect choice" << std::endl;
         break;
     }
 }
 
+void Game::explore() {
+    player.explore();
+
+    Event event;
+    event.generateEvent(player);
+}

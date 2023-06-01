@@ -21,12 +21,19 @@ public:
         int minDamage = def_min_damage, int maxDamage = def_max_damage, int level = def_level, int rarity = def_rarity)
         :Item{ name, category, status, purchasePrice, salePrice, level, rarity}, minDamage{ minDamage }, maxDamage{ maxDamage } {};
 
+    Weapon(const Weapon &other)
+        : Item(other), minDamage(other.minDamage), maxDamage(other.maxDamage) {}
+
     virtual ~Weapon() = default;
+
+    int getMinDamage() const { return minDamage; }
+    int getMaxDamage() const { return maxDamage; }
+
+    void setMinDamage(int minDamage) { this->minDamage = minDamage; }
+    void setMaxDamage(int maxDamage) { this->maxDamage = maxDamage; }
 
     virtual void equip() override;
     virtual void unequip() override;
     virtual void print(std::ostream& os) const override;
     virtual void use() override;
-    int getMinDamage() const { return minDamage; }
-    int getMaxDamage() const { return maxDamage; }
 };

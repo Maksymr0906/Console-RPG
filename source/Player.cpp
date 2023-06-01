@@ -20,12 +20,12 @@ Player::Player()
     statPoints{ def_stat_points },
     skillPoints{ def_skill_points },
     money{ def_money },
-    weapon{nullptr},
-    armorHead{ std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone()) },
-    armorChest{ std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone()) },
-    armorLeggs{ std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone()) },
-    armorBoots{ std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone()) } {
-}
+    weapon{ def_weapon},
+    armorHead{ def_armor },
+    armorChest{ def_armor },
+    armorLeggs{ def_armor },
+    armorBoots{ def_armor },
+    distanceTravelled{ def_distance_travelled } {}
 
 bool Player::isAlive() const {
     return health > 0 ? true : false;
@@ -61,11 +61,12 @@ void Player::initialize(const std::string& name) {
     this->skillPoints = def_skill_points;
     this->money = def_money;
     this->weapon = def_weapon;
-    this->armorHead = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-    this->armorChest = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-    this->armorLeggs = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-    this->armorBoots = std::make_shared<Armor>(std::dynamic_pointer_cast<Armor>(def_armor)->clone());
-    inventory.initialize();
+    this->armorHead = def_armor;
+    this->armorChest = def_armor;
+    this->armorLeggs = def_armor;
+    this->armorBoots = def_armor;
+    this->distanceTravelled = def_distance_travelled;
+    this->inventory.initialize();
 }
 
 void Player::levelUp() {
@@ -111,40 +112,57 @@ void Player::showStats() {
 }
 
 void Player::increaseAttributes() {
-    char choice{ 'n' };
+    char continueChoice{ 'n' };
     do {
         if (this->statPoints > 0) {
-            this->statPoints--;
             std::cout << "(1) - Strength" << std::endl
                 << "(2) - Vitality" << std::endl
                 << "(3) - Dexterity" << std::endl
                 << "(4) - Intelligence" << std::endl
                 << "(5) - Luck" << std::endl;
-            int choice = getNumber("\nEnter which attribute you want to increase: ");
-            if (choice == 1) {
-                this->strength++;
+            int attributeChoice = getValidAttributeChoice();
+            switch(attributeChoice) {
+                case 1:
+                    this->strength++;
+                    break;
+                case 2:
+                    this->vitality++;
+                    break;
+                case 3:
+                    this->dexterity++;
+                    break;
+                case 4:
+                    this->intelligence++;
+                    break;
+                case 5:
+                    this->luck++;
+                    break;
+                default:
+                    std::cout << "\nInvalid attribute choice" << std::endl;
+                    break;
             }
-            else if(choice == 2) {
-                this->vitality++;
-            }
-            else if (choice == 3) {
-                this->dexterity++;
-            }
-            else if (choice == 4) {
-                this->intelligence++;
-            }
-            else if (choice == 5) {
-                this->luck++;
-            }
+            this->statPoints--;
             this->updateCharacteristics();
         }
         else {
             std::cout << "\nYou don't have enough stats points" << std::endl;
+            return;
         }
-        std::cout << "\nYou have " << this->statPoints << " points left.\n Do you want to continue? (y/n)";
-        std::cin >> choice;
-    } while (this->statPoints > 0 && choice != 'n');
+        std::cout << "\nYou have " << this->statPoints << " points left.\nDo you want to continue? (y/n)";
+        std::cin >> continueChoice;
+    } while (this->statPoints > 0 && continueChoice != 'n');
+}
 
+int Player::getValidAttributeChoice() const {
+    int attributeChoice{};
+    do {
+        attributeChoice = getNumber("Enter which attribute you want to increase: ");
+        if(attributeChoice < 1 || attributeChoice > 5) {
+            std::cout << "\nInvalid attribute choice. Please try again." << std::endl;
+        }
+    } while(attributeChoice < 1 || attributeChoice > 5);
+
+    return attributeChoice;
 }
 
 void Player::updateCharacteristics() {
@@ -274,112 +292,116 @@ void potionShop(Player& p) {
             return;
         }
     } while (choice != 4);
-
 }
 
 void Player::equipItem(std::shared_ptr<Item> &item) {
+    item->equip();
     if(item->getCategory() == "Weapon") {
-        if(weapon->getName() != "None") {
-            unequipItem(weapon);
+        std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
+        
+        if(weaponItem) {
+            this->weapon = weaponItem;
+            this->minDamage += weaponItem->getMinDamage();
+            this->maxDamage += weaponItem->getMaxDamage();
         }
-        weapon = item;
-        weapon->equip();
-        this->minDamage += std::dynamic_pointer_cast<Weapon>(item)->getMinDamage();
-        this->maxDamage += std::dynamic_pointer_cast<Weapon>(item)->getMaxDamage();
     }
-    else if(item->getCategory() == "Armor"
-            && std::dynamic_pointer_cast<Armor>(item)->getType() == 1) {
-        if(armorHead->getName() != "None") {
-            unequipItem(armorHead);
+    else if(item->getCategory() == "Armor") {
+        std::shared_ptr<Armor> armorItem = std::dynamic_pointer_cast<Armor>(item);
+
+        if(armorItem) {
+            if(armorItem->getType() == 1) {
+                this->armorHead = armorItem;
+            }
+            else if(armorItem->getType() == 2) {
+                this->armorChest = armorItem;
+            }
+            else if(armorItem->getType() == 3) {
+                this->armorLeggs = armorItem;
+            }
+            else if(armorItem->getType() == 4) {
+                this->armorBoots = armorItem;
+            }
+
+            this->defence += armorItem->getDefence();
         }
-        armorHead = item;
-        armorHead->equip();
-    }
-    else if(item->getCategory() == "Armor"
-            && std::dynamic_pointer_cast<Armor>(item)->getType() == 2) {
-        if(armorChest->getName() != "None") {
-            unequipItem(armorChest);
-        }
-        armorChest = item;
-        armorChest->equip();
-    }
-    else if(item->getCategory() == "Armor"
-            && std::dynamic_pointer_cast<Armor>(item)->getType() == 3) {
-        if(armorLeggs->getName() != "None") {
-            unequipItem(armorLeggs);
-        }
-        armorLeggs = item;
-        armorLeggs->equip();
-    }
-    else if(item->getCategory() == "Armor"
-            && std::dynamic_pointer_cast<Armor>(item)->getType() == 4) {
-        if(armorBoots->getName() != "None") {
-            unequipItem(armorBoots);
-        }
-        armorBoots = item;
-        armorBoots->equip();
-    }
-    else {
-        std::cout << "Error: " << item->getName() << " is not a weapon or armor." << std::endl;
     }
 }
 
 void Player::unequipItem(std::shared_ptr<Item> &item) {
     item->unequip();
-    if(weapon == item) {
-        this->minDamage -= std::dynamic_pointer_cast<Weapon>(item)->getMinDamage();
-        this->maxDamage -= std::dynamic_pointer_cast<Weapon>(item)->getMaxDamage();
-        weapon = def_weapon;
+    if(item->getCategory() == "Weapon") {
+        std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
+        if(weaponItem) {
+            this->weapon = def_weapon;
+            this->minDamage -= weaponItem->getMinDamage();
+            this->maxDamage -= weaponItem->getMaxDamage();
+        }
     }
-    else if(armorBoots == item) {
-        armorBoots = std::make_shared<Armor>(*def_armor);
-    }
-    else if(armorLeggs == item) {
-        armorLeggs = std::make_shared<Armor>(*def_armor);
-    }
-    else if(armorChest == item) {
-        armorChest = std::make_shared<Armor>(*def_armor);
-    }
-    else if(armorHead == item) {
-        armorHead = std::make_shared<Armor>(*def_armor);
+    else if(item->getCategory() == "Armor") {
+        std::shared_ptr<Armor> armorItem = std::dynamic_pointer_cast<Armor>(item);
+
+        if(armorItem) {
+            if(armorItem->getType() == 1) {
+                this->armorHead = def_armor;
+            }
+            else if(armorItem->getType() == 2) {
+                this->armorChest = def_armor;
+            }
+            else if(armorItem->getType() == 3) {
+                this->armorLeggs = def_armor;
+            }
+            else if(armorItem->getType() == 4) {
+                this->armorBoots = def_armor;
+            }
+
+            this->defence -= armorItem->getDefence();
+        }
     }
 }
 
 void Player::showInventory() {
-    std::vector<std::shared_ptr<Item>>& items = this->inventory.getInventory();
-    this->inventory.showInventory();
-    if(items.empty()) {
-        std::cout << "\nYour inventory is empty" << std::endl;
+    if(this->inventory.is_empty()) {
+        std::cout << "\nYour inventory is empty\n" << std::endl;
         return;
     }
-    int choice = getNumber("\nSelect the corresponding number to read more about this item or 0 to go back: ");
 
-    if(choice == 0) {
-        return;
-    }
-    else {
-        std::shared_ptr<Item> currentItem = items.at(choice - 1);
-        std::cout << *currentItem << std::endl;
-        if(currentItem->getStatus() == "Equipped") {
-            std::cout << "Do you want to unequip " << currentItem->getName() << " ?(y/n)" << std::endl;
-            char isPlayerWantToUnequip{ 'n' };
-            std::cin >> isPlayerWantToUnequip;
-            if(isPlayerWantToUnequip == 'y') {
-                this->unequipItem(currentItem);
-            }
+    int selectedItemIndex{};
+
+    do {
+        this->inventory.showInventory();
+        selectedItemIndex = getNumber("\nChoose the number for more details about the item or enter 0 to go back: ");
+        if(selectedItemIndex == 0) {
+            return;
         }
         else {
-            if(currentItem->getCategory() == "Weapon" || currentItem->getCategory() == "Armor") {
-                std::cout << "Do you want to equip " << currentItem->getName() << " ?(y/n)" << std::endl;
-                char isPlayerWantToEquip{ 'n' };
-                std::cin >> isPlayerWantToEquip;
+            std::shared_ptr<Item> selectedItem = this->inventory.getInventory().at(selectedItemIndex - 1);
+            std::cout << *selectedItem << std::endl;
 
-                if(isPlayerWantToEquip == 'y') {
-                    this->equipItem(currentItem);
+            char choice;
+            if(selectedItem->getStatus() == "Equipped") {
+                std::cout << "Do you want to unequip this item? (y/n)\n";
+                std::cin >> choice;
+
+                if(choice == 'y') {
+                    unequipItem(selectedItem);
                 }
             }
-        }
+            else {
+                std::cout << "Do you want to equip this item? (y/n)\n";
+                std::cin >> choice;
 
-        this->showInventory();
-    }
+                if(choice == 'y') {
+                    equipItem(selectedItem);
+                }
+            }
+        } 
+    } while(selectedItemIndex != 0);
+}
+
+void Player::showEquipment() {
+    std::cout << "\nWeapon: \n" << weapon << std::endl;
+    std::cout << "\nArmor head: \n" << armorHead << std::endl;
+    std::cout << "\nArmor chest: \n" << armorChest << std::endl;
+    std::cout << "\nArmor leggs: \n" << armorLeggs << std::endl;
+    std::cout << "\nArmor boots: \n" << armorBoots << std::endl;
 }

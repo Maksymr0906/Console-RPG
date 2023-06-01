@@ -30,7 +30,8 @@ private:
     static constexpr const int def_skill_points = 0;
     static constexpr const int def_money = 30;
     const std::shared_ptr<Item> def_weapon = std::make_shared<Weapon>("None");
-    const std::shared_ptr<Armor> def_armor = std::make_shared<Armor>("None");
+    const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
+    static constexpr const int def_distance_travelled = 0;
 protected:
     std::string name;
     int health, maxHealth;
@@ -49,6 +50,7 @@ protected:
     std::shared_ptr<Item> armorChest;
     std::shared_ptr<Item> armorLeggs;
     std::shared_ptr<Item> armorBoots;
+    int distanceTravelled;
 public:
     //Constructors
     Player();
@@ -73,6 +75,7 @@ public:
     int getMoney() const { return money; }
     std::string getName() const { return name; }
     Inventory& getInventory() { return inventory; }
+    int getDistanceTravelled() const { return distanceTravelled; }
 
     //Modifiers
     void setHealth(int health) { this->health = health; }
@@ -93,8 +96,11 @@ public:
     void setSkillPoints(int skillPoints) { this->skillPoints = skillPoints; }
     void setMoney(int money) { this->money = money; }
     void setName(std::string name) { this->name = name; }
+    void setDistanceTravelled(int distanceTravelled) { this->distanceTravelled = distanceTravelled; }
     //void setInventory(Inventory Inventory) {this->inventory = inventory;}
 
+    //Methods
+    int getValidAttributeChoice() const;
     bool isAlive() const;
     int inflictDamage();
     void initialize(const std::string &name);
@@ -106,6 +112,8 @@ public:
     void unequipItem(std::shared_ptr<Item> &item);
     void showInventory();
     void updateCharacteristics();
+    void explore() { distanceTravelled++; }
+    void showEquipment();
 };
 
 

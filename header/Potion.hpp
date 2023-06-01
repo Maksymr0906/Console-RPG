@@ -2,8 +2,9 @@
 
 #include "Item.hpp"
 
-class Potion {
+class Potion : public Item{
 private:
 protected:
 public:
+	virtual ~Potion() = default;
 };

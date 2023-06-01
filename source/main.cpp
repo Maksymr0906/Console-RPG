@@ -1,7 +1,5 @@
 #include "Game.hpp"
-#include "Player.hpp"
-#include "Zombie.hpp"
-#include "Weapon.hpp"
+
 #include <ctime>
 
 int main() {
@@ -10,7 +8,7 @@ int main() {
     Game game;
     game.backstory();
     game.initialize();
-    while(game.getPlaying()) {
+    while (game.getPlaying()) {
         game.mainMenu();
     }
 }

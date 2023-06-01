@@ -20,4 +20,5 @@ public:
     void removeItem(int position);
     void expand(int numberOfNewCells);
     void initialize();
+    bool is_empty() { return inventory.empty(); }
 };

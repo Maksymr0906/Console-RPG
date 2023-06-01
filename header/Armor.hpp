@@ -28,6 +28,6 @@ public:
     virtual void print(std::ostream& os) const override;
     virtual void use() override;
 
-    Armor clone();
     int getType() const { return type; }
+    int getDefence() const { return defence; }
 };

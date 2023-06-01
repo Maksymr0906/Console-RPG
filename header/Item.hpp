@@ -38,6 +38,9 @@ public:
 
     Item(const char* name = def_name, const char* category = def_category, const char* status = def_status, int purchasePrice = def_purchase_price, int salePrice = def_sale_price, int level = def_level, int rarity = def_rarity)
         :name{ name }, category{ category }, status{ status }, purchasePrice{ purchasePrice }, salePrice{ salePrice }, level{ level }, rarity{ rarity } {};
+    Item(const Item &obj)
+        :name{ obj.name }, category{ obj.category }, status{ obj.status }, purchasePrice{ obj.purchasePrice }, salePrice{ obj.salePrice }, level{ obj.level }, rarity{ obj.rarity } {};
+    
     virtual ~Item() = default;
 
     virtual void equip() = 0;
