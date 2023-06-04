@@ -8,6 +8,7 @@ void Inventory::addItem(std::shared_ptr<Item>& item) {
     else {
         std::cout << "Not enough space in inventory for" << std::endl;
         std::cout << *item << std::endl;
+        //ADD method changeItem
     }
 }
 
@@ -17,6 +18,7 @@ void Inventory::showInventory() {
         return;
     }
     std::cout << "\nYour inventory" << std::endl;
+    std::cout << "(0) - Go back" << std::endl;
     for (size_t i = 0; i < this->inventory.size(); i++) {
         std::cout << "(" << i + 1 << ") - " << this->inventory.at(i)->getName() << std::endl;
     }

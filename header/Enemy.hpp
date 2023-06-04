@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cstdlib>
+#include <string>
 
 class Enemy {
 private:
+	static constexpr const char *def_name = "Unnamed";
 	static constexpr const int def_health = 10;
 	static constexpr const int def_min_damage = 2;
 	static constexpr const int def_max_damage = 5;
@@ -11,6 +13,7 @@ private:
 	static constexpr const int def_drop_chance = 20;
 	static constexpr const int def_defence = 1;
 protected:
+	std::string name;
 	int maxHealth, health;
 	int minDamage, maxDamage;
 	int level;

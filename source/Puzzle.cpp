@@ -19,6 +19,9 @@ Puzzle::Puzzle(std::string fileName) {
 		file >> indexOfCorrectAnswer;
 		file.ignore();
 	}
+	else {
+		std::cout << "Failed to open the file" << std::endl;
+	}
 
 	file.close();
 }

@@ -300,6 +300,9 @@ void Player::equipItem(std::shared_ptr<Item> &item) {
         std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
         
         if(weaponItem) {
+            if(this->weapon->getName() != "None") {
+                unequipItem(this->weapon);
+            }
             this->weapon = weaponItem;
             this->minDamage += weaponItem->getMinDamage();
             this->maxDamage += weaponItem->getMaxDamage();
@@ -310,15 +313,27 @@ void Player::equipItem(std::shared_ptr<Item> &item) {
 
         if(armorItem) {
             if(armorItem->getType() == 1) {
+                if(this->armorHead->getName() != "None") {
+                    unequipItem(this->armorHead);
+                }
                 this->armorHead = armorItem;
             }
             else if(armorItem->getType() == 2) {
+                if(this->armorChest->getName() != "None") {
+                    unequipItem(this->armorChest);
+                }
                 this->armorChest = armorItem;
             }
             else if(armorItem->getType() == 3) {
+                if(this->armorLeggs->getName() != "None") {
+                    unequipItem(this->armorLeggs);
+                }
                 this->armorLeggs = armorItem;
             }
             else if(armorItem->getType() == 4) {
+                if(this->armorBoots->getName() != "None") {
+                    unequipItem(this->armorBoots);
+                }
                 this->armorBoots = armorItem;
             }
 
@@ -369,14 +384,13 @@ void Player::showInventory() {
 
     do {
         this->inventory.showInventory();
-        selectedItemIndex = getNumber("\nChoose the number for more details about the item or enter 0 to go back: ");
-        if(selectedItemIndex == 0) {
+        selectedItemIndex = getNumber("\nYour choice: ");
+        if(selectedItemIndex == 0 || selectedItemIndex > this->inventory.getInventory().size()) {
             return;
         }
         else {
             std::shared_ptr<Item> selectedItem = this->inventory.getInventory().at(selectedItemIndex - 1);
             std::cout << *selectedItem << std::endl;
-
             char choice;
             if(selectedItem->getStatus() == "Equipped") {
                 std::cout << "Do you want to unequip this item? (y/n)\n";
@@ -394,6 +408,7 @@ void Player::showInventory() {
                     equipItem(selectedItem);
                 }
             }
+            selectedItem.reset();
         } 
     } while(selectedItemIndex != 0);
 }

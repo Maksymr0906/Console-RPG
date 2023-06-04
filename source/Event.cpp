@@ -22,10 +22,10 @@ void Event::generateEvent(Player &p) {
 			//Found item
 			break;
 		case 4:
-			puzzleEncouter(p);
+			foundItemEncouter(p);
 			break;
 		case 5:
-			puzzleEncouter(p);
+			foundItemEncouter(p);
 			break;
 		default:
 			break;
@@ -85,8 +85,121 @@ bool Event::isPlayerAnswerValidate(const int &playerAnswer, const int &numberOfA
 
 void Event::fightEncouter(Player &p) {
 	std::cout << "Fight" << std::endl;
+	
 }
 
 void Event::foundItemEncouter(Player &p) {
-	std::cout << "Found item" << std::endl;
+	std::string category = getRandomCategory();
+
+	std::string filePath = "Items/" + category + ".txt";
+	std::ifstream file(filePath);
+
+	if(!file.is_open()) {
+		std::cout << "Failed to open the file." << std::endl;
+		return;
+	}
+
+	std::vector<std::string> namesOfItems;
+	std::string itemName;
+	while(std::getline(file, itemName)) {
+		namesOfItems.push_back(itemName);
+	}
+	file.close();
+
+	std::string randomItemName = namesOfItems[std::rand() % namesOfItems.size()];
+
+	if(category == "Weapons") {
+		foundWeapon(p, randomItemName);
+	}
+	else if(category == "Armor") {
+		foundArmor(p, randomItemName);
+	}
+	else if(category == "Potions") {
+		foundPotion(p, randomItemName);
+	}
+
+	std::cout << "You found " << randomItemName << std::endl;
+}
+
+void Event::foundWeapon(Player &p, const std::string &name) {
+	int playerLevel = p.getLevel();
+	int rarity = calculateRarity();
+	
+	int minDamage = (rand() % 5 + 1) * (rand() % rarity + 1) * playerLevel;
+	int maxDamage = (rand() % minDamage + 1) + minDamage;
+	
+	int purchasePrice = (rand() % 100 + 1) + rarity * 5 * playerLevel;
+	int salePrice = purchasePrice - (rand() % purchasePrice + 1);
+
+	std::shared_ptr<Item> weapon = std::make_shared<Weapon>(Weapon(name.c_str(), "Weapon", "Unequipped", purchasePrice, salePrice, minDamage, maxDamage, 1, rarity));
+	p.getInventory().addItem(weapon);
+}
+
+void Event::foundArmor(Player &p, const std::string &name) {
+	int playerLevel = p.getLevel();
+	int rarity = calculateRarity();
+		
+	int defence = (rand() % 5 + 1) * (rand() % rarity + 1) * playerLevel;
+	int type = calculateType(name);
+
+	int purchasePrice = (rand() % 100 + 1) + rarity * 5 * playerLevel;
+	int salePrice = purchasePrice - (rand() % purchasePrice + 1);
+	
+	std::shared_ptr<Item> armor = std::make_shared<Armor>(Armor(name.c_str(), "Armor", "Unequipped", purchasePrice, salePrice, 1, rarity, defence, type));
+	p.getInventory().addItem(armor);
+}
+
+void Event::foundPotion(Player &p, const std::string &name) {
+	//will be implemented soon
+}
+
+int Event::calculateRarity() const {
+	int rarity = rand() % 100 + 1;
+	if(rarity <= 1) {
+		rarity = 5; // 1%
+	}
+	else if(rarity <= 6) {
+		rarity = 4; // 5%
+	}
+	else if(rarity <= 16) {
+		rarity = 3; // 10%
+	}
+	else if(rarity <= 41) {
+		rarity = 2; // 25%
+	}
+	else {
+		rarity = 1; //59%
+	}
+
+	return rarity;
+}
+
+int Event::calculateType(const std::string &name) const {
+	if(name.find("Helmet") != std::string::npos) {
+		return 1;
+	}
+	else if(name.find("Chestplate") != std::string::npos) {
+		return 2;
+	}
+	else if(name.find("Leggings") != std::string::npos) {
+		return 3;
+	}
+	else if(name.find("Boots") != std::string::npos) {
+		return 4;
+	}
+
+	return 0;
+}
+
+std::string Event::getRandomCategory() const {
+	int x = rand() % 3;
+	if(x == 0) {
+		return "Armor";
+	}
+	else if(x == 1) {
+		return "Weapons";
+	}
+	else {
+		return "Potions";
+	}
 }

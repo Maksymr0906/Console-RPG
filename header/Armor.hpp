@@ -9,7 +9,7 @@ private:
     static constexpr const char* def_status = "Unequipped";
     static constexpr const int def_purchase_price = 200;
     static constexpr const int def_sale_price = 160;
-    static constexpr const int def_defence = 5;
+    static constexpr const int def_defence = 0;
     static constexpr const int def_level = 1;
     static constexpr const int def_rarity = 1;
     static constexpr const int def_type = 0;
