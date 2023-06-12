@@ -1,0 +1,7 @@
+Ogre
+Zombie
+Dark Knight
+Mage
+Thief
+Toxic Zombie
+Woman

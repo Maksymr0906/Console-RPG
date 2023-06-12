@@ -2,12 +2,11 @@
 
 #include <ctime>
 #include <cstdlib>
-#include <string>
-#include <iostream>
 
 #include "Inventory.hpp"
 #include "Weapon.hpp"
 #include "Armor.hpp"
+
 class Player {
 private:
     static constexpr const int def_health = 10;
@@ -107,13 +106,20 @@ public:
     void levelUp();
     void showStats();
     void increaseAttributes();
-    void buyItem(std::shared_ptr<Item> &item);
+    bool buyItem(std::shared_ptr<Item> &item);
     void equipItem(std::shared_ptr<Item> &item);
     void unequipItem(std::shared_ptr<Item> &item);
     void showInventory();
     void updateCharacteristics();
     void explore() { distanceTravelled++; }
     void showEquipment();
+    std::string getAsString() const;
+    bool serialize(std::ofstream &outfile) const;
+    bool deserialize(std::ifstream &infile);
+    void previewPlayer() const;
+
+    //Overloaded operators
+    bool operator==(const Player &rhs);
 };
 
 

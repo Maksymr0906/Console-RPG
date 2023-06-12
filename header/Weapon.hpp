@@ -13,13 +13,14 @@ private:
     static constexpr const int def_max_damage = 10;
     static constexpr const int def_level = 1;
     static constexpr const int def_rarity = 1;
+    static constexpr const int def_item_type = 1;
 protected:
     int minDamage, maxDamage/*, criticalHit*/;
 public:
     Weapon(const char* name = def_name, const char* category = def_category, const char* status = def_status,
         int purchasePrice = def_purchase_price, int salePrice = def_sale_price,
-        int minDamage = def_min_damage, int maxDamage = def_max_damage, int level = def_level, int rarity = def_rarity)
-        :Item{ name, category, status, purchasePrice, salePrice, level, rarity}, minDamage{ minDamage }, maxDamage{ maxDamage } {};
+        int minDamage = def_min_damage, int maxDamage = def_max_damage, int level = def_level, int rarity = def_rarity, int itemType = def_item_type)
+        :Item{ name, category, status, purchasePrice, salePrice, level, rarity, itemType}, minDamage{ minDamage }, maxDamage{ maxDamage } {};
 
     Weapon(const Weapon &other)
         : Item(other), minDamage(other.minDamage), maxDamage(other.maxDamage) {}
@@ -36,4 +37,6 @@ public:
     virtual void unequip() override;
     virtual void print(std::ostream& os) const override;
     virtual void use() override;
+    virtual void serialize(std::ofstream &outfile) const override;
+    virtual void deserialize(std::ifstream &infile) override;
 };

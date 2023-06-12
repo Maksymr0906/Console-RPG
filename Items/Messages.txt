@@ -1,0 +1,15 @@
+You found {} lying in the depths of the dungeon.
+You stumbled upon {} concealed within a hidden chamber.
+Congratulations! You managed to retrieve {} from a long-forgotten treasure chest.
+Huzzah! You uncovered {} beneath a pile of ancient bones.
+Behold! You seized {} from the clutches of a defeated monster.
+A stroke of luck! You chanced upon {} wedged between the cracks of a fallen statue.
+Victory is yours! You discovered {} shimmering within a hidden treasure hoard.
+How fortunate! You unearthed {} from a long-abandoned crypt.
+You discovered a mighty {}lying deep within the dungeon.
+Congratulations! You've stumbled upon a powerful {} hidden in the darkness.
+A gleaming {} emerges from the shadows as you search through the dungeon.
+You triumphantly unearthed a valuable {} from a forgotten treasure chest.
+Amidst the debris, you find a {} of legendary status, left behind by a fallen hero.
+You pick up a {}, its previous owner no longer needing it in the afterlife.
+As you rummage through the remains of fallen enemies, you discover a formidable {}.

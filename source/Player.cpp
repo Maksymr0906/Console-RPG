@@ -69,6 +69,99 @@ void Player::initialize(const std::string& name) {
     this->inventory.initialize();
 }
 
+bool Player::serialize(std::ofstream &outfile) const {
+    try {
+        int nameLength = name.length();
+        outfile.write(reinterpret_cast<const char *>(&nameLength), sizeof(nameLength));
+        outfile.write(name.c_str(), nameLength);
+
+        outfile.write(reinterpret_cast<const char *>(&health), sizeof(health));
+        outfile.write(reinterpret_cast<const char *>(&maxHealth), sizeof(maxHealth));
+        outfile.write(reinterpret_cast<const char *>(&minDamage), sizeof(minDamage));
+        outfile.write(reinterpret_cast<const char *>(&maxDamage), sizeof(maxDamage));
+        outfile.write(reinterpret_cast<const char *>(&exp), sizeof(exp));
+        outfile.write(reinterpret_cast<const char *>(&expNext), sizeof(expNext));
+        outfile.write(reinterpret_cast<const char *>(&level), sizeof(level));
+        outfile.write(reinterpret_cast<const char *>(&stamina), sizeof(stamina));
+        outfile.write(reinterpret_cast<const char *>(&staminaMax), sizeof(staminaMax));
+        outfile.write(reinterpret_cast<const char *>(&defence), sizeof(defence));
+        outfile.write(reinterpret_cast<const char *>(&strength), sizeof(strength));
+        outfile.write(reinterpret_cast<const char *>(&vitality), sizeof(vitality));
+        outfile.write(reinterpret_cast<const char *>(&dexterity), sizeof(dexterity));
+        outfile.write(reinterpret_cast<const char *>(&intelligence), sizeof(intelligence));
+        outfile.write(reinterpret_cast<const char *>(&luck), sizeof(luck));
+        outfile.write(reinterpret_cast<const char *>(&statPoints), sizeof(statPoints));
+        outfile.write(reinterpret_cast<const char *>(&skillPoints), sizeof(skillPoints));
+        outfile.write(reinterpret_cast<const char *>(&skillPoints), sizeof(skillPoints));
+
+        inventory.serialize(outfile);
+        weapon->serialize(outfile);
+        armorHead->serialize(outfile);
+        armorChest->serialize(outfile);
+        armorLeggs->serialize(outfile);
+        armorBoots->serialize(outfile);
+
+        outfile.write(reinterpret_cast<const char *>(&distanceTravelled), sizeof(distanceTravelled));
+        return true;
+    }
+    catch(...) {
+        return false;
+    }
+}
+
+bool Player::deserialize(std::ifstream &infile) {
+    try {
+        int nameLength{};
+        infile.read(reinterpret_cast<char *>(&nameLength), sizeof(nameLength));
+        if(nameLength == 0) {
+            throw 0;
+        }
+        char *nameBuffer = new char[nameLength + 1];
+        infile.read(nameBuffer, nameLength);
+        nameBuffer[nameLength] = '\0';
+        name = nameBuffer;
+        delete[] nameBuffer;
+
+        infile.read(reinterpret_cast<char *>(&health), sizeof(health));
+        infile.read(reinterpret_cast<char *>(&maxHealth), sizeof(maxHealth));
+        infile.read(reinterpret_cast<char *>(&minDamage), sizeof(minDamage));
+        infile.read(reinterpret_cast<char *>(&maxDamage), sizeof(maxDamage));
+        infile.read(reinterpret_cast<char *>(&exp), sizeof(exp));
+        infile.read(reinterpret_cast<char *>(&expNext), sizeof(expNext));
+        infile.read(reinterpret_cast<char *>(&level), sizeof(level));
+        infile.read(reinterpret_cast<char *>(&stamina), sizeof(stamina));
+        infile.read(reinterpret_cast<char *>(&staminaMax), sizeof(staminaMax));
+        infile.read(reinterpret_cast<char *>(&defence), sizeof(defence));
+        infile.read(reinterpret_cast<char *>(&strength), sizeof(strength));
+        infile.read(reinterpret_cast<char *>(&vitality), sizeof(vitality));
+        infile.read(reinterpret_cast<char *>(&dexterity), sizeof(dexterity));
+        infile.read(reinterpret_cast<char *>(&intelligence), sizeof(intelligence));
+        infile.read(reinterpret_cast<char *>(&luck), sizeof(luck));
+        infile.read(reinterpret_cast<char *>(&statPoints), sizeof(statPoints));
+        infile.read(reinterpret_cast<char *>(&skillPoints), sizeof(skillPoints));
+        infile.read(reinterpret_cast<char *>(&skillPoints), sizeof(skillPoints));
+        inventory.deserialize(infile);
+        weapon = std::make_shared<Weapon>();
+        weapon->deserialize(infile);
+
+        armorHead = std::make_shared<Armor>();
+        armorHead->deserialize(infile);
+
+        armorChest = std::make_shared<Armor>();
+        armorChest->deserialize(infile);
+
+        armorLeggs = std::make_shared<Armor>();
+        armorLeggs->deserialize(infile);
+
+        armorBoots = std::make_shared<Armor>();
+        armorBoots->deserialize(infile);
+        infile.read(reinterpret_cast<char *>(&distanceTravelled), sizeof(distanceTravelled));
+    }
+    catch(...) {
+        return false;
+    }
+}
+
 void Player::levelUp() {
     if (exp >= expNext) {
         level++;
@@ -109,6 +202,28 @@ void Player::showStats() {
         << "Equipped chestplate: " << this->armorChest->getName() << std::endl
         << "Equipped leggings: " << this->armorLeggs->getName() << std::endl
         << "Equipped boots: " << this->armorBoots->getName() << std::endl;
+}
+
+std::string Player::getAsString() const {
+    return this->name + " " + 
+           std::to_string(this->health) + " " +
+           std::to_string(this->maxHealth) + " " + 
+           std::to_string(this->minDamage) + " " +
+           std::to_string(this->maxDamage) + " " + 
+           std::to_string(this->exp) + " " + 
+           std::to_string(this->expNext) + " " + 
+           std::to_string(this->level) + " " + 
+           std::to_string(this->stamina) + " " +
+           std::to_string(this->staminaMax) + " " +
+           std::to_string(this->defence) + " " +
+           std::to_string(this->strength) + " " +
+           std::to_string(this->vitality) + " " +
+           std::to_string(this->dexterity) + " " +
+           std::to_string(this->intelligence) + " " +
+           std::to_string(this->luck) + " " +
+           std::to_string(this->statPoints) + " " +
+           std::to_string(this->skillPoints) + " " +
+           std::to_string(money);
 }
 
 void Player::increaseAttributes() {
@@ -182,14 +297,15 @@ int getNumber(const std::string& message) {
     return number;
 }
 
-void Player::buyItem(std::shared_ptr<Item>& item) {
+bool Player::buyItem(std::shared_ptr<Item>& item) {
     if (this->money >= item->getPurchasePrice()) {
-        std::cout << "\nYou successfully bought a " << item->getName() << std::endl;
+        std::cout << "\n/*You bought a " << item->getName() << "*/" << std::endl;
         this->money -= item->getPurchasePrice();
         this->inventory.addItem(item);
+        return true;
     }
     else {
-        std::cout << "\nYou don't have enough money to buy " << item->getName() << std::endl;
+        return false;
     }
 }
 
@@ -199,7 +315,7 @@ void shop(Player& p) {
     std::cout << "What type of items you want to view?" << std::endl;
     int choice;
     do {
-        std::cout << "\n(1) - Weapons\n(2) - Armor\n(3) - Potions\n(4) - Leave the shop" << std::endl;
+        std::cout << "\n(0) - Leave the shop\n(1) - Weapons\n(2) - Armor\n(3) - Potions\n(4) - Sell items" << std::endl;
         choice = getNumber("\nYour choice: ");
         if (choice == 1) {
             weaponShop(p);
@@ -210,11 +326,14 @@ void shop(Player& p) {
         else if (choice == 3) {
             potionShop(p);
         }
+        else if(choice == 4) {
+            std::cout << "sell items" << std::endl;
+        }
         else {
-            std::cout << "" << std::endl;
+            std::cout << "Though you didn't make a purchase, I'm always happy to see you. Stay safe on your travels!" << std::endl;
             break;
         }
-    } while (choice != 4);
+    } while (choice != 0);
 
 }
 
@@ -230,15 +349,30 @@ void weaponShop(Player& p) {
         choice = getNumber("\nYour choice: ");
         if (choice == 1) {
             std::shared_ptr<Item> sword = std::make_shared<Weapon>(Weapon("Sword", "Weapon", "Unequipped", 20, 15, 1, 5, 1, 1));
-            p.buyItem(sword);
+            if(p.buyItem(sword)) {
+                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
+            }
+            else {
+                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
+            }
         }
         else if (choice == 2) {
             std::shared_ptr<Item> spear = std::make_shared<Weapon>(Weapon("Spear", "Weapon", "Unequipped", 40, 30, 5, 10, 1, 1));
-            p.buyItem(spear);
+            if(p.buyItem(spear)) {
+                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
+            }
+            else {
+                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
+            }
         }
         else if (choice == 3) {
             std::shared_ptr<Item> axe = std::make_shared<Weapon>(Weapon("Axe", "Weapon", "Unequipped", 80, 60, 10, 15, 1, 1));
-            p.buyItem(axe);
+            if(p.buyItem(axe)) {
+                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
+            }
+            else {
+                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
+            }
         }
     } while (choice != 4);
 
@@ -256,15 +390,30 @@ void armorShop(Player& p) {
         choice = getNumber("\nYour choice: ");
         if (choice == 1) {
             std::shared_ptr<Item> helmet = std::make_shared<Armor>(Armor("Helmet", "Armor", "Unequipped", 20, 10, 1, 1, 5, 1));
-            p.buyItem(helmet);
+            if(p.buyItem(helmet)) {
+                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
+            }
+            else {
+                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
+            }
         }
         else if (choice == 2) {
             std::shared_ptr<Item> mail = std::make_shared<Armor>(Armor("Mail", "Armor", "Unequipped", 40, 30, 1, 1, 10, 2));
-            p.buyItem(mail);
+            if(p.buyItem(mail)) {
+                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
+            }
+            else {
+                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
+            }
         }
         else if (choice == 3) {
             std::shared_ptr<Item> leatherPants = std::make_shared<Armor>(Armor("Leather Pants", "Armor", "Unequipped", 80, 60, 1, 1, 15, 3));
-            p.buyItem(leatherPants);
+            if(p.buyItem(leatherPants)) {
+                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
+            }
+            else {
+                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
+            }
         }
     } while (choice != 4);
 }
@@ -419,4 +568,13 @@ void Player::showEquipment() {
     std::cout << "\nArmor chest: \n" << armorChest << std::endl;
     std::cout << "\nArmor leggs: \n" << armorLeggs << std::endl;
     std::cout << "\nArmor boots: \n" << armorBoots << std::endl;
+}
+
+void Player::previewPlayer() const {
+    std::cout << "\nName: " << this->name << "\nLevel: " << this->level << "\nGold: " << this->money << std::endl;
+}
+
+bool Player::operator==(const Player &rhs) {
+    //will be implemented soon
+    return true;
 }

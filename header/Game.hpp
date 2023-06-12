@@ -4,7 +4,6 @@
 #include <conio.h>
 
 #include "Option.hpp"
-#include "Player.hpp"
 #include "Event.hpp"
 
 class Game {
@@ -12,10 +11,10 @@ private:
 protected:
     Option option;
     bool playing;
-    Player player;
+    int indexOfActivePlayer;
+    std::vector<Player> players;
 public:
     Game();
-
 
     bool getPlaying() const { return playing; }
     //Option getOption() const {return option;}
@@ -23,10 +22,15 @@ public:
     void setPlaying(bool playing) { this->playing = playing; }
     void setOption(Option option) { this->option = option; }
 
+    //Methods
     void backstory() const;
     void mainMenu();
     void initialize();
     void explore();
+    void createNewPlayer();
+    void savePlayers();
+    void loadPlayers();
+    void startGame();
 };
 
 void printMenu();

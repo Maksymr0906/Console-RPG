@@ -10,7 +10,7 @@ void Event::generateEvent(Player &p) {
 	
 	switch(event) {
 		case 1:
-			fightEncouter(p);
+			puzzleEncouter(p);
 			//Fight
 			break;
 		case 2:
@@ -18,14 +18,14 @@ void Event::generateEvent(Player &p) {
 			//Puzzle
 			break;
 		case 3:
-			foundItemEncouter(p);
+			puzzleEncouter(p);
 			//Found item
 			break;
 		case 4:
-			foundItemEncouter(p);
+			puzzleEncouter(p);
 			break;
 		case 5:
-			foundItemEncouter(p);
+			puzzleEncouter(p);
 			break;
 		default:
 			break;
@@ -34,7 +34,7 @@ void Event::generateEvent(Player &p) {
 
 void Event::puzzleEncouter(Player &p) {
 	int indexForPuzzle = rand() % numberOfPuzzles + 1;
-	std::string nameOfFile = "Puzzles/Puzzle" + std::to_string(indexForPuzzle) + ".txt";
+	const std::string nameOfFile = "Puzzles/Puzzle" + std::to_string(indexForPuzzle) + ".txt";
 	Puzzle puzzle(nameOfFile);
 	
 	int playerAnswer{};
@@ -49,7 +49,7 @@ void Event::puzzleEncouter(Player &p) {
 		std::cout << puzzle.getAsString() << std::endl;
 
 		do {
-			playerAnswer = getNumber("Your answer: ");
+			playerAnswer = getNumber("Your answer: ") - 1;
 			if(isPlayerAnswerValidate(playerAnswer, puzzle.getNumberOfAnswers() - 1)) {
 				std::cout << "\nChoose one from the given variants\n" << std::endl;
 			}
@@ -91,7 +91,7 @@ void Event::fightEncouter(Player &p) {
 void Event::foundItemEncouter(Player &p) {
 	std::string category = getRandomCategory();
 
-	std::string filePath = "Items/" + category + ".txt";
+	const std::string filePath = "Items/" + category + ".txt";
 	std::ifstream file(filePath);
 
 	if(!file.is_open()) {
@@ -115,12 +115,38 @@ void Event::foundItemEncouter(Player &p) {
 		foundArmor(p, randomItemName);
 	}
 	else if(category == "Potions") {
-		foundPotion(p, randomItemName);
+		foundWeapon(p, randomItemName);
 	}
 
-	std::cout << "You found " << randomItemName << std::endl;
+	displayMessageAboutFoundItem(randomItemName);
 }
 
+void Event::displayMessageAboutFoundItem(const std::string &nameOfItem) const {
+	const std::string filePath = "Items/Messages.txt";
+	std::ifstream file(filePath);
+	if(!file.is_open()) {
+		std::cout << "Failed to open the file." << std::endl;
+		return;
+	}
+
+	std::vector<std::string> messages;
+	std::string message;
+	while(std::getline(file, message)) {
+		messages.push_back(message);
+	}
+
+	file.close();
+
+	std::string outputMessage = messages[std::rand() % messages.size()];
+	size_t tagPos = outputMessage.find("{}");
+
+	if(tagPos != std::string::npos) {
+		outputMessage.replace(tagPos, 2, nameOfItem);
+	}
+
+	std::cout << std::endl << outputMessage << std::endl;
+}
+//rewrite all this formulas
 void Event::foundWeapon(Player &p, const std::string &name) {
 	int playerLevel = p.getLevel();
 	int rarity = calculateRarity();

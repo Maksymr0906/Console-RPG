@@ -23,6 +23,7 @@ protected:
 	int calculateRarity() const;
 	int calculateType(const std::string &name) const;
 	std::string getRandomCategory() const;
+	void displayMessageAboutFoundItem(const std::string &nameOfItem) const;
 public:
 	Event();
 	~Event() = default;
