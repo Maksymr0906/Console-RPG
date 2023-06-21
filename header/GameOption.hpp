@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-enum class Option {
-    QUIT = 0,
+enum class GameOption {
+    BACK_TO_MAIN_MENU = 0,
     EXPLORE_WORLD,
     REST,
     SHOP,
@@ -16,4 +16,4 @@ enum class Option {
     LOAD_PLAYER
 };
 
-Option getOption();
+GameOption getGameOption();

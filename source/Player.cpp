@@ -156,6 +156,7 @@ bool Player::deserialize(std::ifstream &infile) {
         armorBoots = std::make_shared<Armor>();
         armorBoots->deserialize(infile);
         infile.read(reinterpret_cast<char *>(&distanceTravelled), sizeof(distanceTravelled));
+        return true;
     }
     catch(...) {
         return false;
@@ -574,7 +575,40 @@ void Player::previewPlayer() const {
     std::cout << "\nName: " << this->name << "\nLevel: " << this->level << "\nGold: " << this->money << std::endl;
 }
 
-bool Player::operator==(const Player &rhs) {
-    //will be implemented soon
-    return true;
+bool Player::operator==(const Player &rhs) const {
+    if(this->name == rhs.name)
+        return true;
+}
+
+Player &Player::operator=(const Player &rhs) {
+    if(this == &rhs) {
+        return *this;
+    }
+
+    this->name = rhs.name;
+    this->maxHealth = rhs.maxHealth;
+    this->health = rhs.health;
+    this->minDamage = rhs.minDamage;
+    this->maxDamage = rhs.maxDamage;
+    this->exp = rhs.exp;
+    this->expNext = rhs.expNext;
+    this->level = rhs.level;
+    this->staminaMax = rhs.staminaMax;
+    this->stamina = rhs.stamina;
+    this->defence = rhs.defence;
+    this->strength = rhs.strength;
+    this->vitality = rhs.vitality;
+    this->dexterity = rhs.dexterity;
+    this->intelligence = rhs.intelligence;
+    this->luck = rhs.luck;
+    this->statPoints = rhs.statPoints;
+    this->skillPoints = rhs.skillPoints;
+    this->money = rhs.money;
+    this->weapon = rhs.weapon;
+    this->armorHead = rhs.armorHead;
+    this->armorChest = rhs.armorChest;
+    this->armorLeggs = rhs.armorLeggs;
+    this->armorBoots = rhs.armorBoots;
+    this->distanceTravelled = rhs.distanceTravelled;
+    this->inventory = rhs.inventory;
 }

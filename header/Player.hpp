@@ -119,7 +119,8 @@ public:
     void previewPlayer() const;
 
     //Overloaded operators
-    bool operator==(const Player &rhs);
+    bool operator==(const Player &rhs) const;
+    Player &operator=(const Player &rhs);
 };
 
 

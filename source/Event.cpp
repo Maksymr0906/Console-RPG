@@ -14,15 +14,15 @@ void Event::generateEvent(Player &p) {
 			//Fight
 			break;
 		case 2:
-			puzzleEncouter(p);
+			foundItemEncouter(p);
 			//Puzzle
 			break;
 		case 3:
-			puzzleEncouter(p);
+			foundItemEncouter(p);
 			//Found item
 			break;
 		case 4:
-			puzzleEncouter(p);
+			foundItemEncouter(p);
 			break;
 		case 5:
 			puzzleEncouter(p);

@@ -3,13 +3,23 @@
 #include <iomanip>
 #include <conio.h>
 
-#include "Option.hpp"
+#include "GameOption.hpp"
 #include "Event.hpp"
 
 class Game {
 private:
+    //Methods
+    void backstory() const;
+    void explore();
+    void createNewPlayer();
+    void savePlayers();
+    void loadPlayers();
+    std::vector<Player> getPlayersFromFile(const std::string &filePath);
+    void displayAllPlayers() const;
+    void printGameMenu() const;
+    int findPlayerIndexByName(const std::string &name) const;
 protected:
-    Option option;
+    GameOption gameOption;
     bool playing;
     int indexOfActivePlayer;
     std::vector<Player> players;
@@ -20,17 +30,11 @@ public:
     //Option getOption() const {return option;}
 
     void setPlaying(bool playing) { this->playing = playing; }
-    void setOption(Option option) { this->option = option; }
+    void setOption(GameOption gameOption) { this->gameOption = gameOption; }
 
     //Methods
-    void backstory() const;
-    void mainMenu();
     void initialize();
-    void explore();
-    void createNewPlayer();
-    void savePlayers();
-    void loadPlayers();
-    void startGame();
+    void gameMenu();
+    void mainMenu();
 };
 
-void printMenu();
