@@ -39,4 +39,5 @@ public:
     virtual void use() override;
     virtual void serialize(std::ofstream &outfile) const override;
     virtual void deserialize(std::ifstream &infile) override;
+    bool operator==(const Weapon &other) const;
 };

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <iomanip>
 #include <conio.h>
-
+#include <limits>
 #include "GameOption.hpp"
 #include "Event.hpp"
 
@@ -13,16 +12,19 @@ private:
     void explore();
     void createNewPlayer();
     void savePlayers();
-    void loadPlayers();
-    std::vector<Player> getPlayersFromFile(const std::string &filePath);
+    void selectPlayer();
+    std::vector<Player> loadPlayers(const std::string &filePath);
     void displayAllPlayers() const;
     void printGameMenu() const;
     int findPlayerIndexByName(const std::string &name) const;
+    void askToSavePlayer();
+    void deletePlayerByIndex(); //TEST
 protected:
     GameOption gameOption;
     bool playing;
     int indexOfActivePlayer;
     std::vector<Player> players;
+    bool isPlayerSaved;
 public:
     Game();
 

@@ -54,4 +54,5 @@ public:
     virtual void use() = 0;
     virtual void serialize(std::ofstream &outfile) const = 0;
     virtual void deserialize(std::ifstream &infile) = 0;
+    bool operator==(const Item &other) const;
 };

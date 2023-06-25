@@ -2,6 +2,7 @@
 
 #include <ctime>
 #include <cstdlib>
+#include <iomanip>
 
 #include "Inventory.hpp"
 #include "Weapon.hpp"
@@ -11,6 +12,8 @@ class Player {
 private:
     static constexpr const int def_health = 10;
     static constexpr const int def_max_health = 10;
+    static constexpr const int def_thirst = 10;
+    static constexpr const int def_hunger = 10;
     static constexpr const int def_min_damage = 2;
     static constexpr const int def_max_damage = 5;
     static constexpr const int def_exp = 0;
@@ -28,12 +31,14 @@ private:
     static constexpr const int def_stat_points = 0;
     static constexpr const int def_skill_points = 0;
     static constexpr const int def_money = 30;
+    static constexpr const int def_radiation = 0;
     const std::shared_ptr<Item> def_weapon = std::make_shared<Weapon>("None");
     const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
     static constexpr const int def_distance_travelled = 0;
 protected:
     std::string name;
     int health, maxHealth;
+    int thirst, hunger;
     int minDamage, maxDamage;
     int exp, expNext, level;
     int stamina, staminaMax;
@@ -42,7 +47,7 @@ protected:
     int luck;
     int statPoints, skillPoints;
     int money;
-    //int radiation;
+    int radiation;
     Inventory inventory;
     std::shared_ptr<Item> weapon;
     std::shared_ptr<Item> armorHead;
@@ -75,6 +80,7 @@ public:
     std::string getName() const { return name; }
     Inventory& getInventory() { return inventory; }
     int getDistanceTravelled() const { return distanceTravelled; }
+    std::shared_ptr<Item> getArmorHead() const { return armorHead; }
 
     //Modifiers
     void setHealth(int health) { this->health = health; }
@@ -107,6 +113,7 @@ public:
     void showStats();
     void increaseAttributes();
     bool buyItem(std::shared_ptr<Item> &item);
+    void sellItem(const int &position);
     void equipItem(std::shared_ptr<Item> &item);
     void unequipItem(std::shared_ptr<Item> &item);
     void showInventory();
@@ -123,9 +130,8 @@ public:
     Player &operator=(const Player &rhs);
 };
 
-
-int getNumber(const std::string& message);
-void shop(Player& p);
-void weaponShop(Player& p);
-void armorShop(Player& p);
-void potionShop(Player& p);
+void shop(Player &p);
+void weaponShop(Player &p);
+void armorShop(Player &p);
+void potionShop(Player &p);
+void sellItems(Player &p);

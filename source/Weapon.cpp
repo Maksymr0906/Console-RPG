@@ -30,3 +30,12 @@ void Weapon::deserialize(std::ifstream &infile) {
     infile.read(reinterpret_cast<char *>(&minDamage), sizeof(minDamage));
     infile.read(reinterpret_cast<char *>(&maxDamage), sizeof(maxDamage));
 }
+
+bool Weapon::operator==(const Weapon &other) const {
+    const Item &item1 = *this;
+    const Item &item2 = other;
+
+    return item1 == item2 &&
+        minDamage == other.minDamage &&
+        maxDamage == other.maxDamage;
+}

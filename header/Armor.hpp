@@ -34,4 +34,6 @@ public:
 
     int getType() const { return type; }
     int getDefence() const { return defence; }
+
+    bool operator==(const Armor &other) const;
 };

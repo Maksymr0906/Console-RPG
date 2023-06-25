@@ -1,9 +1,7 @@
 #include "GameOption.hpp"
 
 GameOption getGameOption() {
-    std::cout << "\nEnter your choice: ";
-    int number{};
-    std::cin >> number;
+    int number = getValidateAnswer("Enter your choice: ", "\nIncorrect choice", 0, 7);
 
     return static_cast<GameOption>(number);
 }

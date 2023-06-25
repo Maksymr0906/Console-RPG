@@ -17,16 +17,25 @@ private:
 	bool isPlayerAnswerValidate(const int &playerAnswer, const int &numberOfAnswers) const;
 	void printPuzzleChances(const int &remainingChances) const;
 	void displayMessageAboutFoundItem(const std::string &nameOfItem) const;
+	int calculateRandomEvent() const;
+
+	static void getNthHappenedFromFile(); //Rename
+	static void getPuzzlesFromFile();
 protected:
+	static std::vector<std::string> nthHappened; //Rename
+	static std::vector<Puzzle> puzzles;
+
 	int numberOfEvents;
-	int numberOfPuzzles;
 
 	void puzzleEncouter(Player &p);
 	void fightEncouter(Player &p);
 	void foundItemEncouter(Player &p);
+	void nothingHappened() const; //Rename
+	
 public:
 	Event();
 	~Event() = default;
 	void generateEvent(Player &p);
+	static void initialize();
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include "Functions.hpp"
 
 enum class GameOption {
     BACK_TO_MAIN_MENU = 0,
@@ -9,11 +9,8 @@ enum class GameOption {
     SHOP,
     VIEW_STATS,
     VIEW_INVENTORY,
-    LEVEL_UP,
     UPGRADE_CHARACTERISTICS,
-    CREATE_NEW_PLAYER,
-    SAVE_PLAYER,
-    LOAD_PLAYER
+    SAVE_PLAYER
 };
 
 GameOption getGameOption();

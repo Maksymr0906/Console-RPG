@@ -61,3 +61,14 @@ void Item::deserialize(std::ifstream &infile) {
     infile.read(reinterpret_cast<char *>(&level), sizeof(level));
     infile.read(reinterpret_cast<char *>(&rarity), sizeof(rarity));
 }
+
+bool Item::operator==(const Item &other) const {
+    return (name == other.name &&
+            category == other.category &&
+            status == other.status &&
+            purchasePrice == other.purchasePrice &&
+            salePrice == other.salePrice &&
+            level == other.level &&
+            rarity == other.rarity &&
+            itemType == other.itemType);
+}

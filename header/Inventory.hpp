@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "Functions.hpp"
 #include "Armor.hpp"
 #include "Weapon.hpp"
 
@@ -26,4 +27,6 @@ public:
 
     void serialize(std::ofstream &outfile) const;
     void deserialize(std::ifstream &infile);
+
+    int getSizeOfInventory() const { return sizeOfInventory; }
 };

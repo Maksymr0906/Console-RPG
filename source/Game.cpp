@@ -4,15 +4,18 @@ Game::Game() {
     playing = true;
     gameOption = GameOption::BACK_TO_MAIN_MENU;
     indexOfActivePlayer = 0;
+    isPlayerSaved = true;
 }
 
 void Game::initialize() {
     this->backstory();
+    Event::initialize();
 }
 
 void Game::mainMenu() {
-    std::cout << "\n(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n";
-    int choice = getNumber("\nEnter your choice: ");
+    std::cout << "(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n\n";
+    int choice = getValidateAnswer("Enter your choice: ", "\nIncorrect choice", 0, 2);
+
     if(choice == 0) {
         playing = false;
     }
@@ -20,16 +23,21 @@ void Game::mainMenu() {
         createNewPlayer();
     }
     else if(choice == 2) {
-        loadPlayers();
+        selectPlayer();
     }
 }
 
 void Game::gameMenu() {
+    players[indexOfActivePlayer].previewPlayer();
+    players[indexOfActivePlayer].levelUp();
     printGameMenu();
     gameOption = getGameOption();
+
+    //system("CLS");
     switch(gameOption) {
         case GameOption::BACK_TO_MAIN_MENU:
-            Game::mainMenu();
+            askToSavePlayer();
+            mainMenu();
             break;
         case GameOption::REST:
             //Will be implemented soon
@@ -46,28 +54,45 @@ void Game::gameMenu() {
         case GameOption::VIEW_INVENTORY:
             players[indexOfActivePlayer].showInventory();
             break;
-        case GameOption::LEVEL_UP:
-            players[indexOfActivePlayer].levelUp();
-            break;
         case GameOption::UPGRADE_CHARACTERISTICS:
             players[indexOfActivePlayer].increaseAttributes();
             break;
-        case GameOption::CREATE_NEW_PLAYER:
-            createNewPlayer();
-            break;
         case GameOption::SAVE_PLAYER:
             savePlayers();
-            break;
-        case GameOption::LOAD_PLAYER:
-            loadPlayers();
             break;
         default:
             std::cout << "Incorrect choice" << std::endl;
             break;
     }
+
+    if(gameOption != GameOption::SAVE_PLAYER) {
+        isPlayerSaved = false;
+    }
+    else {
+        isPlayerSaved = true;
+    }
 }
 
-//Remove 8, 9, 10. If I choose 0, then show the message whether to save the player or not, if it did not be saved before
+void Game::askToSavePlayer() {
+    if(!isPlayerSaved) {
+        char saveChoice{};
+        do {
+            std::cout << "\nDo you want to save the player before returning to the main menu? (Y/N): ";
+
+            std::cin >> saveChoice;
+            if(saveChoice == 'Y' || saveChoice == 'y') {
+                savePlayers();
+            }
+            else if(saveChoice == 'N' || saveChoice == 'n') {
+                return;
+            }
+            else {
+                std::cout << "\nIncorrect choice" << std::endl;
+            }
+        } while(saveChoice != 'Y' || saveChoice != 'y' || saveChoice == 'N' || saveChoice == 'n');
+    }
+}
+
 void Game::printGameMenu() const {
     std::cout << std::endl << std::setw(20) << std::right << "Game Menu" << std::endl
         << "(0) - Back to main menu" << std::endl
@@ -76,11 +101,8 @@ void Game::printGameMenu() const {
         << "(3) - Visit Merchant" << std::endl
         << "(4) - Player's characteristics" << std::endl
         << "(5) - Player's inventory" << std::endl
-        << "(6) - Level up" << std::endl
-        << "(7) - Upgrade characteristics" << std::endl
-        << "(8) - Create new player" << std::endl
-        << "(9) - Save player" << std::endl
-        << "(10) - Load player" << std::endl;
+        << "(6) - Upgrade characteristics" << std::endl
+        << "(7) - Save player" << std::endl << std::endl;
 }
 
 void Game::backstory() const {
@@ -90,12 +112,17 @@ void Game::backstory() const {
         << "For now, all you need is to survive, and how to achieve this depends on you." << std::endl
         << "So get up and don't waste a single moment on empty thoughts, otherwise you simply won't survive." << std::endl;
 
-    std::cout << std::endl << std::setw(70) << std::right << "/*/*Press any key to continue*/*/" << std::endl;
-    _getch();
+    std::cout << std::endl << std::setw(70) << std::right << "/*/*Press Enter to continue*/*/" << std::endl;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    system("CLS");
 }
 
 void Game::explore() {
     //Зробити шось із енергією
+    if(players[indexOfActivePlayer].getInventory().getInventory().size() == players[indexOfActivePlayer].getInventory().getSizeOfInventory()) {
+        std::cout << "My backpack is full. I need to do something about this and continue searching..." << std::endl;
+        return;
+    }
     players[indexOfActivePlayer].explore();
 
     Event event;
@@ -103,12 +130,11 @@ void Game::explore() {
 }
 
 void Game::createNewPlayer() {
-    std::cin.ignore();
     std::string name{};
     std::cout << "\nEnter the name of your character: ";
     getline(std::cin, name);
 
-    players = getPlayersFromFile("Players/players.bin");
+    players = loadPlayers("Players/players.bin");
 
     int indexOfPlayerWithSameName = findPlayerIndexByName(name);
     
@@ -121,7 +147,7 @@ void Game::createNewPlayer() {
     else {
         int number{};
         do {
-            number = getNumber("\nCharacter with entered name is already exist. Do you want to exchange him?\n1 - Yes\n2 - No\nYour choice: ");
+            number = getNumber("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ");
             
             if(number < 1 || number > 2) {
                 std::cout << "\nIncorrect choice. Choose correct number." << std::endl;
@@ -138,6 +164,8 @@ void Game::createNewPlayer() {
             }
         } while(number < 1 || number > 2);
     }
+
+    std::cout << std::endl << name << " succesfully created! Welcome to the game!" << std::endl;
 }
 
 int Game::findPlayerIndexByName(const std::string &name) const {
@@ -158,26 +186,17 @@ void Game::savePlayers() {
     }
 
     outFile.close();
-
-    std::cout << "\nYour characters are saved" << std::endl;
 }
 
-void Game::loadPlayers() {
+void Game::selectPlayer() {
     players.clear();
-    players = getPlayersFromFile("Players/players.bin");
+    players = loadPlayers("Players/players.bin");
 
     int choice{};
-    do {
-        displayAllPlayers();
-
-        choice = getNumber("Which character you want to play: ");
-        if(choice <= 0 || choice > players.size()) {
-            std::cout << "\nCharacter with this number does not exist. Choose another number.\n";
-        }
-        else {
-            indexOfActivePlayer = choice - 1;
-        }
-    } while(choice <= 0 || choice > players.size());
+ 
+    displayAllPlayers();
+    choice = getValidateAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 1, players.size());
+    indexOfActivePlayer = choice - 1;
 }
 
 void Game::displayAllPlayers() const {
@@ -186,7 +205,7 @@ void Game::displayAllPlayers() const {
     }
 }
 
-std::vector<Player> Game::getPlayersFromFile(const std::string &filePath) {
+std::vector<Player> Game::loadPlayers(const std::string &filePath) {
     std::ifstream inFile(filePath, std::ios::binary);
 
     std::vector<Player> result;
@@ -201,4 +220,11 @@ std::vector<Player> Game::getPlayersFromFile(const std::string &filePath) {
     inFile.close();
 
     return result;
+}
+
+void Game::deletePlayerByIndex() {
+    players = loadPlayers("Players/players.bin");
+    displayAllPlayers(); 
+    int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Incorrect choice. Try again", 1, players.size());
+    players.erase(players.begin() + choice - 1);
 }

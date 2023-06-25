@@ -1,20 +1,95 @@
 #include "Event.hpp"
 
+std::vector<std::string> Event::nthHappened;
+std::vector<Puzzle> Event::puzzles;
+
 Event::Event() {
 	this->numberOfEvents = 5;
-	this->numberOfPuzzles = 5;
+}
+
+//Refactor
+void Event::initialize() {
+	getNthHappenedFromFile();
+	getPuzzlesFromFile();
+}
+
+//Refactor
+void Event::getNthHappenedFromFile() {
+	std::ifstream file("NothingHappened/Messages.txt");
+
+	if(!file.is_open()) {
+		std::cerr << "Error opening file" << std::endl;
+		return;
+	}
+
+	std::string message{};
+	while(std::getline(file, message)) {
+		nthHappened.push_back(message);
+	}
+
+	file.close();
+}
+
+//Refactor
+void Event::getPuzzlesFromFile() {
+	std::ifstream file("Puzzles/Puzzle.txt");
+
+	if(!file.is_open()) {
+		std::cerr << "Error opening file" << std::endl;
+		return;
+	}
+	while(!file.eof()) {
+		
+		std::string answer{};
+		int numOfAnswers{}, indexOfCorrectAnswer{};
+		std::string question;
+
+		std::getline(file, question);
+		file >> numOfAnswers;
+		file.ignore();
+
+		std::vector<std::string> answers;
+		for(size_t i = 0; i < numOfAnswers; i++) {
+			std::getline(file, answer);
+			answers.push_back(answer);
+		}
+
+		file >> indexOfCorrectAnswer;
+		file.ignore();
+
+		Puzzle puzzle{ question, indexOfCorrectAnswer, answers };
+		puzzles.push_back(puzzle);
+	}
+
+	file.close();
+}
+
+int Event::calculateRandomEvent() const {
+	int event = rand() % 72 + 1;
+	if(event <= 40) {
+		return 1; //Nothing - 40%
+	}
+	else if(event <= 55) {
+		return 2; //Puzzle - 15%
+	}
+	else if(event <= 65) {
+		return 3; //Found Item - 10%
+	}
+	else if(event <= 72) {
+		return 4; //Fight - 7%
+	}
 }
 
 void Event::generateEvent(Player &p) {
-	int event = rand() % numberOfPuzzles + 1;
-	
-	switch(event) {
+	int indexOfRandomEvent = calculateRandomEvent();
+
+	switch(indexOfRandomEvent) {
 		case 1:
-			puzzleEncouter(p);
+			nothingHappened();
 			//Fight
 			break;
 		case 2:
-			foundItemEncouter(p);
+			puzzleEncouter(p);
 			//Puzzle
 			break;
 		case 3:
@@ -32,11 +107,12 @@ void Event::generateEvent(Player &p) {
 	}
 }
 
+void Event::nothingHappened() const {
+	std::cout << nthHappened[std::rand() % nthHappened.size()] << std::endl;
+}
+
 void Event::puzzleEncouter(Player &p) {
-	int indexForPuzzle = rand() % numberOfPuzzles + 1;
-	const std::string nameOfFile = "Puzzles/Puzzle" + std::to_string(indexForPuzzle) + ".txt";
-	Puzzle puzzle(nameOfFile);
-	
+Puzzle puzzle = puzzles[std::rand() % puzzles.size()];
 	int playerAnswer{};
 	int remainingChances{puzzle.getNumberOfAnswers() - 1};
 
@@ -152,7 +228,7 @@ void Event::foundWeapon(Player &p, const std::string &name) {
 	int rarity = calculateRarity();
 	
 	int minDamage = (rand() % 5 + 1) * (rand() % rarity + 1) * playerLevel;
-	int maxDamage = (rand() % minDamage + 1) + minDamage;
+	int maxDamage = ((rand() % 5 + 1) * (rand() % rarity + 1) * playerLevel) + minDamage;
 	
 	int purchasePrice = (rand() % 100 + 1) + rarity * 5 * playerLevel;
 	int salePrice = purchasePrice - (rand() % purchasePrice + 1);

@@ -48,3 +48,12 @@ void Armor::deserialize(std::ifstream &infile) {
     infile.read(reinterpret_cast<char *>(&defence), sizeof(defence));
     infile.read(reinterpret_cast<char *>(&type), sizeof(type));
 }
+
+bool Armor::operator==(const Armor &other) const {
+    const Item &item1 = *this;
+    const Item &item2 = other;
+
+    return item1 == item2 &&
+        defence == other.defence &&
+        type == other.type;
+}

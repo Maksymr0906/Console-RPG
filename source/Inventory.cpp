@@ -12,7 +12,6 @@ void Inventory::addItem(std::shared_ptr<Item>& item) {
     else {
         std::cout << "Not enough space in inventory for" << std::endl;
         std::cout << *item << std::endl;
-        //ADD method changeItem
     }
 }
 
