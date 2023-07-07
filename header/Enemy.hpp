@@ -1,24 +1,18 @@
 #pragma once
 
-#include <cstdlib>
-#include <string>
+#include "Entity.hpp"
 
-class Enemy {
+class Enemy : public Entity {
 private:
 	static constexpr const char *def_name = "Unnamed";
-	static constexpr const int def_health = 10;
+	static constexpr const int def_health = 100;
 	static constexpr const int def_min_damage = 2;
 	static constexpr const int def_max_damage = 5;
 	static constexpr const int def_level = 1;
 	static constexpr const int def_drop_chance = 20;
 	static constexpr const int def_defence = 1;
 protected:
-	std::string name;
-	int maxHealth, health;
-	int minDamage, maxDamage;
-	int level;
 	int dropChance;
-	int defence;
 public:
 	Enemy();
 	Enemy(int level);

@@ -15,7 +15,7 @@ private:
     static constexpr const int def_rarity = 1;
     static constexpr const int def_item_type = 1;
 protected:
-    int minDamage, maxDamage/*, criticalHit*/;
+    int minDamage, maxDamage;
 public:
     Weapon(const char* name = def_name, const char* category = def_category, const char* status = def_status,
         int purchasePrice = def_purchase_price, int salePrice = def_sale_price,
@@ -35,9 +35,12 @@ public:
 
     virtual void equip() override;
     virtual void unequip() override;
-    virtual void print(std::ostream& os) const override;
-    virtual void use() override;
+    virtual void use(Entity &en) override;
+    virtual void writeToTxtFile(std::ofstream &outfile) const override;
+    virtual void readFromTxtFile(std::ifstream &infile) override;
     virtual void serialize(std::ofstream &outfile) const override;
     virtual void deserialize(std::ifstream &infile) override;
+    virtual void print(std::ostream &os) const override;
+
     bool operator==(const Weapon &other) const;
 };

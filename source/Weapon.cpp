@@ -15,8 +15,19 @@ void Weapon::print(std::ostream& os) const {
         << "\nLevel: " << this->level << "\nRarity: " << this->rarity;
 }
 
-void Weapon::use() {
+void Weapon::use(Entity &en) {
     std::cout << "Weapon used" << std::endl;
+}
+
+void Weapon::writeToTxtFile(std::ofstream &outfile) const {
+    Item::writeToTxtFile(outfile);
+    outfile << minDamage << "\n"
+            << maxDamage << "\n";
+}
+
+void Weapon::readFromTxtFile(std::ifstream &infile) {
+    Item::readFromTxtFile(infile);
+    infile >> minDamage >> maxDamage;
 }
 
 void Weapon::serialize(std::ofstream &outfile) const {

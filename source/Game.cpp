@@ -13,23 +13,41 @@ void Game::initialize() {
 }
 
 void Game::mainMenu() {
-    std::cout << "(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n\n";
-    int choice = getValidateAnswer("Enter your choice: ", "\nIncorrect choice", 0, 2);
+    players.clear();
+    players = loadPlayers("Players/players.txt");
+    bool isAnyPlayerExist = !players.empty();
+    do {
+        int choice = getValidateAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n\nEnter your choice: ", "\nIncorrect choice", 0, 2);
 
-    if(choice == 0) {
-        playing = false;
-    }
-    else if(choice == 1) {
-        createNewPlayer();
-    }
-    else if(choice == 2) {
-        selectPlayer();
-    }
+        if(choice == 0) {
+            playing = false;
+            break;
+        }
+        else if(choice == 1) {
+            createNewPlayer();
+            isAnyPlayerExist = true;
+        }
+        else if(choice == 2) {
+            if(!isAnyPlayerExist) {
+                std::cout << "\nYou don't have savings. Create a new character first." << std::endl;
+            }
+            else
+                selectPlayer();
+        }
+    } while(!isAnyPlayerExist);
+
 }
 
 void Game::gameMenu() {
-    players[indexOfActivePlayer].previewPlayer();
+    if(!players[indexOfActivePlayer].isAlive()) {
+        std::cout << "\nYou die" << std::endl;
+        playing = false;
+        return;
+    }
     players[indexOfActivePlayer].levelUp();
+
+    if(gameOption != GameOption::VIEW_STATS)
+        players[indexOfActivePlayer].previewPlayer();
     printGameMenu();
     gameOption = getGameOption();
 
@@ -39,8 +57,8 @@ void Game::gameMenu() {
             askToSavePlayer();
             mainMenu();
             break;
-        case GameOption::REST:
-            //Will be implemented soon
+        case GameOption::RETURN_SHELTER:
+            shelter();
             break;
         case GameOption::EXPLORE_WORLD:
             explore();
@@ -65,7 +83,7 @@ void Game::gameMenu() {
             break;
     }
 
-    if(gameOption != GameOption::SAVE_PLAYER) {
+    if(gameOption != GameOption::SAVE_PLAYER && gameOption != GameOption::BACK_TO_MAIN_MENU) {
         isPlayerSaved = false;
     }
     else {
@@ -89,7 +107,7 @@ void Game::askToSavePlayer() {
             else {
                 std::cout << "\nIncorrect choice" << std::endl;
             }
-        } while(saveChoice != 'Y' || saveChoice != 'y' || saveChoice == 'N' || saveChoice == 'n');
+        } while(saveChoice != 'Y' && saveChoice != 'y' && saveChoice != 'N' && saveChoice != 'n');
     }
 }
 
@@ -97,7 +115,7 @@ void Game::printGameMenu() const {
     std::cout << std::endl << std::setw(20) << std::right << "Game Menu" << std::endl
         << "(0) - Back to main menu" << std::endl
         << "(1) - Explore world" << std::endl
-        << "(2) - Rest" << std::endl
+        << "(2) - Return to shelter" << std::endl
         << "(3) - Visit Merchant" << std::endl
         << "(4) - Player's characteristics" << std::endl
         << "(5) - Player's inventory" << std::endl
@@ -108,7 +126,6 @@ void Game::printGameMenu() const {
 void Game::backstory() const {
     std::cout << "Zombie Project - a simple console game in which you have to survive in an unfair world full of zombies." << std::endl
         << "You come to your senses in an empty New York, which is full of zombies." << std::endl
-        << "All you have in your pockets is a knife, Coca-Kolya, and a loaf of bread." << std::endl
         << "For now, all you need is to survive, and how to achieve this depends on you." << std::endl
         << "So get up and don't waste a single moment on empty thoughts, otherwise you simply won't survive." << std::endl;
 
@@ -118,8 +135,8 @@ void Game::backstory() const {
 }
 
 void Game::explore() {
-    //Зробити шось із енергією
-    if(players[indexOfActivePlayer].getInventory().getInventory().size() == players[indexOfActivePlayer].getInventory().getSizeOfInventory()) {
+    Inventory &inventory = players[indexOfActivePlayer].getInventory();
+    if(inventory.getInventory().size() == inventory.getSizeOfInventory()) {
         std::cout << "My backpack is full. I need to do something about this and continue searching..." << std::endl;
         return;
     }
@@ -134,10 +151,8 @@ void Game::createNewPlayer() {
     std::cout << "\nEnter the name of your character: ";
     getline(std::cin, name);
 
-    players = loadPlayers("Players/players.bin");
-
     int indexOfPlayerWithSameName = findPlayerIndexByName(name);
-    
+
 
     if(indexOfPlayerWithSameName == -1) {
         players.push_back(Player());
@@ -148,7 +163,7 @@ void Game::createNewPlayer() {
         int number{};
         do {
             number = getNumber("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ");
-            
+
             if(number < 1 || number > 2) {
                 std::cout << "\nIncorrect choice. Choose correct number." << std::endl;
             }
@@ -160,12 +175,13 @@ void Game::createNewPlayer() {
             }
             else if(number == 2) {
                 std::cout << "\nThen come up with the new name" << std::endl;
-                Game::createNewPlayer();
+                createNewPlayer();
             }
         } while(number < 1 || number > 2);
     }
 
     std::cout << std::endl << name << " succesfully created! Welcome to the game!" << std::endl;
+    savePlayers();
 }
 
 int Game::findPlayerIndexByName(const std::string &name) const {
@@ -179,21 +195,22 @@ int Game::findPlayerIndexByName(const std::string &name) const {
 }
 
 void Game::savePlayers() {
-    std::ofstream outFile("Players/players.bin", std::ios::binary);
-   
+    std::ofstream outFile("Players/players.txt", std::ios::binary);
+    int numOfPlayers = players.size();
+    outFile << numOfPlayers << '\n';
     for(const auto &player : players) {
-        player.serialize(outFile);
+        player.writeToTxtFile(outFile);
     }
 
     outFile.close();
 }
 
 void Game::selectPlayer() {
-    players.clear();
-    players = loadPlayers("Players/players.bin");
+    if(players.empty()) {
+        return;
+    }
 
     int choice{};
- 
     displayAllPlayers();
     choice = getValidateAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 1, players.size());
     indexOfActivePlayer = choice - 1;
@@ -208,11 +225,17 @@ void Game::displayAllPlayers() const {
 std::vector<Player> Game::loadPlayers(const std::string &filePath) {
     std::ifstream inFile(filePath, std::ios::binary);
 
+    if(!inFile) {
+        return {};
+    }
+
+    int numOfPlayers{};
+    inFile >> numOfPlayers;
     std::vector<Player> result;
-    while(!inFile.eof()) {
+    while(result.size() < numOfPlayers) {
+        inFile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         Player p;
-        if(!p.deserialize(inFile))
-            break;
+        p.readFromTxtFile(inFile);
 
         result.push_back(p);
     }
@@ -223,8 +246,39 @@ std::vector<Player> Game::loadPlayers(const std::string &filePath) {
 }
 
 void Game::deletePlayerByIndex() {
-    players = loadPlayers("Players/players.bin");
-    displayAllPlayers(); 
+    savePlayers();
+    players = loadPlayers("Players/players.txt");
+    displayAllPlayers();
     int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Incorrect choice. Try again", 1, players.size());
     players.erase(players.begin() + choice - 1);
+}
+
+void Game::shelter() {
+    int choice{};
+    do {
+        std::cout << "(0) - Back to the street\n(1) - My bed\n(2) - WorkBench\n(3) - My box\n";
+        choice = getValidateAnswer("Your choice: ", "Incorrect choice", 0, 3);
+        if(choice == 0) {
+            return;
+        }
+        else if(choice == 1) {
+            sleep();
+        }
+        else if(choice == 2) {
+            std::cout << "Craft" << std::endl;
+        }
+        else if(choice == 3) {
+            std::cout << "My box" << std::endl;
+        }
+    } while(choice != 0);
+}
+
+void Game::sleep() {
+    if(players[indexOfActivePlayer].getHunger() < 40 || players[indexOfActivePlayer].getThirst() < 40) {
+        std::cout << "\nI need to raise my hunger and thirst to 40 or I won't be able to sleep" << std::endl;
+    }
+    else {
+        players[indexOfActivePlayer].sleep();
+        std::cout << "\nI slept well. My energy are restored" << std::endl;
+    }
 }

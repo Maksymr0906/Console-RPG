@@ -19,6 +19,8 @@ private:
     int findPlayerIndexByName(const std::string &name) const;
     void askToSavePlayer();
     void deletePlayerByIndex(); //TEST
+    void shelter();
+    void sleep();
 protected:
     GameOption gameOption;
     bool playing;
@@ -29,7 +31,6 @@ public:
     Game();
 
     bool getPlaying() const { return playing; }
-    //Option getOption() const {return option;}
 
     void setPlaying(bool playing) { this->playing = playing; }
     void setOption(GameOption gameOption) { this->gameOption = gameOption; }

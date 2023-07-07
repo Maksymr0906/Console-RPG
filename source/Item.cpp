@@ -8,9 +8,27 @@ void Item::unequip() {
     this->status = "Unequipped";
 }
 
-void Item::use() {
+void Item::use(Entity &en) {
     std::cout << "Item used" << std::endl;
 }
+
+void Item::writeToTxtFile(std::ofstream &outfile) const {
+    outfile << name << '\n'
+            << category << '\n'
+            << status << '\n'
+            << purchasePrice << "\n"
+            << salePrice << "\n"
+            << level << "\n"
+            << rarity << "\n";
+}
+
+void Item::readFromTxtFile(std::ifstream &infile) {
+    std::getline(infile, name);
+    std::getline(infile, category);
+    std::getline(infile, status);
+    infile >> purchasePrice >> salePrice >> level >> rarity;
+}
+
 
 void Item::serialize(std::ofstream &outfile) const {
     int nameLength = name.size();

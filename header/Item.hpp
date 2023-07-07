@@ -1,9 +1,10 @@
 #pragma once
 
 #include "I_Printable.hpp"
+#include "Entity.hpp"
 
-#include <string>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 
 class Item : public I_Printable {
@@ -15,12 +16,12 @@ private:
     static constexpr const int def_sale_price = 80;
     static constexpr const int def_level = 1;
     static constexpr const int def_rarity = 1;
-    static constexpr const int def_item_type = 0;
+    static constexpr const int def_item_type = 0; //delete this or catecory
 protected:
     std::string name, category, status/*equiped or in inventory*/;
     int purchasePrice, salePrice;
     int level, rarity;//1 - Common, 2 - Uncommon, 3 - Rare, 4 - Epic, 5 - Legendary
-    int itemType; //1 - Weapon, 2 - Armor, 3 - Potions
+    int itemType; //1 - Weapon, 2 - Armor, 3 - Products
 public:
     //Accesors
     std::string getName() const { return name; }
@@ -51,7 +52,9 @@ public:
 
     virtual void equip() = 0;
     virtual void unequip() = 0;
-    virtual void use() = 0;
+    virtual void use(Entity &en) = 0;
+    virtual void writeToTxtFile(std::ofstream &outfile) const = 0;
+    virtual void readFromTxtFile(std::ifstream &infile) = 0;
     virtual void serialize(std::ofstream &outfile) const = 0;
     virtual void deserialize(std::ifstream &infile) = 0;
     bool operator==(const Item &other) const;

@@ -1,27 +1,26 @@
 #pragma once
 
 #include <ctime>
-#include <cstdlib>
-#include <iomanip>
 
 #include "Inventory.hpp"
-#include "Weapon.hpp"
-#include "Armor.hpp"
+#include "Entity.hpp"
 
-class Player {
+class Player : public Entity {
 private:
-    static constexpr const int def_health = 10;
-    static constexpr const int def_max_health = 10;
-    static constexpr const int def_thirst = 10;
-    static constexpr const int def_hunger = 10;
+    static constexpr const int def_health = 100;
+    static constexpr const int def_max_health = 100;
+    static constexpr const int def_thirst = 100;
+    static constexpr const int def_thirst_max = 100;
+    static constexpr const int def_hunger = 100;
+    static constexpr const int def_hunger_max = 100;
     static constexpr const int def_min_damage = 2;
     static constexpr const int def_max_damage = 5;
     static constexpr const int def_exp = 0;
     static constexpr const int def_exp_next = 100;
     static constexpr const int def_level = 1;
-    static constexpr const char* def_name = "Unnamed";
-    static constexpr const int def_stamina = 10;
-    static constexpr const int def_stamina_max = 10;
+    static constexpr const char *def_name = "Unnamed";
+    static constexpr const int def_stamina = 100;
+    static constexpr const int def_stamina_max = 100;
     static constexpr const int def_defence = 1;
     static constexpr const int def_strength = 5;
     static constexpr const int def_vitality = 5;
@@ -36,13 +35,10 @@ private:
     const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
     static constexpr const int def_distance_travelled = 0;
 protected:
-    std::string name;
-    int health, maxHealth;
     int thirst, hunger;
-    int minDamage, maxDamage;
-    int exp, expNext, level;
+    int thirstMax, hungerMax;
+    int exp, expNext;
     int stamina, staminaMax;
-    int defence;
     int strength, vitality, dexterity, intelligence;
     int luck;
     int statPoints, skillPoints;
@@ -58,7 +54,9 @@ protected:
 public:
     //Constructors
     Player();
+    virtual ~Player() = default;
 
+    virtual std::string getName() const override { return this->name; }
     //Accessors
     int getHealth() const { return health; }
     int getMaxHealth() const { return maxHealth; }
@@ -69,6 +67,11 @@ public:
     int getLevel() const { return level; }
     int getStamina() const { return stamina; }
     int getStaminaMax() const { return staminaMax; }
+    int getHunger() const { return hunger; }
+    int getHungerMax() const { return hungerMax; }
+    int getThirst() const { return thirst; }
+    int getThirstMax() const { return thirstMax; }
+    int getRadiation() const { return radiation; }
     int getDefence() const { return defence; }
     int getStrength() const { return strength; }
     int getDexterity() const { return dexterity; }
@@ -77,8 +80,7 @@ public:
     int getStatPoints() const { return statPoints; }
     int getSkillPoints() const { return skillPoints; }
     int getMoney() const { return money; }
-    std::string getName() const { return name; }
-    Inventory& getInventory() { return inventory; }
+    Inventory &getInventory() { return inventory; }
     int getDistanceTravelled() const { return distanceTravelled; }
     std::shared_ptr<Item> getArmorHead() const { return armorHead; }
 
@@ -92,6 +94,9 @@ public:
     void setLevel(int level) { this->level = level; }
     void setStamina(int stamina) { this->stamina = stamina; }
     void setStaminaMax(int staminaMax) { this->staminaMax = staminaMax; }
+    void setHunger(int hunger) { this->hunger = hunger; }
+    void setThirst(int thirst) { this->thirst = thirst; }
+    void setRadiation(int radiation) { this->radiation = radiation; }
     void setDefence(int defence) { this->defence = defence; }
     void setStrength(int strength) { this->strength = strength; }
     void setDexterity(int dexterity) { this->dexterity = dexterity; }
@@ -118,12 +123,17 @@ public:
     void unequipItem(std::shared_ptr<Item> &item);
     void showInventory();
     void updateCharacteristics();
-    void explore() { distanceTravelled++; }
+    void explore();
     void showEquipment();
     std::string getAsString() const;
+    void writeToTxtFile(std::ofstream &outfile) const;
+    void readFromTxtFile(std::ifstream &infile);
     bool serialize(std::ofstream &outfile) const;
     bool deserialize(std::ifstream &infile);
     void previewPlayer() const;
+    void sleep();
+    int calculateRandomCharacteristic(int leftBorder, int rightBorder) const;
+    void useProduct(std::shared_ptr<Item> &item);
 
     //Overloaded operators
     bool operator==(const Player &rhs) const;
@@ -131,6 +141,8 @@ public:
 };
 
 void shop(Player &p);
+void increaseBackpack(Player &p);
+bool setNewBackpack(Player &p, const std::pair<int, int> &backpack);
 void weaponShop(Player &p);
 void armorShop(Player &p);
 void potionShop(Player &p);

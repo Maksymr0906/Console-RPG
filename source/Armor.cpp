@@ -32,10 +32,20 @@ Armor::Armor(const Armor &obj)
     :Item(obj), defence{ obj.defence }, type{ obj.type } {
 }
 
-void Armor::use() {
+void Armor::use(Entity &en) {
     std::cout << "Armor used" << std::endl;
 }
 
+void Armor::writeToTxtFile(std::ofstream &outfile) const {
+    Item::writeToTxtFile(outfile);
+    outfile << defence << "\n"
+            << type << "\n";
+}
+
+void Armor::readFromTxtFile(std::ifstream &infile) {
+    Item::readFromTxtFile(infile);
+    infile >> defence >> type;
+}
 
 void Armor::serialize(std::ofstream &outfile) const {
     Item::serialize(outfile);
