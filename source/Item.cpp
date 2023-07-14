@@ -8,10 +8,6 @@ void Item::unequip() {
     this->status = "Unequipped";
 }
 
-void Item::use(Entity &en) {
-    std::cout << "Item used" << std::endl;
-}
-
 void Item::writeToTxtFile(std::ofstream &outfile) const {
     outfile << name << '\n'
             << category << '\n'

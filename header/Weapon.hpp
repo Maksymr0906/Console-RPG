@@ -35,7 +35,6 @@ public:
 
     virtual void equip() override;
     virtual void unequip() override;
-    virtual void use(Entity &en) override;
     virtual void writeToTxtFile(std::ofstream &outfile) const override;
     virtual void readFromTxtFile(std::ifstream &infile) override;
     virtual void serialize(std::ofstream &outfile) const override;

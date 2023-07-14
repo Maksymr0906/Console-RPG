@@ -16,9 +16,10 @@ protected:
 public:
 	Enemy();
 	Enemy(int level);
-	~Enemy() {};
+	virtual ~Enemy() = default;
 
 	//Accessors
+	virtual std::string getName() const override { return this->name; }
 	int getHealth() const { return health; }
 	int getMaxHealth() const { return maxHealth; }
 	int getMinDamage() const { return minDamage; }
@@ -37,12 +38,12 @@ public:
 	void setDefence(int defence) { this->defence = defence; }
 
 	//Methods
-	int getDamage() {
+	int inflictDamage() {
 		int givenDamage{};
 		givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
 		return givenDamage;
 	}
-	void takeDamage(int damage) { health -= damage; }
+	void takeDamage(int damage) { this->health = std::max(0, this->health - damage); }
 	bool isAlive() { return health > 0; }
 	
 };

@@ -3,18 +3,21 @@
 Game::Game() {
     playing = true;
     gameOption = GameOption::BACK_TO_MAIN_MENU;
-    indexOfActivePlayer = 0;
+    indexOfActivePlayer = -1;
     isPlayerSaved = true;
+    this->storeTime = 0;
 }
 
 void Game::initialize() {
     this->backstory();
     Event::initialize();
+    this->storeTime = 0;
 }
 
 void Game::mainMenu() {
     players.clear();
     players = loadPlayers("Players/players.txt");
+    indexOfActivePlayer = -1;
     bool isAnyPlayerExist = !players.empty();
     do {
         int choice = getValidateAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n\nEnter your choice: ", "\nIncorrect choice", 0, 2);
@@ -31,11 +34,14 @@ void Game::mainMenu() {
             if(!isAnyPlayerExist) {
                 std::cout << "\nYou don't have savings. Create a new character first." << std::endl;
             }
-            else
-                selectPlayer();
-        }
-    } while(!isAnyPlayerExist);
+            else {
+                int indexOfSelectedPlayer = selectPlayer();
+                if(indexOfSelectedPlayer != 0)
+                    indexOfActivePlayer = indexOfSelectedPlayer - 1;
+            }
 
+        }
+    } while(!isAnyPlayerExist || indexOfActivePlayer == -1);
 }
 
 void Game::gameMenu() {
@@ -64,7 +70,7 @@ void Game::gameMenu() {
             explore();
             break;
         case GameOption::SHOP:
-            shop(players[indexOfActivePlayer]);
+            shop();
             break;
         case GameOption::VIEW_STATS:
             players[indexOfActivePlayer].showStats();
@@ -135,6 +141,7 @@ void Game::backstory() const {
 }
 
 void Game::explore() {
+    storeTime++;
     Inventory &inventory = players[indexOfActivePlayer].getInventory();
     if(inventory.getInventory().size() == inventory.getSizeOfInventory()) {
         std::cout << "My backpack is full. I need to do something about this and continue searching..." << std::endl;
@@ -144,6 +151,11 @@ void Game::explore() {
 
     Event event;
     event.generateEvent(players[indexOfActivePlayer]);
+    if(storeTime == 10) {
+        storeTime = 0;
+        std::cout << "Shop updated" << std::endl;
+        event.updateShop();
+    }
 }
 
 void Game::createNewPlayer() {
@@ -205,18 +217,20 @@ void Game::savePlayers() {
     outFile.close();
 }
 
-void Game::selectPlayer() {
+int Game::selectPlayer() {
     if(players.empty()) {
-        return;
+        return 0;
     }
 
     int choice{};
     displayAllPlayers();
-    choice = getValidateAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 1, players.size());
-    indexOfActivePlayer = choice - 1;
+    choice = getValidateAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 0, players.size());
+    
+    return choice;
 }
 
 void Game::displayAllPlayers() const {
+    std::cout << "\n(0) - Exit" << std::endl;
     for(size_t i = 0; i < players.size(); i++) {
         std::cout << "(" << i + 1 << ") - " << players[i].getName() << std::endl;
     }
@@ -281,4 +295,9 @@ void Game::sleep() {
         players[indexOfActivePlayer].sleep();
         std::cout << "\nI slept well. My energy are restored" << std::endl;
     }
+}
+
+void Game::shop() {
+    Event event;
+    event.shop(players[indexOfActivePlayer]);
 }

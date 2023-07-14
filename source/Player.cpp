@@ -103,7 +103,7 @@ void Player::showInventory() {
     do {
         this->inventory.showInventory();
         selectedItemIndex = getValidateAnswer("Your choice: ", "Incorrect choice", 0, this->inventory.getInventory().size());
-        if(selectedItemIndex == 0 || selectedItemIndex > this->inventory.getInventory().size()) {
+        if(selectedItemIndex == 0) {
             return;
         }
         else {
@@ -112,9 +112,13 @@ void Player::showInventory() {
             char choice{};
             //std::cout << "\n(0) - Go back\n(1) - Equip/Use\n(2) - Info\n(3) - Delete Item\n";
             if(selectedItem->getItemType() == 3) {
-                this->useProduct(selectedItem);
-                this->getInventory().removeItem(selectedItemIndex-1);
-                continue;
+                std::cout << "Do you want to use this item? (y/n)\n";
+                std::cin >> choice;
+                if(choice == 'y') {
+                    this->useProduct(selectedItem);
+                    this->getInventory().removeItem(selectedItemIndex - 1);
+                    continue;
+                }
             }
 
             if(selectedItem->getStatus() == "Equipped") {
@@ -135,6 +139,45 @@ void Player::showInventory() {
             }
         }
     } while(selectedItemIndex != 0);
+}
+
+void Player::useItemInCombat() {
+    std::cout << "\nYou can use only one item per turn!" << std::endl;
+    this->inventory.showInventory();
+    int selectedItemIndex{};
+    selectedItemIndex = getValidateAnswer("Your choice: ", "Incorrect choice", 0, this->inventory.getInventory().size());
+    if(selectedItemIndex == 0) {
+        return;
+    }
+    std::shared_ptr<Item> &selectedItem = this->inventory.getInventory().at(selectedItemIndex - 1);
+
+    char choice{};
+    if(selectedItem->getItemType() == 3) {
+        std::cout << "Do you want to use this item? (y/n)\n";
+        std::cin >> choice;
+        if(choice == 'y') {
+            this->useProduct(selectedItem);
+            this->getInventory().removeItem(selectedItemIndex - 1);
+        }
+    }
+    else {
+        if(selectedItem->getStatus() == "Equipped") {
+            std::cout << "Do you want to unequip this item? (y/n)\n";
+            std::cin >> choice;
+
+            if(choice == 'y') {
+                unequipItem(selectedItem);
+            }
+        }
+        else {
+            std::cout << "Do you want to equip this item? (y/n)\n";
+            std::cin >> choice;
+
+            if(choice == 'y') {
+                equipItem(selectedItem);
+            }
+        }
+    }
 }
 
 void Player::showEquipment() {
@@ -485,33 +528,6 @@ bool Player::buyItem(std::shared_ptr<Item> &item) {
     }
 }
 
-void sellItems(Player &p) {
-    std::cout << "Welcome to the flea market. Here you can sell all your junk." << std::endl;
-    Inventory &inventory = p.getInventory();
-    int choice{};
-
-    do {
-        if(inventory.getInventory().size() > 0) {
-            inventory.showInventory();
-            choice = getValidateAnswer("Choose item that you want to sell: ", "Incorrect choice", 0, inventory.getInventory().size());
-
-            if(choice == 0) {
-                return;
-            }
-            else {
-                std::string nameOfSoldItem = inventory.getInventory()[choice - 1]->getName();
-                p.sellItem(choice - 1);
-                std::cout << nameOfSoldItem << " sold" << std::endl;
-            }
-        }
-        else {
-            std::cout << "\nYour inventory is empty" << std::endl;
-            return;
-        }
-    } while(choice != 0);
-    
-}
-
 void Player::sellItem(const int &position) {
     std::shared_ptr<Item> &item = this->getInventory().getInventory()[position];
     this->money = this->money + this->getInventory().getInventory()[position]->getSalePrice();
@@ -519,192 +535,6 @@ void Player::sellItem(const int &position) {
         unequipItem(this->getInventory().getInventory()[position]);
     }
     this->getInventory().removeItem(position);
-}
-
-void shop(Player &p) {
-    std::cout << "\nWelcome to the Golden street " << p.getName() << "!" << std::endl
-              << "In this street you can buy (almost) everything you want" << std::endl
-              << "What type of items you want to view?" << std::endl;
-    int choice{}, moneyBefore{p.getMoney()};
-    do {
-        std::cout << "My money: " << p.getMoney() << std::endl;
-        choice = getValidateAnswer("\n(0) - Leave the shop\n(1) - Weapons\n(2) - Armor\n(3) - Potions\n(4) - Increase backpack\n(5) - Sell items\nYour choice: ", "Incorrect choice", 0, 5);
-        if(choice == 1) {
-            weaponShop(p);
-        }
-        else if(choice == 2) {
-            armorShop(p);
-        }
-        else if(choice == 3) {
-            potionShop(p);
-        }
-        else if(choice == 4) {
-            increaseBackpack(p);
-        }
-        else if(choice == 5) {
-            sellItems(p);
-        }
-        else {
-            if(moneyBefore == p.getMoney()) {
-                std::cout << "Though you didn't make a purchase, I'm always happy to see you. Stay safe on your travels!" << std::endl;
-            }
-            break;
-        }
-    } while(choice != 0);
-
-}
-
-void weaponShop(Player &p) {
-    std::cout << "\n/*Weapon shop*/" << std::endl;
-
-    int choice{};
-    do {
-        std::cout << "\n(0) - Go back" << std::endl;
-        std::cout << "(1) - Sword (+5 damage) : cost 20G" << std::endl;
-        std::cout << "(2) - Spear (+10 damage) : cost 40G" << std::endl;
-        std::cout << "(3) - Axe (+15 damage) : cost 80G" << std::endl;
-
-        choice = getNumber("\nYour choice: ");
-        if(choice == 1) {
-            std::shared_ptr<Item> sword = std::make_shared<Weapon>(Weapon("Sword", "Weapon", "Unequipped", 20, 15, 1, 5, 1, 1));
-            if(p.buyItem(sword)) {
-                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
-            }
-            else {
-                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
-            }
-        }
-        else if(choice == 2) {
-            std::shared_ptr<Item> spear = std::make_shared<Weapon>(Weapon("Spear", "Weapon", "Unequipped", 40, 30, 5, 10, 1, 1));
-            if(p.buyItem(spear)) {
-                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
-            }
-            else {
-                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
-            }
-        }
-        else if(choice == 3) {
-            std::shared_ptr<Item> axe = std::make_shared<Weapon>(Weapon("Axe", "Weapon", "Unequipped", 80, 60, 10, 15, 1, 1));
-            if(p.buyItem(axe)) {
-                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
-            }
-            else {
-                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
-            }
-        }
-    } while(choice != 0);
-
-}
-
-void armorShop(Player &p) {
-    std::cout << "\n/*Armor shop*/" << std::endl;
-
-    int choice{};
-    do {
-        std::cout << "\n(0) - Go back" << std::endl;
-        std::cout << "(1) - Helmet (+5 defence) : cost 20G" << std::endl;
-        std::cout << "(2) - Mail (+10 defence) : cost 40G" << std::endl;
-        std::cout << "(3) - Leather pants (+15 defence) : cost 80G" << std::endl;
-
-        choice = getNumber("\nYour choice: ");
-        if(choice == 1) {
-            std::shared_ptr<Item> helmet = std::make_shared<Armor>(Armor("Helmet", "Armor", "Unequipped", 20, 10, 1, 1, 5, 1));
-            if(p.buyItem(helmet)) {
-                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
-            }
-            else {
-                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
-            }
-        }
-        else if(choice == 2) {
-            std::shared_ptr<Item> mail = std::make_shared<Armor>(Armor("Mail", "Armor", "Unequipped", 40, 30, 1, 1, 10, 2));
-            if(p.buyItem(mail)) {
-                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
-            }
-            else {
-                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
-            }
-        }
-        else if(choice == 3) {
-            std::shared_ptr<Item> leatherPants = std::make_shared<Armor>(Armor("Leather Pants", "Armor", "Unequipped", 80, 60, 1, 1, 15, 3));
-            if(p.buyItem(leatherPants)) {
-                std::cout << "Thank you for your purchase! Feel free to come back anytime, I always have something interesting!" << std::endl;
-            }
-            else {
-                std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
-            }
-        }
-    } while(choice != 4);
-}
-
-void potionShop(Player &p) {
-    std::cout << "\n/*Potion shop*/" << std::endl;
-
-    int choice{};
-    do {
-        std::cout << "\n(1) - Health potion (Restores all HP) : cost 20G" << std::endl;
-        std::cout << "(2) - Attack potion (+10 damage) : cost 20G" << std::endl;
-        std::cout << "(3) - Defend potion (+10 defence) : cost 20G" << std::endl;
-        std::cout << "(4) - Go back" << std::endl;
-        choice = getNumber("\nYour choice: ");
-        if(choice == 1) {
-            std::cout << "You have bought an Health potion" << std::endl;
-        }
-        else if(choice == 2) {
-            std::cout << "You have bought an Attack potion" << std::endl;
-        }
-        else if(choice == 3) {
-            std::cout << "You have bought an Defend potion" << std::endl;
-        }
-        else if(choice == 4) {
-            return;
-        }
-    } while(choice != 4);
-}
-
-void increaseBackpack(Player &p) {
-    std::cout << "\nWelcome to Backpack shop. Hope something suits you!" << std::endl;
-    int choice{};
-    std::vector<std::pair<int, int>> backpacks{ {30, 9}, {80, 13}, {150, 19}, {300, 23}, {500, 25} };
-    do {
-        choice = getValidateAnswer("\n(0) - Go back\n(1) - School backpack (+4 slots) Cost: 30G\n(2) - Pioneer backpack (+8 slots) Cost: 80G\n(3) - Duffel bag (+14 slots) Cost: 150G\n(4) - Tourist backpack (+18 slots) Cost: 300G\n(5) - Army backpack (+20 slots) Cost: 500G\nYour choice: ", "Incorrect choice", 0, 5);
-        if(choice == 1) {
-            if(setNewBackpack(p, backpacks[choice - 1]))
-                std::cout << "\nYou bought a School backpack" << std::endl;
-        }
-        else if(choice == 2) {
-            if(setNewBackpack(p, backpacks[choice - 1]))
-                std::cout << "\nYou bought a Pioneer backpack" << std::endl;
-        }
-        else if(choice == 3) {
-            if(setNewBackpack(p, backpacks[choice-1])) 
-                std::cout << "\nYou bought a Duffel bag" << std::endl;
-        }
-        else if(choice == 4) {
-            if(setNewBackpack(p, backpacks[choice - 1]))
-                std::cout << "\nYou bought a Tourist backpack" << std::endl;
-        }
-        else if(choice == 5) {
-            if(setNewBackpack(p, backpacks[choice-1]))
-                std::cout << "\nYou bought a Army backpack" << std::endl;
-        }
-    } while(choice != 0);
-}
-
-bool setNewBackpack(Player &p, const std::pair<int, int> &backpack) {
-    if(p.getInventory().getSizeOfInventory() >= backpack.second) {
-        std::cout << "\nI guess you already have a bigger backpack than that" << std::endl;
-        return false;
-    }
-
-    if(p.getMoney() < backpack.first) {
-        std::cout << "\nYou don't have enough money" << std::endl;
-        return false;
-    }
-
-    p.getInventory().setSizeOfInventory(backpack.second);
-    p.setMoney(p.getMoney() - backpack.first);
-    return true;
 }
 
 void Player::equipItem(std::shared_ptr<Item> &item) {
@@ -862,10 +692,10 @@ void Player::explore() {
 }
 
 void Player::sleep() {
-    this->thirst -= calculateRandomCharacteristic(35, 40);
-    this->hunger -= calculateRandomCharacteristic(35, 40);
+    this->thirst = std::max(this->thirst - calculateRandomCharacteristic(35, 40), 0);
+    this->hunger = std::max(this->hunger - calculateRandomCharacteristic(35, 40), 0);
     this->stamina = this->staminaMax;
-    this->health += calculateRandomCharacteristic(20, 40);
+    this->health = std::min(100, this->health + calculateRandomCharacteristic(20, 40));
 }
 
 int Player::calculateRandomCharacteristic(int leftBorder, int rightBorder) const {
@@ -878,5 +708,13 @@ void Player::useProduct(std::shared_ptr<Item> &item) {
     this->stamina = std::min(this->stamina + product->getEnergyRestored(), 100);
     this->health = std::min(this->health + product->getHealthRestored(), 100);
     this->thirst = std::min(this->thirst + product->getThirstRestored(), 100);
-    this->radiation += product->getRadiationRestored();
+    this->radiation = std::max(this->radiation + product->getRadiationRestored(), 0);
+}
+
+void Player::restoreStaminaInCombat() {
+    int restoredStamina = std::min(100, this->stamina + calculateRandomCharacteristic(20, 30));
+    this->stamina = restoredStamina;
+
+    this->hunger = std::max(0, this->hunger - calculateRandomCharacteristic(5, 10));
+    this->thirst = std::max(0, this->thirst - calculateRandomCharacteristic(5, 10));
 }

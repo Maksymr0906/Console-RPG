@@ -6,7 +6,7 @@ Behold! You seized {} from the clutches of a defeated monster.
 A stroke of luck! You chanced upon {} wedged between the cracks of a fallen statue.
 Victory is yours! You discovered {} shimmering within a hidden treasure hoard.
 How fortunate! You unearthed {} from a long-abandoned crypt.
-You discovered a mighty {}lying deep within the dungeon.
+You discovered a mighty {} lying deep within the dungeon.
 Congratulations! You've stumbled upon a powerful {} hidden in the darkness.
 A gleaming {} emerges from the shadows as you search through the dungeon.
 You triumphantly unearthed a valuable {} from a forgotten treasure chest.

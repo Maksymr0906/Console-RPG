@@ -12,7 +12,7 @@ private:
     void explore();
     void createNewPlayer();
     void savePlayers();
-    void selectPlayer();
+    int selectPlayer();
     std::vector<Player> loadPlayers(const std::string &filePath);
     void displayAllPlayers() const;
     void printGameMenu() const;
@@ -27,6 +27,7 @@ protected:
     int indexOfActivePlayer;
     std::vector<Player> players;
     bool isPlayerSaved;
+    int storeTime;
 public:
     Game();
 
@@ -39,5 +40,6 @@ public:
     void initialize();
     void gameMenu();
     void mainMenu();
+    void shop();
 };
 

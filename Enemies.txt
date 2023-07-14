@@ -1,0 +1,10 @@
+Mutadog
+Rat
+Zombie
+Bandit
+Scavenger
+Raider
+Undead
+Infected
+Stalker
+Marauder

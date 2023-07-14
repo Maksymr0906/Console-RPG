@@ -15,10 +15,6 @@ void Weapon::print(std::ostream& os) const {
         << "\nLevel: " << this->level << "\nRarity: " << this->rarity;
 }
 
-void Weapon::use(Entity &en) {
-    std::cout << "Weapon used" << std::endl;
-}
-
 void Weapon::writeToTxtFile(std::ofstream &outfile) const {
     Item::writeToTxtFile(outfile);
     outfile << minDamage << "\n"

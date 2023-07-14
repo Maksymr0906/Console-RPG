@@ -1,11 +1,12 @@
 #pragma once
 
 #include "I_Printable.hpp"
-#include "Entity.hpp"
 
+#include <fstream>
+#include <string>
 #include <iostream>
 #include <iomanip>
-#include <fstream>
+#include <limits>
 
 class Item : public I_Printable {
 private:
@@ -52,7 +53,6 @@ public:
 
     virtual void equip() = 0;
     virtual void unequip() = 0;
-    virtual void use(Entity &en) = 0;
     virtual void writeToTxtFile(std::ofstream &outfile) const = 0;
     virtual void readFromTxtFile(std::ifstream &infile) = 0;
     virtual void serialize(std::ofstream &outfile) const = 0;

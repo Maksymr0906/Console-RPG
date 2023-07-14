@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdlib.h>
-#include <limits>
 
 #include "Puzzle.hpp"
 #include "Player.hpp"
@@ -9,37 +8,50 @@
 
 class Event {
 private:
-	void foundArmor(Player &p, const std::string &name);
-	void foundWeapon(Player &p, const std::string &name);
-	int calculateRarity() const;
-	int calculateType(const std::string &name) const;
+	void foundArmor(Player &p);
+	void foundWeapon(Player &p);
+	void foundProduct(Player &p);
 	std::string getRandomCategory() const;
 	bool isPlayerAnswerValidate(const int &playerAnswer, const int &numberOfAnswers) const;
 	void printPuzzleChances(const int &remainingChances) const;
 	void displayMessageAboutFoundItem(const std::string &nameOfItem) const;
 	int calculateRandomEvent() const;
+	void increaseBackpack(Player &p);
+	bool setNewBackpack(Player &p, const std::pair<int, int> &backpack);
+	void weaponShop(Player &p);
+	void armorShop(Player &p);
+	void productsShop(Player &p);
+	void sellItems(Player &p);
 
-	static void getNthHappenedFromFile(); //Rename
-	static void getPuzzlesFromFile();
-	static void getProductsFromFile();
+	static void readEmptyEventMessagesFromFile();
+	static void readPuzzlesFromFile();
+	static void readProductsFromFile();
+	static void generateItemsToSell();
+	static void readWeaponsFromFile();
+	static void readArmorFromFile();
+	static void readItemsFromFile(const std::string fileName, std::vector<std::shared_ptr<Item>> &items);
+
 protected:
-	static std::vector<std::string> nthHappened; //Rename
+	static std::vector<std::shared_ptr<Item>> itemsToSell;
+	static std::vector<std::string> emptyEventMessages;
 	static std::vector<Puzzle> puzzles;
 	static std::vector<std::shared_ptr<Item>> products;
+	static std::vector<std::shared_ptr<Item>> weapons;
+	static std::vector<std::shared_ptr<Item>> armor;
 
 	int numberOfEvents;
 
 	void puzzleEncouter(Player &p);
 	void fightEncouter(Player &p);
 	void foundItemEncouter(Player &p);
-
-	void nothingHappened() const; //Rename
+	void emptyEventEncouter() const;
 
 public:
 	Event();
-	void foundProductEncouter(Player &p);
 	~Event() = default;
 	void generateEvent(Player &p);
 	static void initialize();
+	void shop(Player &p);
+	static void updateShop();
 };
 

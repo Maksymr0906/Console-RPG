@@ -2,6 +2,7 @@
 
 #include "Item.hpp"
 
+
 class Product : public Item {
 private:
 	static constexpr const char *def_name = "Unnamed";
@@ -18,7 +19,8 @@ private:
 	static constexpr const int def_thirstRestored = 0;
 	static constexpr const int def_radiation_restored = 0;
 protected:
-	int hungerRestored, energyRestored, healthRestored, thirstRestored, radiationRestored;
+	int hungerRestored, energyRestored;
+	int healthRestored, thirstRestored, radiationRestored;
 public:
 	Product(const char *name = def_name, const char *category = def_category, const char *status = def_status,
 			int purchasePrice = def_purchase_price, int salePrice = def_sale_price,
@@ -39,7 +41,6 @@ public:
 
 	virtual void equip() override;
 	virtual void unequip() override;
-	virtual void use(Entity &en) override;
 	virtual void writeToTxtFile(std::ofstream &outfile) const override;
 	virtual void readFromTxtFile(std::ifstream &infile) override;
 	virtual void serialize(std::ofstream &outfile) const override;
@@ -57,4 +58,6 @@ public:
 	void setHealthRestored(int healthRestored) { this->healthRestored = healthRestored; }
 	void setThirstRestored(int thirstRestored) { this->thirstRestored = thirstRestored; }
 	void setRadiationRestored(int radiationRestored) { this->radiationRestored = radiationRestored; }
+
+	bool operator==(const Product &other) const;
 };

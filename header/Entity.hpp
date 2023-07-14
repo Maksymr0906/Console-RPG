@@ -3,6 +3,7 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include <algorithm>
 
 class Entity {
 private:

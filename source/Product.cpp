@@ -2,7 +2,7 @@
 
 void Product::equip() {}
 void Product::unequip() {}
-void Product::use(Entity &en) {}
+
 void Product::writeToTxtFile(std::ofstream &outfile) const {
 	Item::writeToTxtFile(outfile);
 	outfile << hungerRestored << "\n"
@@ -43,4 +43,10 @@ void Product::print(std::ostream &os) const {
 		<< std::left << "Hunger: " << this->hungerRestored << std::endl
 		<< std::left << "Radiation: " << this->radiationRestored << std::endl
 		<< std::left << "Purchase/Sell Price: " << this->purchasePrice << " / " << this->salePrice << std::endl;
+}
+
+bool Product::operator==(const Product &other) const {
+	return Item::operator==(other) && hungerRestored == other.hungerRestored &&
+		energyRestored == other.energyRestored && healthRestored == other.healthRestored &&
+		thirstRestored == other.thirstRestored && radiationRestored == other.radiationRestored;
 }

@@ -113,6 +113,7 @@ public:
     int getValidAttributeChoice() const;
     bool isAlive() const;
     int inflictDamage();
+    void takeDamage(int damage) { this->health = std::max(0, this->health - damage); }
     void initialize(const std::string &name);
     void levelUp();
     void showStats();
@@ -134,16 +135,10 @@ public:
     void sleep();
     int calculateRandomCharacteristic(int leftBorder, int rightBorder) const;
     void useProduct(std::shared_ptr<Item> &item);
+    void useItemInCombat();
+    void restoreStaminaInCombat();
 
     //Overloaded operators
     bool operator==(const Player &rhs) const;
     Player &operator=(const Player &rhs);
 };
-
-void shop(Player &p);
-void increaseBackpack(Player &p);
-bool setNewBackpack(Player &p, const std::pair<int, int> &backpack);
-void weaponShop(Player &p);
-void armorShop(Player &p);
-void potionShop(Player &p);
-void sellItems(Player &p);
