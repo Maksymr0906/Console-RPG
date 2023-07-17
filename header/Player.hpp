@@ -107,13 +107,11 @@ public:
     void setMoney(int money) { this->money = money; }
     void setName(std::string name) { this->name = name; }
     void setDistanceTravelled(int distanceTravelled) { this->distanceTravelled = distanceTravelled; }
-    //void setInventory(Inventory Inventory) {this->inventory = inventory;}
 
     //Methods
-    int getValidAttributeChoice() const;
     bool isAlive() const;
     int inflictDamage();
-    void takeDamage(int damage) { this->health = std::max(0, this->health - damage); }
+    void takeDamage(int damage);
     void initialize(const std::string &name);
     void levelUp();
     void showStats();
@@ -126,17 +124,18 @@ public:
     void updateCharacteristics();
     void explore();
     void showEquipment();
-    std::string getAsString() const;
     void writeToTxtFile(std::ofstream &outfile) const;
     void readFromTxtFile(std::ifstream &infile);
     bool serialize(std::ofstream &outfile) const;
     bool deserialize(std::ifstream &infile);
     void previewPlayer() const;
     void sleep();
-    int calculateRandomCharacteristic(int leftBorder, int rightBorder) const;
     void useProduct(std::shared_ptr<Item> &item);
-    void useItemInCombat();
+    bool useItemInCombat();
     void restoreStaminaInCombat();
+    void upgradeItems();
+    void upgradeWeapon(int indexOfWeapon);
+    void upgradeArmor(int indexOfArmor);
 
     //Overloaded operators
     bool operator==(const Player &rhs) const;

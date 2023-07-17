@@ -12,7 +12,6 @@ private:
 	static constexpr const int def_sale_price = 80;
 	static constexpr const int def_level = 1;
 	static constexpr const int def_rarity = 1;
-	static constexpr const int def_item_type = 3;
 	static constexpr const int def_hunger_restored = 0;
 	static constexpr const int def_energy_restored = 0;
 	static constexpr const int def_health_restored = 0;
@@ -24,11 +23,11 @@ protected:
 public:
 	Product(const char *name = def_name, const char *category = def_category, const char *status = def_status,
 			int purchasePrice = def_purchase_price, int salePrice = def_sale_price,
-			int level = def_level, int rarity = def_rarity, int itemType = def_item_type,
+			int level = def_level, int rarity = def_rarity,
 			int hungerRestored = def_hunger_restored, int energyRestored = def_energy_restored,
 			int healthRestored = def_health_restored, int thirstRestored = def_thirstRestored,
 			int radiationRestored = def_radiation_restored)
-		:Item{ name, category, status, purchasePrice, salePrice, level, rarity, itemType },
+		:Item{ name, category, status, purchasePrice, salePrice, level, rarity },
 		hungerRestored{ hungerRestored }, energyRestored{ energyRestored },
 		healthRestored{ healthRestored }, thirstRestored{ thirstRestored },
 		radiationRestored{ radiationRestored } {}

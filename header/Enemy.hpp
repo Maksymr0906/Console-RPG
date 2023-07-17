@@ -1,6 +1,10 @@
 #pragma once
 
 #include "Entity.hpp"
+#include "Weapon.hpp"
+#include "Armor.hpp"
+#include "Product.hpp"
+#include <memory>
 
 class Enemy : public Entity {
 private:
@@ -13,6 +17,7 @@ private:
 	static constexpr const int def_defence = 1;
 protected:
 	int dropChance;
+	std::shared_ptr<Item> droppedItem;
 public:
 	Enemy();
 	Enemy(int level);
@@ -36,6 +41,10 @@ public:
 	void setLevel(int level) { this->level = level; }
 	void setDropChance(int dropChance) { this->dropChance = dropChance; }
 	void setDefence(int defence) { this->defence = defence; }
+	void readFromTxtFile(std::ifstream &infile);
+	void writeToTxtFile(std::ofstream &outfile) const;
+	std::shared_ptr<Item> getDroppedItem();
+	void updateCharacteristics(int playerLevel);
 
 	//Methods
 	int inflictDamage() {
@@ -43,8 +52,12 @@ public:
 		givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
 		return givenDamage;
 	}
-	void takeDamage(int damage) { this->health = std::max(0, this->health - damage); }
+	void takeDamage(int damage) {
+		int effectiveDamage = std::max(damage - (defence / 3), 0);
+		this->health = std::max(this->health - effectiveDamage, 0);
+	}
 	bool isAlive() { return health > 0; }
+	void print() const;
 	
 };
 

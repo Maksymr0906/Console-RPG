@@ -83,6 +83,5 @@ bool Item::operator==(const Item &other) const {
             purchasePrice == other.purchasePrice &&
             salePrice == other.salePrice &&
             level == other.level &&
-            rarity == other.rarity &&
-            itemType == other.itemType);
+            rarity == other.rarity);
 }

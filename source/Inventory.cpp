@@ -91,8 +91,8 @@ void Inventory::serialize(std::ofstream &outfile) const {
     outfile.write(reinterpret_cast<const char *>(&itemCount), sizeof(itemCount));
 
     for(const auto &item : inventory) {
-        int itemType = item->getItemType();
-        outfile.write(reinterpret_cast<const char *>(&itemType), sizeof(itemType));
+        std::string itemCategory = item->getCategory();
+        outfile.write(reinterpret_cast<const char *>(&itemCategory), sizeof(itemCategory));
         item->serialize(outfile);
     }
 }
@@ -102,18 +102,18 @@ void Inventory::deserialize(std::ifstream &infile) {
 
     size_t itemCount;
     infile.read(reinterpret_cast<char *>(&itemCount), sizeof(itemCount));
-    int typeOfItem{};
+    std::string itemCategory{};
     for(size_t i = 0; i < itemCount; i++) {
-        infile.read(reinterpret_cast<char *>(&typeOfItem), sizeof(typeOfItem));
+        infile.read(reinterpret_cast<char *>(&itemCategory), sizeof(itemCategory));
 
         std::shared_ptr<Item> item;
-        if(typeOfItem == 1) {
+        if(itemCategory == "Weapon") {
             item = std::make_shared<Weapon>();
         }
-        else if(typeOfItem == 2) {
+        else if(itemCategory == "Armor") {
             item = std::make_shared<Armor>();
         }
-        else if(typeOfItem == 3) {
+        else if(itemCategory == "Product") {
             item = std::make_shared<Product>();
         }
         item->deserialize(infile);

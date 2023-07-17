@@ -18,7 +18,8 @@ private:
     void printGameMenu() const;
     int findPlayerIndexByName(const std::string &name) const;
     void askToSavePlayer();
-    void deletePlayerByIndex(); //TEST
+    void deletePlayer();
+    void deletePlayerByIndex(int index);
     void shelter();
     void sleep();
 protected:
@@ -27,7 +28,7 @@ protected:
     int indexOfActivePlayer;
     std::vector<Player> players;
     bool isPlayerSaved;
-    int storeTime;
+    int timeToUpdateStore;
 public:
     Game();
 

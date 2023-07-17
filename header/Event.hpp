@@ -23,6 +23,7 @@ private:
 	void productsShop(Player &p);
 	void sellItems(Player &p);
 
+	static void readEnemiesFromFile();
 	static void readEmptyEventMessagesFromFile();
 	static void readPuzzlesFromFile();
 	static void readProductsFromFile();
@@ -32,6 +33,7 @@ private:
 	static void readItemsFromFile(const std::string fileName, std::vector<std::shared_ptr<Item>> &items);
 
 protected:
+	static std::vector<Enemy> enemies;
 	static std::vector<std::shared_ptr<Item>> itemsToSell;
 	static std::vector<std::string> emptyEventMessages;
 	static std::vector<Puzzle> puzzles;

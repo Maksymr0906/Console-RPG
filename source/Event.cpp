@@ -6,6 +6,7 @@ std::vector<std::shared_ptr<Item>> Event::products;
 std::vector<std::shared_ptr<Item>> Event::itemsToSell;
 std::vector<std::shared_ptr<Item>> Event::weapons;
 std::vector<std::shared_ptr<Item>> Event::armor;
+std::vector<Enemy> Event::enemies;
 
 Event::Event() {
 	this->numberOfEvents = 5;
@@ -13,12 +14,31 @@ Event::Event() {
 
 //Refactor
 void Event::initialize() {
+	readEnemiesFromFile();
 	readEmptyEventMessagesFromFile();
 	readPuzzlesFromFile();
 	readProductsFromFile();
 	readArmorFromFile();
 	readWeaponsFromFile();
 	generateItemsToSell();
+}
+
+void Event::readEnemiesFromFile() {
+	std::ifstream infile("Enemies.txt");
+
+	if(!infile.is_open()) {
+		std::cerr << "Error opening file" << std::endl;
+		return;
+	}
+
+	Enemy enemy;
+	while(!infile.eof()) {
+		enemy.readFromTxtFile(infile);
+		enemies.push_back(enemy);
+		infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	}
+
+	infile.close();
 }
 
 void Event::readWeaponsFromFile() {
@@ -129,35 +149,34 @@ void Event::readEmptyEventMessagesFromFile() {
 }
 
 void Event::readPuzzlesFromFile() {
-	std::ifstream file("Puzzles/Puzzle.txt");
+	std::ifstream infile("Puzzle.txt");
 
-	if(!file.is_open()) {
+	if(!infile.is_open()) {
 		std::cerr << "Error opening file" << std::endl;
 		return;
 	}
-	while(!file.eof()) {
+	while(!infile.eof()) {
 
 		std::string answer{};
 		int numOfAnswers{}, indexOfCorrectAnswer{};
 		std::string question;
-
-		std::getline(file, question);
-		file >> numOfAnswers;
-		file.ignore();
+		std::getline(infile, question);
+		infile >> numOfAnswers;
+		infile.ignore();
 
 		std::vector<std::string> answers;
 		for(size_t i = 0; i < numOfAnswers; i++) {
-			std::getline(file, answer);
+			std::getline(infile, answer);
 			answers.push_back(answer);
 		}
 
-		file >> indexOfCorrectAnswer;
-		file.ignore();
+		infile >> indexOfCorrectAnswer;
+		infile.ignore();
 
 		puzzles.emplace_back(question, indexOfCorrectAnswer, answers);
 	}
 
-	file.close();
+	infile.close();
 }
 
 int Event::calculateRandomEvent() const {
@@ -212,40 +231,37 @@ void Event::puzzleEncouter(Player &p) {
 	bool completed = false;
 
 	while(!completed && remainingChances > 0) {
-		printPuzzleChances(remainingChances);
-		remainingChances--;
 
 		std::cout << puzzle.getAsString() << std::endl;
-
+		printPuzzleChances(remainingChances);
+		remainingChances--;
 		do {
 			playerAnswer = getNumber("Your answer: ") - 1;
 			if(isPlayerAnswerValidate(playerAnswer, puzzle.getNumberOfAnswers() - 1)) {
 				std::cout << "\nChoose one from the given variants\n" << std::endl;
 			}
 		} while(isPlayerAnswerValidate(playerAnswer, puzzle.getNumberOfAnswers() - 1));
-
-
+		
 		if(playerAnswer == puzzle.getIndexOfCorrectAnswer()) {
 			completed = true;
-			std::cout << "\nYou won" << std::endl;
-			int expGained = p.getLevel() * rand() % 15 + 5;
+			int expGained = calculateRandomCharacteristic(10 * (p.getLevel() + (p.getLuck() / 2)), 15 * (p.getLevel() + (p.getLuck() / 2)));
+			int moneyGained = calculateRandomCharacteristic(10 * (p.getLevel() + (p.getLuck() / 2)), 15 * (p.getLevel() + (p.getLuck() / 2)));
 			p.setExp(p.getExp() + expGained);
-			std::cout << "\nYou received " << expGained << " exp" << std::endl;
-		}
-		else {
-			std::cout << "You lose" << std::endl;
+			p.setMoney(p.getMoney() + moneyGained);
+			std::cout << "\nI chose the right answer, the safe opened and I received " << expGained << " exp and " << moneyGained << " money" << std::endl;
+			return;
+
 		}
 	}
+
+	std::cout << "Unfortunately, my attempt to open the safe was unsuccessful." << std::endl;
 }
 
 void Event::printPuzzleChances(const int &remainingChances) const {
-	std::cout << std::endl << remainingChances;
-	if(remainingChances > 1) {
-		std::cout << " chances left" << std::endl;
-	}
-	else {
-		std::cout << " chance left" << std::endl;
-	}
+	if(remainingChances > 1) 
+		std::cout << "I have " << remainingChances << " attempts left to crack the safe.I have to choose my next answer wisely!"<< std::endl << std::endl;
+	else
+		std::cout << "I only have 1 try remaining before the safe locks permanently."<< std::endl << std::endl;
 }
 
 bool Event::isPlayerAnswerValidate(const int &playerAnswer, const int &numberOfAnswers) const {
@@ -253,8 +269,8 @@ bool Event::isPlayerAnswerValidate(const int &playerAnswer, const int &numberOfA
 }
 
 void Event::fightEncouter(Player &p) {
-	Enemy enemy(p.getLevel());//figure out how generate enemy
-	//Enemy enemy{"Name", p.getLevel()};
+	Enemy enemy = enemies[rand() % enemies.size()];
+	enemy.updateCharacteristics(p.getLevel());
 
 	bool isPlayerTurn = false, isEnemyTurn = false;
 	rand() % 2 == 0 ? isPlayerTurn = true : isEnemyTurn = true;
@@ -276,19 +292,18 @@ void Event::fightEncouter(Player &p) {
 	bool escape = false;
 
 	while(p.isAlive() && enemy.isAlive() && !escape) {
-		std::cout << std::endl;
-		std::cout << std::setw(37) << std::setfill('=') << "   |   " << std::setw(30) << std::right << std::setfill('=') << " " << std::endl;
-		std::cout << std::left << std::setw(30) << "== " + p.getName() + " " << std::setw(36) << std::left << "   |   == " + enemy.getName() + " " << std::endl;
-		std::cout << std::left << std::setw(14) << "== Health  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getHealth()) + " / " + std::to_string(p.getMaxHealth()) + " " << std::setw(36) << std::left << "   |   == " + std::to_string(enemy.getHealth()) + " / " + std::to_string(enemy.getMaxHealth()) + " " << std::endl;
-		std::cout << std::left << std::setw(14) << "== Damage  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getMinDamage()) + " / " + std::to_string(p.getMaxDamage()) + " " << std::setw(36) << std::left << "   |   == " + std::to_string(enemy.getMinDamage()) + " / " + std::to_string(enemy.getMaxDamage()) + " " << std::endl;
-		std::cout << std::left << std::setw(14) << "== Stamina == " << std::setw(16) << std::setfill('=') << std::to_string(p.getStamina()) + " / " + std::to_string(p.getStaminaMax()) + " " << std::setw(36) << std::left << "   |   " << std::endl;
-		std::cout << std::left << std::setw(14) << "== Hunger  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getHunger()) + " / " + std::to_string(p.getHungerMax()) + " " << std::setw(7) << std::left << "   |   " << std::endl;
-		std::cout << std::left << std::setw(14) << "== Thirst  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getThirst()) + " / " + std::to_string(p.getThirstMax()) + " " << std::setw(7) << std::left << "   |   " << std::endl;
-		std::cout << std::setw(37) << std::right << std::setfill('=') << "   |   " << std::endl;
-		std::cout << std::right << std::setfill(' ');
-
-
 		if(isPlayerTurn && p.isAlive()) {
+			std::cout << std::endl;
+			std::cout << std::setw(37) << std::setfill('=') << "   |   " << std::setw(30) << std::right << std::setfill('=') << " " << std::endl;
+			std::cout << std::left << std::setw(30) << "== " + p.getName() + " " << std::setw(36) << std::left << "   |   == " + enemy.getName() + " " << std::endl;
+			std::cout << std::left << std::setw(14) << "== Health  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getHealth()) + " / " + std::to_string(p.getMaxHealth()) + " " << std::setw(36) << std::left << "   |   == " + std::to_string(enemy.getHealth()) + " / " + std::to_string(enemy.getMaxHealth()) + " " << std::endl;
+			std::cout << std::left << std::setw(14) << "== Damage  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getMinDamage()) + " / " + std::to_string(p.getMaxDamage()) + " " << std::setw(36) << std::left << "   |   == " + std::to_string(enemy.getMinDamage()) + " / " + std::to_string(enemy.getMaxDamage()) + " " << std::endl;
+			std::cout << std::left << std::setw(14) << "== Stamina == " << std::setw(16) << std::setfill('=') << std::to_string(p.getStamina()) + " / " + std::to_string(p.getStaminaMax()) + " " << std::setw(36) << std::left << "   |   " << std::endl;
+			std::cout << std::left << std::setw(14) << "== Hunger  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getHunger()) + " / " + std::to_string(p.getHungerMax()) + " " << std::setw(7) << std::left << "   |   " << std::endl;
+			std::cout << std::left << std::setw(14) << "== Thirst  == " << std::setw(16) << std::setfill('=') << std::to_string(p.getThirst()) + " / " + std::to_string(p.getThirstMax()) + " " << std::setw(7) << std::left << "   |   " << std::endl;
+			std::cout << std::setw(37) << std::right << std::setfill('=') << "   |   " << std::endl;
+			std::cout << std::right << std::setfill(' ');
+
 			if(p.getStamina() == 0) {
 				std::cout << "\nI will lose hp because my stamina is 0. To increase stamina press 3" << std::endl;
 			}
@@ -298,15 +313,15 @@ void Event::fightEncouter(Player &p) {
 					  << "(3) - Restore Energy" << std::endl;
 			int choice = getNumber("Your choice: ");
 			if(choice == 0) {
-				if(p.getStamina() > 40 && p.getHunger() > 30 && p.getThirst() > 30) {
+				if(p.getStamina() > 60 && p.getHunger() > 30 && p.getThirst() > 30) {
 					escape = true;
 					std::cout << "Escape successful" << std::endl;
-					p.setStamina(std::max(p.getStamina() - 40, 0));
+					p.setStamina(std::max(p.getStamina() - 60, 0));
 					p.setHunger(std::max(p.getHunger() - 30, 0));
 					p.setThirst(std::max(p.getThirst() - 30, 0));
 				}
 				else {
-					std::cout << "I need to raise my hunger and thirst to 40 or I won't be able to sleep" << std::endl;
+					std::cout << "I need to raise my stamina to 60, hunger and thirst to 30 or I won't be able to escape" << std::endl;
 					continue;
 				}
 				
@@ -321,7 +336,8 @@ void Event::fightEncouter(Player &p) {
 					std::cout << "\nMy Inventory is empty" << std::endl;
 					continue;
 				}
-				p.useItemInCombat();
+				if(!p.useItemInCombat())
+					continue;
 			}
 			else if(choice == 3) {
 				p.restoreStaminaInCombat();
@@ -332,9 +348,9 @@ void Event::fightEncouter(Player &p) {
 				p.takeDamage(rand() % 10 + 1);
 			}
 			
-			p.setStamina(std::max(0, p.getStamina() - p.calculateRandomCharacteristic(3, 8)));
-			p.setHunger(std::max(0, p.getHunger() - p.calculateRandomCharacteristic(2, 5)));
-			p.setThirst(std::max(0, p.getThirst() - p.calculateRandomCharacteristic(2, 5)));
+			p.setStamina(std::max(0, p.getStamina() - calculateRandomCharacteristic(3, 8)));
+			p.setHunger(std::max(0, p.getHunger() - calculateRandomCharacteristic(2, 5)));
+			p.setThirst(std::max(0, p.getThirst() - calculateRandomCharacteristic(2, 5)));
 			isPlayerTurn = false;
 			isEnemyTurn = true;
 		}
@@ -349,17 +365,19 @@ void Event::fightEncouter(Player &p) {
 
 
 		if(!enemy.isAlive()) {
-			p.setMoney(p.getMoney() + p.calculateRandomCharacteristic(10 * enemy.getLevel(), 50 * enemy.getLevel()));
-			p.setExp(p.getExp() + p.calculateRandomCharacteristic(10 * enemy.getLevel(), 30 * enemy.getLevel()));
+			p.setMoney(p.getMoney() + calculateRandomCharacteristic(10 * enemy.getLevel(), 50 * enemy.getLevel()));
+			p.setExp(p.getExp() + calculateRandomCharacteristic(10 * enemy.getLevel(), 30 * enemy.getLevel()));
 			int drop = rand() % 100 + 1;
 			if(drop <= enemy.getDropChance()) {
-				//give an item
+				std::shared_ptr<Item> givenItem = enemy.getDroppedItem();
+				std::cout << givenItem.use_count() << std::endl;
+				std::cout << "You received " << givenItem->getName() << std::endl;
+				p.getInventory().addItem(givenItem);
 			}
 			std::cout << "\nYou won" << std::endl;
 			break;
 		}
 		if(!p.isAlive()) {
-			std::cout << "\nYou die" << std::endl;
 			break;
 		}
 	}
@@ -545,9 +563,9 @@ void Event::productsShop(Player &p) {
 void Event::increaseBackpack(Player &p) {
 	std::cout << "\nWelcome to Backpack shop. Hope something suits you!" << std::endl;
 	int choice{};
-	std::vector<std::pair<int, int>> backpacks{ {500, 9}, {1600, 13}, {4000, 19}, {7000, 23}, {10000, 25} };
+	std::vector<std::pair<int, int>> backpacks{ {1000, 9}, {3200, 13}, {8000, 19}, {14000, 23}, {20000, 25} };
 	do {
-		choice = getValidateAnswer("\n(0) - Go back\n(1) - School backpack (+4 slots) Cost: 500G\n(2) - Pioneer backpack (+8 slots) Cost: 1600G\n(3) - Duffel bag (+14 slots) Cost: 4000G\n(4) - Tourist backpack (+18 slots) Cost: 7000G\n(5) - Army backpack (+20 slots) Cost: 10000G\nYour choice: ", "Incorrect choice", 0, 5);
+		choice = getValidateAnswer("\n(0) - Go back\n(1) - School backpack (+4 slots) Cost: 1000G\n(2) - Pioneer backpack (+8 slots) Cost: 3200G\n(3) - Duffel bag (+14 slots) Cost: 8000G\n(4) - Tourist backpack (+18 slots) Cost: 14000G\n(5) - Army backpack (+20 slots) Cost: 20000G\nYour choice: ", "Incorrect choice", 0, 5);
 		if(choice == 1) {
 			if(setNewBackpack(p, backpacks[choice - 1]))
 				std::cout << "\nYou bought a School backpack" << std::endl;

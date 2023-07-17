@@ -5,22 +5,22 @@ Game::Game() {
     gameOption = GameOption::BACK_TO_MAIN_MENU;
     indexOfActivePlayer = -1;
     isPlayerSaved = true;
-    this->storeTime = 0;
+    this->timeToUpdateStore = 0;
 }
 
 void Game::initialize() {
     this->backstory();
     Event::initialize();
-    this->storeTime = 0;
+    this->timeToUpdateStore = 0;
 }
 
 void Game::mainMenu() {
     players.clear();
-    players = loadPlayers("Players/players.txt");
+    players = loadPlayers("players.txt");
     indexOfActivePlayer = -1;
-    bool isAnyPlayerExist = !players.empty();
+
     do {
-        int choice = getValidateAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n\nEnter your choice: ", "\nIncorrect choice", 0, 2);
+        int choice = getValidateAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n(3) - Delete characters\n\nEnter your choice: ", "\nIncorrect choice", 0, 3);
 
         if(choice == 0) {
             playing = false;
@@ -28,10 +28,9 @@ void Game::mainMenu() {
         }
         else if(choice == 1) {
             createNewPlayer();
-            isAnyPlayerExist = true;
         }
         else if(choice == 2) {
-            if(!isAnyPlayerExist) {
+            if(players.empty()) {
                 std::cout << "\nYou don't have savings. Create a new character first." << std::endl;
             }
             else {
@@ -41,14 +40,24 @@ void Game::mainMenu() {
             }
 
         }
-    } while(!isAnyPlayerExist || indexOfActivePlayer == -1);
+        else if(choice == 3) {
+            if(players.empty()) {
+                std::cout << "\nYou don't have savings to delete." << std::endl;
+            }
+            else {
+                deletePlayer();
+            }
+        }
+    } while(players.empty() || indexOfActivePlayer == -1);
 }
 
 void Game::gameMenu() {
     if(!players[indexOfActivePlayer].isAlive()) {
-        std::cout << "\nYou die" << std::endl;
-        playing = false;
-        return;
+        std::cout << "\nYou die\nYour character will be automatically deleted" << std::endl;
+        deletePlayerByIndex(indexOfActivePlayer);
+        mainMenu();
+        if(indexOfActivePlayer == -1)
+            return;
     }
     players[indexOfActivePlayer].levelUp();
 
@@ -99,21 +108,13 @@ void Game::gameMenu() {
 
 void Game::askToSavePlayer() {
     if(!isPlayerSaved) {
-        char saveChoice{};
+        int choice{};
         do {
-            std::cout << "\nDo you want to save the player before returning to the main menu? (Y/N): ";
-
-            std::cin >> saveChoice;
-            if(saveChoice == 'Y' || saveChoice == 'y') {
+            choice = getValidateAnswer("\nDo you want to save the player before returning to the main menu?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+            if(choice == 1) {
                 savePlayers();
             }
-            else if(saveChoice == 'N' || saveChoice == 'n') {
-                return;
-            }
-            else {
-                std::cout << "\nIncorrect choice" << std::endl;
-            }
-        } while(saveChoice != 'Y' && saveChoice != 'y' && saveChoice != 'N' && saveChoice != 'n');
+        } while(choice != 1 && choice != 2);
     }
 }
 
@@ -141,18 +142,18 @@ void Game::backstory() const {
 }
 
 void Game::explore() {
-    storeTime++;
     Inventory &inventory = players[indexOfActivePlayer].getInventory();
     if(inventory.getInventory().size() == inventory.getSizeOfInventory()) {
         std::cout << "My backpack is full. I need to do something about this and continue searching..." << std::endl;
         return;
     }
+    timeToUpdateStore++;
     players[indexOfActivePlayer].explore();
 
     Event event;
     event.generateEvent(players[indexOfActivePlayer]);
-    if(storeTime == 10) {
-        storeTime = 0;
+    if(timeToUpdateStore == 10) {
+        timeToUpdateStore = 0;
         std::cout << "Shop updated" << std::endl;
         event.updateShop();
     }
@@ -207,7 +208,7 @@ int Game::findPlayerIndexByName(const std::string &name) const {
 }
 
 void Game::savePlayers() {
-    std::ofstream outFile("Players/players.txt", std::ios::binary);
+    std::ofstream outFile("players.txt", std::ios::binary);
     int numOfPlayers = players.size();
     outFile << numOfPlayers << '\n';
     for(const auto &player : players) {
@@ -259,19 +260,25 @@ std::vector<Player> Game::loadPlayers(const std::string &filePath) {
     return result;
 }
 
-void Game::deletePlayerByIndex() {
+void Game::deletePlayer() {
     savePlayers();
-    players = loadPlayers("Players/players.txt");
+    players = loadPlayers("players.txt");
     displayAllPlayers();
-    int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Incorrect choice. Try again", 1, players.size());
-    players.erase(players.begin() + choice - 1);
+    int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Incorrect choice. Try again", 0, players.size());
+    if(choice != 0) {
+        deletePlayerByIndex(choice-1);
+    }
+}
+
+void Game::deletePlayerByIndex(int index) {
+    players.erase(players.begin() + index);
+    savePlayers();
 }
 
 void Game::shelter() {
     int choice{};
     do {
-        std::cout << "(0) - Back to the street\n(1) - My bed\n(2) - WorkBench\n(3) - My box\n";
-        choice = getValidateAnswer("Your choice: ", "Incorrect choice", 0, 3);
+        choice = getValidateAnswer("\n(0) - Back to the street\n(1) - My bed\n(2) - WorkBench\n(3) - My box\nYour choice: ", "Incorrect choice", 0, 3);
         if(choice == 0) {
             return;
         }
@@ -279,7 +286,8 @@ void Game::shelter() {
             sleep();
         }
         else if(choice == 2) {
-            std::cout << "Craft" << std::endl;
+            std::cout << "Here I can upgrade your items, such as armor and weapons" << std::endl;
+            players[indexOfActivePlayer].upgradeItems();
         }
         else if(choice == 3) {
             std::cout << "My box" << std::endl;

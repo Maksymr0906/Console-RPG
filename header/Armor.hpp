@@ -13,15 +13,14 @@ private:
     static constexpr const int def_level = 1;
     static constexpr const int def_rarity = 1;
     static constexpr const int def_type = 0;
-    static constexpr const int def_item_type = 2;
 protected:
     int defence;
     int type; //1 - head, 2 - chestplate, 3 - leggings, 4 - boots
 public:
     Armor(const char* name = def_name, const char* category = def_category, const char* status = def_status,
         int purchasePrice = def_purchase_price, int salePrice = def_sale_price, int level = def_level, int rarity = def_rarity,
-        int defence = def_defence, int type = def_type, int itemType = def_item_type)
-        :Item{ name, category, status, purchasePrice, salePrice, level, rarity, itemType }, defence{ defence }, type{ type } {};
+        int defence = def_defence, int type = def_type)
+        :Item{ name, category, status, purchasePrice, salePrice, level, rarity }, defence{ defence }, type{ type } {};
     Armor(const Armor &obj);
     virtual ~Armor() = default;
 
@@ -35,6 +34,8 @@ public:
 
     int getType() const { return type; }
     int getDefence() const { return defence; }
+
+    void setDefence(int defence) { this->defence = defence; }
 
     bool operator==(const Armor &other) const;
 };

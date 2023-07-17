@@ -70,6 +70,7 @@ void Player::showStats() {
         << "Hunger: " << this->hunger << " / " << this->hungerMax << std::endl
         << "Thirst: " << this->thirst << " / " << this->thirstMax << std::endl
         << "Stamina: " << this->stamina << " / " << this->staminaMax << std::endl
+        << "Radiation: " << this->radiation << std::endl
         << "Damage: " << this->minDamage << " - " << this->maxDamage << std::endl
         << "Defence: " << this->defence << std::endl
         << std::endl
@@ -81,7 +82,7 @@ void Player::showStats() {
         << "Luck: " << this->luck << std::endl
         << "Available stats points: " << this->statPoints << std::endl
         << "Available skill points: " << this->skillPoints << std::endl
-        << "Gold: " << this->money << std::endl
+        << "Money: " << this->money << std::endl
         << std::endl << "/*Equipment*/" << std::endl
         << "Equipped weapon: " << this->weapon->getName() << std::endl
         << "Equipped helmet: " << this->armorHead->getName() << std::endl
@@ -109,75 +110,83 @@ void Player::showInventory() {
         else {
             std::shared_ptr<Item> &selectedItem = this->inventory.getInventory().at(selectedItemIndex - 1);
             std::cout << *selectedItem << std::endl;
-            char choice{};
+            int choice{};
             //std::cout << "\n(0) - Go back\n(1) - Equip/Use\n(2) - Info\n(3) - Delete Item\n";
-            if(selectedItem->getItemType() == 3) {
-                std::cout << "Do you want to use this item? (y/n)\n";
-                std::cin >> choice;
-                if(choice == 'y') {
+            if(selectedItem->getCategory() == "Product") {
+                choice = getValidateAnswer("Do you want to use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+                if(choice == 1) {
                     this->useProduct(selectedItem);
                     this->getInventory().removeItem(selectedItemIndex - 1);
                     continue;
                 }
             }
-
-            if(selectedItem->getStatus() == "Equipped") {
-                std::cout << "Do you want to unequip this item? (y/n)\n";
-                std::cin >> choice;
-
-                if(choice == 'y') {
-                    unequipItem(selectedItem);
-                }
-            }
             else {
-                std::cout << "Do you want to equip this item? (y/n)\n";
-                std::cin >> choice;
+                if(selectedItem->getStatus() == "Equipped") {
+                    choice = getValidateAnswer("Do you want to unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
 
-                if(choice == 'y') {
-                    equipItem(selectedItem);
+                    if(choice == 1) {
+                        unequipItem(selectedItem);
+                    }
+                }
+                else {
+                    choice = getValidateAnswer("Do you want to equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+
+                    if(choice == 1) {
+                        equipItem(selectedItem);
+                    }
                 }
             }
         }
     } while(selectedItemIndex != 0);
 }
 
-void Player::useItemInCombat() {
-    std::cout << "\nYou can use only one item per turn!" << std::endl;
+bool Player::useItemInCombat() {
+    if(this->getInventory().is_empty()) {
+        std::cout << "\nMy Inventory is empty" << std::endl;
+        return false;
+    }
+    std::cout << "\nI can use only one item per turn!" << std::endl;
+    
     this->inventory.showInventory();
     int selectedItemIndex{};
     selectedItemIndex = getValidateAnswer("Your choice: ", "Incorrect choice", 0, this->inventory.getInventory().size());
     if(selectedItemIndex == 0) {
-        return;
+        return false;
     }
-    std::shared_ptr<Item> &selectedItem = this->inventory.getInventory().at(selectedItemIndex - 1);
 
-    char choice{};
-    if(selectedItem->getItemType() == 3) {
-        std::cout << "Do you want to use this item? (y/n)\n";
-        std::cin >> choice;
-        if(choice == 'y') {
-            this->useProduct(selectedItem);
-            this->getInventory().removeItem(selectedItemIndex - 1);
-        }
-    }
-    else {
-        if(selectedItem->getStatus() == "Equipped") {
-            std::cout << "Do you want to unequip this item? (y/n)\n";
-            std::cin >> choice;
+    int choice{};
+    do {
+        std::shared_ptr<Item> &selectedItem = this->inventory.getInventory().at(selectedItemIndex - 1);
+        std::cout << *selectedItem << std::endl;
 
-            if(choice == 'y') {
-                unequipItem(selectedItem);
+        if(selectedItem->getCategory() == "Product") {
+            choice = getValidateAnswer("Should I use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+            if(choice == 1) {
+                this->useProduct(selectedItem);
+                this->getInventory().removeItem(selectedItemIndex - 1);
+                return true;
             }
         }
         else {
-            std::cout << "Do you want to equip this item? (y/n)\n";
-            std::cin >> choice;
+            if(selectedItem->getStatus() == "Equipped") {
+                choice = getValidateAnswer("Should I unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
 
-            if(choice == 'y') {
-                equipItem(selectedItem);
+                if(choice == 1) {
+                    unequipItem(selectedItem);
+                    return true;
+                }
+            }
+            else {
+                choice = getValidateAnswer("Should I equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+
+                if(choice == 1) {
+                    equipItem(selectedItem);
+                    return true;
+                }
             }
         }
-    }
+    } while(choice != 2);
+    return false;
 }
 
 void Player::showEquipment() {
@@ -192,6 +201,7 @@ void Player::previewPlayer() const {
     std::cout << std::endl;
     std::cout << std::setw(41) << std::setfill('=') << " " << std::endl;
     std::cout << std::left << std::setw(40) << "== " + this->name + " " << std::endl;
+    std::cout << std::left << std::setw(40) << "== Level: " + std::to_string(this->level) + " " << std::endl;
     std::cout << std::right << std::setw(41) << std::setfill('=') << " " << std::endl;
     std::cout << std::left << std::setw(40) << "== Hp: " + std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + " " << std::endl;
     std::cout << std::left << std::setw(40) << "== Stamina: " + std::to_string(this->stamina) + "/" + std::to_string(this->staminaMax) + " " << std::endl;
@@ -210,6 +220,11 @@ int Player::inflictDamage() {
     givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
 
     return givenDamage;
+}
+
+void Player::takeDamage(int damage) {
+    int effectiveDamage = std::max(damage - (defence / 3), 0);
+    this->health = std::max(this->health - effectiveDamage, 0);
 }
 
 void Player::writeToTxtFile(std::ofstream &outfile) const {
@@ -254,36 +269,36 @@ void Player::readFromTxtFile(std::ifstream &infile) {
            >> distanceTravelled;
     this->inventory.readFromTxtFile(infile);
     infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    //this->weapon = std::make_shared<Weapon>();
     this->weapon->readFromTxtFile(infile);
     infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    //this->armorHead = std::make_shared<Armor>();
     this->armorHead->readFromTxtFile(infile);
     infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    //this->armorChest = std::make_shared<Armor>();
     this->armorChest->readFromTxtFile(infile);
     infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    //this->armorLeggs = std::make_shared<Armor>();
     this->armorLeggs->readFromTxtFile(infile);
     infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    //this->armorBoots = std::make_shared<Armor>();
     this->armorBoots->readFromTxtFile(infile);
 
     for(const auto &item : this->inventory.getInventory()) {
         if(item->getStatus() == "Equipped") {
             if(*item == *weapon) {
+                weapon.reset();
                 weapon = item;
             }
             else if(*item == *armorHead) {
+                armorHead.reset();
                 armorHead = item;
             }
             else if(*item == *armorChest) {
+                armorChest.reset();
                 armorChest = item;
             }
             else if(*item == *armorLeggs) {
+                armorLeggs.reset();
                 armorLeggs = item;
             }
             else if(*item == *armorBoots) {
+                armorBoots.reset();
                 armorBoots = item;
             }
         }
@@ -425,30 +440,11 @@ void Player::levelUp() {
         this->thirst = this->thirstMax;
         this->health = this->maxHealth;
         this->stamina = this->staminaMax;
-        std::cout << "\nCongratulations, you are now " << this->level << " level!" << std::endl;
+        std::cout << "\nLEVEL UP!" << std::endl;
+        std::cout << "Congratulations! Your level has increased to " << this->level << ". You have also received 5 extra stat points to allocate." << std::endl;
+        std::cout << "You now have a total of " << this->statPoints << " stat points available for further improvement." << std::endl;
+        std::cout << "All your vital parameters have been fully restored." << std::endl;
     }
-}
-
-std::string Player::getAsString() const {
-    return this->name + " " +
-        std::to_string(this->health) + " " +
-        std::to_string(this->maxHealth) + " " +
-        std::to_string(this->minDamage) + " " +
-        std::to_string(this->maxDamage) + " " +
-        std::to_string(this->exp) + " " +
-        std::to_string(this->expNext) + " " +
-        std::to_string(this->level) + " " +
-        std::to_string(this->stamina) + " " +
-        std::to_string(this->staminaMax) + " " +
-        std::to_string(this->defence) + " " +
-        std::to_string(this->strength) + " " +
-        std::to_string(this->vitality) + " " +
-        std::to_string(this->dexterity) + " " +
-        std::to_string(this->intelligence) + " " +
-        std::to_string(this->luck) + " " +
-        std::to_string(this->statPoints) + " " +
-        std::to_string(this->skillPoints) + " " +
-        std::to_string(money);
 }
 
 void Player::increaseAttributes() {
@@ -460,7 +456,6 @@ void Player::increaseAttributes() {
                 << "(3) - Dexterity" << std::endl
                 << "(4) - Intelligence" << std::endl
                 << "(5) - Luck" << std::endl;
-            //int attributeChoice = getValidAttributeChoice();
             int attributeChoice = getValidateAnswer("Enter which attribute you want to increase: ", "\nInvalid attribute choice. Please try again.", 1, 5);
             switch(attributeChoice) {
                 case 1:
@@ -489,30 +484,22 @@ void Player::increaseAttributes() {
             std::cout << "\nYou don't have enough stats points" << std::endl;
             return;
         }
-        std::cout << "\nYou have " << this->statPoints << " points left.\nDo you want to continue? (y/n)";
-        std::cin >> continueChoice;
+        if(this->statPoints > 0) {
+            std::cout << "\nYou have " << this->statPoints << " points left.\nDo you want to continue? (y/n)";
+            std::cin >> continueChoice;
+        }
+        else {
+            std::cout << "\nYou don't have enough stat points" << std::endl;
+            break;
+        }
     } while(this->statPoints > 0 && continueChoice != 'n');
 }
 
-int Player::getValidAttributeChoice() const {
-    int attributeChoice{};
-    do {
-        attributeChoice = getNumber("Enter which attribute you want to increase: ");
-        if(attributeChoice < 1 || attributeChoice > 5) {
-            std::cout << "\nInvalid attribute choice. Please try again." << std::endl;
-        }
-    } while(attributeChoice < 1 || attributeChoice > 5);
-
-    return attributeChoice;
-}
-
 void Player::updateCharacteristics() {
-    this->maxHealth = def_max_health + (int)(strength / 2) - 2;
-    this->health = this->maxHealth;
+    this->maxHealth = def_max_health + (int)(vitality / 2) - 2;
     this->minDamage = def_min_damage + (int)(strength / 4 + vitality / 4) - 2;
     this->maxDamage = def_max_damage + (int)(strength / 4 + vitality / 4) - 2;
-    this->staminaMax = def_stamina_max + (int)(vitality / 2) - 2;
-    this->stamina = this->staminaMax;
+    this->staminaMax = def_stamina_max + (int)(dexterity / 2) - 2;
     this->defence = def_defence + (intelligence / 2) - 2;
 }
 
@@ -667,28 +654,36 @@ Player &Player::operator=(const Player &rhs) {
 
 void Player::explore() {
     this->distanceTravelled++;
-    //Do smth with radiation
+    int usedRadiation = rand() % 4 == 0? 1 : 0;
     int usedStamina = calculateRandomCharacteristic(7, 11);
     int usedHunger = calculateRandomCharacteristic(2, 6);
     int usedThirst = calculateRandomCharacteristic(2, 6);
     int usedHealth = calculateRandomCharacteristic(4, 10);
-    int expEarned = calculateRandomCharacteristic(5, 8);
-    int moneyEarned = calculateRandomCharacteristic(3, 6);
 
     if(stamina != 0 && hunger != 0 && thirst != 0) {
         stamina = std::max(stamina - usedStamina, 0);
         hunger = std::max(hunger - usedHunger, 0);
         thirst = std::max(thirst - usedThirst, 0);
+        radiation = std::min(radiation + usedRadiation, 15);
     }
     else {
         health = std::max(health - usedHealth, 0);
         stamina = std::max(stamina - usedStamina, 0);
         hunger = std::max(hunger - usedHunger, 0);
         thirst = std::max(thirst - usedThirst, 0);
+        radiation = std::min(radiation + usedRadiation, 15);
+
     }
 
-    exp += expEarned;
-    money += moneyEarned;
+    exp += calculateRandomCharacteristic(5 + (3 * this->level), 10 + (3 * this->level));
+    money += calculateRandomCharacteristic(20 + (this->luck * 2), 30 + (this->luck * 2));
+
+    if(radiation >= 10) {
+        std::cout << "High radiation. I feel bad. I need to reduce radiation, or I will die." << std::endl;
+        hunger = std::max(hunger - 10, 0);
+        thirst = std::max(thirst - 10, 0);
+        health = std::max(health - 10, 0);
+    }
 }
 
 void Player::sleep() {
@@ -696,10 +691,6 @@ void Player::sleep() {
     this->hunger = std::max(this->hunger - calculateRandomCharacteristic(35, 40), 0);
     this->stamina = this->staminaMax;
     this->health = std::min(100, this->health + calculateRandomCharacteristic(20, 40));
-}
-
-int Player::calculateRandomCharacteristic(int leftBorder, int rightBorder) const {
-    return rand() % (rightBorder - leftBorder + 1) + leftBorder;
 }
 
 void Player::useProduct(std::shared_ptr<Item> &item) {
@@ -712,9 +703,86 @@ void Player::useProduct(std::shared_ptr<Item> &item) {
 }
 
 void Player::restoreStaminaInCombat() {
-    int restoredStamina = std::min(100, this->stamina + calculateRandomCharacteristic(20, 30));
-    this->stamina = restoredStamina;
+    this->stamina = std::min(100, this->stamina + calculateRandomCharacteristic(40, 50));
 
-    this->hunger = std::max(0, this->hunger - calculateRandomCharacteristic(5, 10));
-    this->thirst = std::max(0, this->thirst - calculateRandomCharacteristic(5, 10));
+    this->hunger = std::max(0, this->hunger - calculateRandomCharacteristic(8, 12));
+    this->thirst = std::max(0, this->thirst - calculateRandomCharacteristic(8, 12));
+}
+
+void Player::upgradeItems() {
+    if(this->inventory.is_empty()) {
+        std::cout << "\nYour inventory is empty\n" << std::endl;
+        return;
+    }
+
+    int selectedItemIndex{};
+
+    this->inventory.showInventory();
+    selectedItemIndex = getValidateAnswer("Choose the item I want to upgrade: ", "Incorrect choice", 0, this->inventory.getInventory().size());
+
+    if(selectedItemIndex == 0)
+        return;
+    if(this->inventory.getInventory()[selectedItemIndex - 1]->getCategory() == "Product") {
+        std::cout << "I can't upgrade products!" << std::endl;
+    }
+    else if(this->inventory.getInventory()[selectedItemIndex - 1]->getCategory() == "Weapon") {
+        upgradeWeapon(selectedItemIndex - 1);
+    }
+    else if(this->inventory.getInventory()[selectedItemIndex - 1]->getCategory() == "Armor") {
+        upgradeArmor(selectedItemIndex - 1);
+    }
+}
+
+void Player::upgradeWeapon(int indexOfWeapon) {
+    std::shared_ptr<Weapon> weaponToUpgrade = std::dynamic_pointer_cast<Weapon>(this->inventory.getInventory()[indexOfWeapon]);
+    int spendedMoney = weaponToUpgrade->getPurchasePrice() / 10;
+    std::cout << "To upgrade " << weaponToUpgrade->getName() << " I need to spend " << spendedMoney << " money" << std::endl;
+    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+    if(choice == 2)
+        return;
+    if(spendedMoney > this->money) {
+        std::cout << "I don't have enough resources to spend" << std::endl;
+        return;
+    }
+    std::cout << "I need to unequip item before I upgrade him" << std::endl;
+    unequipItem(this->inventory.getInventory()[indexOfWeapon]);
+
+    int minDamageAdded = std::max(weaponToUpgrade->getMinDamage() / 10, 1);
+    int maxDamageAdded = std::max(weaponToUpgrade->getMaxDamage() / 10, 1);
+    int purchasePriceAdded = std::max(weaponToUpgrade->getPurchasePrice() / 10, 80);
+    int salePriceAdded = std::max(weaponToUpgrade->getSalePrice() / 10, 40);
+    weaponToUpgrade->setPurchasePrice(weaponToUpgrade->getPurchasePrice() + purchasePriceAdded);
+    weaponToUpgrade->setSalePrice(weaponToUpgrade->getSalePrice() + salePriceAdded);
+    weaponToUpgrade->setMinDamage(weaponToUpgrade->getMinDamage() + minDamageAdded);
+    weaponToUpgrade->setMaxDamage(weaponToUpgrade->getMaxDamage() + maxDamageAdded);
+    this->money -= spendedMoney;
+
+    std::cout << "I upgraded " << weaponToUpgrade->getName() << " and damage upgraded on " << minDamageAdded << " / " << maxDamageAdded << std::endl;
+    equipItem(this->inventory.getInventory()[indexOfWeapon]);
+}
+
+void Player::upgradeArmor(int indexOfArmor) {
+    std::shared_ptr<Armor> armorToUpgrade = std::dynamic_pointer_cast<Armor>(this->inventory.getInventory()[indexOfArmor]);
+    int spendedMoney = armorToUpgrade->getPurchasePrice() / 10;
+    std::cout << "To upgrade " << armorToUpgrade->getName() << " I need to spend " << spendedMoney << "money" << std::endl;
+    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+    if(choice == 2)
+        return;
+    if(spendedMoney > this->money) {
+        std::cout << "I don't have enough resources to spend" << std::endl;
+        return;
+    }
+    unequipItem(this->inventory.getInventory()[indexOfArmor]);
+
+    int defenceAdded = std::max(armorToUpgrade->getDefence() / 10, 1);
+    int purchasePriceAdded = std::max(armorToUpgrade->getPurchasePrice() / 10, 80);
+    int salePriceAdded = std::max(armorToUpgrade->getSalePrice() / 10, 40);
+    armorToUpgrade->setDefence(armorToUpgrade->getDefence() + defenceAdded);
+    armorToUpgrade->setPurchasePrice(armorToUpgrade->getPurchasePrice() + purchasePriceAdded);
+    armorToUpgrade->setSalePrice(armorToUpgrade->getSalePrice() + salePriceAdded);
+
+    this->money -= spendedMoney;
+
+    std::cout << "I upgraded " << armorToUpgrade->getName() << " and defence upgraded on " << defenceAdded << std::endl;
+    equipItem(this->inventory.getInventory()[indexOfArmor]);
 }

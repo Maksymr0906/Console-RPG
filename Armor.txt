@@ -34,7 +34,7 @@ Unequipped
 3
 4
 4
-Ironclad Helmet
+Ironclad Helm
 Armor
 Unequipped
 600
@@ -43,7 +43,7 @@ Unequipped
 1
 1
 1
-Ironclad Chestplate
+Ironclad Body Armor
 Armor
 Unequipped
 800
@@ -52,7 +52,7 @@ Unequipped
 1
 2
 2
-Ironclad Leggings
+Ironclad Legguards
 Armor
 Unequipped
 700
@@ -70,7 +70,7 @@ Unequipped
 1
 1
 4
-Shadow Helmet
+Shadow Visage
 Armor
 Unequipped
 2000
@@ -79,7 +79,7 @@ Unequipped
 4
 5
 1
-Shadow Chestplate
+Shadow Plate
 Armor
 Unequipped
 2500
@@ -106,7 +106,7 @@ Unequipped
 4
 5
 4
-Defender Helmet
+Defender Helm
 Armor
 Unequipped
 1000
@@ -115,7 +115,7 @@ Unequipped
 2
 2
 1
-Defender Chestplate
+Defender Chestguard
 Armor
 Unequipped
 1200
@@ -124,7 +124,7 @@ Unequipped
 2
 3
 2
-Defender Leggings
+Defender Legplates
 Armor
 Unequipped
 1200
@@ -250,7 +250,7 @@ Unequipped
 1
 1
 4
-Scout Helmet
+Scout Hood
 Armor
 Unequipped
 600
@@ -259,7 +259,7 @@ Unequipped
 1
 1
 1
-Scout Chestplate
+Scout Tunic
 Armor
 Unequipped
 800
@@ -286,7 +286,7 @@ Unequipped
 1
 2
 4
-Sanctuary Helmet
+Sanctuary Helm
 Armor
 Unequipped
 1500
@@ -304,7 +304,7 @@ Unequipped
 3
 7
 2
-Sanctuary Leggings
+Sanctuary Legguards
 Armor
 Unequipped
 1600
@@ -322,7 +322,7 @@ Unequipped
 3
 6
 4
-Regal Helmet
+Regal Helm
 Armor
 Unequipped
 3000

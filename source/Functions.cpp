@@ -23,3 +23,7 @@ int getValidateAnswer(const std::string &message, const std::string &errorMessag
 
     return number;
 }
+
+int calculateRandomCharacteristic(int leftBorder, int rightBorder) {
+    return rand() % (rightBorder - leftBorder + 1) + leftBorder;
+}

@@ -1,15 +1,20 @@
-You found {} lying in the depths of the dungeon.
-You stumbled upon {} concealed within a hidden chamber.
-Congratulations! You managed to retrieve {} from a long-forgotten treasure chest.
-Huzzah! You uncovered {} beneath a pile of ancient bones.
-Behold! You seized {} from the clutches of a defeated monster.
-A stroke of luck! You chanced upon {} wedged between the cracks of a fallen statue.
-Victory is yours! You discovered {} shimmering within a hidden treasure hoard.
-How fortunate! You unearthed {} from a long-abandoned crypt.
-You discovered a mighty {} lying deep within the dungeon.
-Congratulations! You've stumbled upon a powerful {} hidden in the darkness.
-A gleaming {} emerges from the shadows as you search through the dungeon.
-You triumphantly unearthed a valuable {} from a forgotten treasure chest.
-Amidst the debris, you find a {} of legendary status, left behind by a fallen hero.
-You pick up a {}, its previous owner no longer needing it in the afterlife.
-As you rummage through the remains of fallen enemies, you discover a formidable {}.
+I found {} lying in the rubble of a destroyed house.
+I came across {} hidden by the owners in the safe.
+Found this in rusted track: {}.
+Found this in someone's broken safe: {}.
+I found {} by searching through the remains of an ex-soldier.
+I pick up {} while searching a pre-war apartment.
+On the way I came across a field of corpses. I think they don't need some things anymore. Took myself: {}.
+I saw a dead body in the street. Reaching into his pockets, I found {}.
+By luck, I stumbled upon {} hidden in the debris of a collapsed building.
+How lucky I am! I found {} in the remains of a once-thriving bunker.
+As I search through the ruins of the old city, {} catches my attention.
+I took {} from a defeated mutant and made it mine.
+I pick up {} left behind by its previous owner after the catastrophe.
+I heard shots nearby. When I arrived, it was already late. From the remains of the tramp I got {}.
+I obtained {} by searching through garbage cans.
+I found {} on the veranda of a half-ruined cottage
+Wandered into the grocery and found {}.
+I went into a large building that looked like a police station, in one of the cells I found {}.
+While searching for the remains of defeated enemies, I found {} in the belongings of one of them.
+After chasing away several mutants with rocks, I took the backpack they were dragging. In it I found {}.
