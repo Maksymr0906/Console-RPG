@@ -1,13 +1,5 @@
 #include "Armor.hpp"
 
-void Armor::equip() {
-    Item::equip();
-}
-
-void Armor::unequip() {
-    Item::unequip();
-}
-
 void Armor::print(std::ostream& os) const {
     os << "\nName: " << this->name << "\nCategory: " << this->category << "\nDefence: "
         << this->defence << "\nStatus: " << this->status
@@ -41,18 +33,6 @@ void Armor::writeToTxtFile(std::ofstream &outfile) const {
 void Armor::readFromTxtFile(std::ifstream &infile) {
     Item::readFromTxtFile(infile);
     infile >> defence >> type;
-}
-
-void Armor::serialize(std::ofstream &outfile) const {
-    Item::serialize(outfile);
-    outfile.write(reinterpret_cast<const char *>(&defence), sizeof(defence));
-    outfile.write(reinterpret_cast<const char *>(&type), sizeof(type));
-}
-
-void Armor::deserialize(std::ifstream &infile) {
-    Item::deserialize(infile);
-    infile.read(reinterpret_cast<char *>(&defence), sizeof(defence));
-    infile.read(reinterpret_cast<char *>(&type), sizeof(type));
 }
 
 bool Armor::operator==(const Armor &other) const {

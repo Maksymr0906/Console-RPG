@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -13,7 +12,7 @@ class Inventory {
 private:
 protected:
     std::vector<std::shared_ptr<Item>> inventory;
-    int sizeOfInventory;
+    size_t sizeOfInventory;
 public:
     Inventory();
 
@@ -28,9 +27,7 @@ public:
 
     void writeToTxtFile(std::ofstream &outfile) const;
     void readFromTxtFile(std::ifstream &infile);
-    void serialize(std::ofstream &outfile) const;
-    void deserialize(std::ifstream &infile);
 
-    int getSizeOfInventory() const { return sizeOfInventory; }
+    size_t getSizeOfInventory() const { return sizeOfInventory; }
     void setSizeOfInventory(int sizeOfInventory) { this->sizeOfInventory = sizeOfInventory; }
 };

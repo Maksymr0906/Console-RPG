@@ -1,5 +1,5 @@
 #include "Event.hpp"
-//std::shared_ptr<Item> product = std::make_shared<Product>(*dynamic_cast<Product *>(products[randomProductIndex].get()));
+
 std::vector<std::string> Event::emptyEventMessages;
 std::vector<Puzzle> Event::puzzles;
 std::vector<std::shared_ptr<Item>> Event::products;
@@ -95,7 +95,7 @@ void Event::generateItemsToSell() {
 		if(!isProductExist)
 			itemsToSell.push_back(product);
 		isProductExist = false;
-		
+
 	}
 
 	bool isWeaponExist = false;
@@ -158,7 +158,8 @@ void Event::readPuzzlesFromFile() {
 	while(!infile.eof()) {
 
 		std::string answer{};
-		int numOfAnswers{}, indexOfCorrectAnswer{};
+		int indexOfCorrectAnswer{};
+		size_t numOfAnswers{};
 		std::string question;
 		std::getline(infile, question);
 		infile >> numOfAnswers;
@@ -190,7 +191,7 @@ int Event::calculateRandomEvent() const {
 	else if(event <= 90) {
 		return 3; //Found Item - 25%
 	}
-	else if(event <= 100) {
+	else {
 		return 4; //Fight - 10%
 	}
 }
@@ -226,7 +227,7 @@ void Event::emptyEventEncouter() const {
 void Event::puzzleEncouter(Player &p) {
 	Puzzle puzzle = puzzles[std::rand() % puzzles.size()];
 	int playerAnswer{};
-	int remainingChances{ puzzle.getNumberOfAnswers() - 1 };
+	size_t remainingChances{ puzzle.getNumberOfAnswers() - 1 };
 
 	bool completed = false;
 
@@ -241,7 +242,7 @@ void Event::puzzleEncouter(Player &p) {
 				std::cout << "\nChoose one from the given variants\n" << std::endl;
 			}
 		} while(isPlayerAnswerValidate(playerAnswer, puzzle.getNumberOfAnswers() - 1));
-		
+
 		if(playerAnswer == puzzle.getIndexOfCorrectAnswer()) {
 			completed = true;
 			int expGained = calculateRandomCharacteristic(10 * (p.getLevel() + (p.getLuck() / 2)), 15 * (p.getLevel() + (p.getLuck() / 2)));
@@ -258,10 +259,10 @@ void Event::puzzleEncouter(Player &p) {
 }
 
 void Event::printPuzzleChances(const int &remainingChances) const {
-	if(remainingChances > 1) 
-		std::cout << "I have " << remainingChances << " attempts left to crack the safe.I have to choose my next answer wisely!"<< std::endl << std::endl;
+	if(remainingChances > 1)
+		std::cout << "I have " << remainingChances << " attempts left to crack the safe.I have to choose my next answer wisely!" << std::endl << std::endl;
 	else
-		std::cout << "I only have 1 try remaining before the safe locks permanently."<< std::endl << std::endl;
+		std::cout << "I only have 1 try remaining before the safe locks permanently." << std::endl << std::endl;
 }
 
 bool Event::isPlayerAnswerValidate(const int &playerAnswer, const int &numberOfAnswers) const {
@@ -308,9 +309,9 @@ void Event::fightEncouter(Player &p) {
 				std::cout << "\nI will lose hp because my stamina is 0. To increase stamina press 3" << std::endl;
 			}
 			std::cout << "\n(0) - Escape" << std::endl
-					  << "(1) - Attack" << std::endl
-					  << "(2) - Use Item" << std::endl
-					  << "(3) - Restore Energy" << std::endl;
+				<< "(1) - Attack" << std::endl
+				<< "(2) - Use Item" << std::endl
+				<< "(3) - Restore Energy" << std::endl;
 			int choice = getNumber("Your choice: ");
 			if(choice == 0) {
 				if(p.getStamina() > 60 && p.getHunger() > 30 && p.getThirst() > 30) {
@@ -324,7 +325,7 @@ void Event::fightEncouter(Player &p) {
 					std::cout << "I need to raise my stamina to 60, hunger and thirst to 30 or I won't be able to escape" << std::endl;
 					continue;
 				}
-				
+
 			}
 			else if(choice == 1) {
 				int givenDamage = p.inflictDamage();
@@ -347,7 +348,7 @@ void Event::fightEncouter(Player &p) {
 				std::cout << "I lose hp because I am tired" << std::endl;
 				p.takeDamage(rand() % 10 + 1);
 			}
-			
+
 			p.setStamina(std::max(0, p.getStamina() - calculateRandomCharacteristic(3, 8)));
 			p.setHunger(std::max(0, p.getHunger() - calculateRandomCharacteristic(2, 5)));
 			p.setThirst(std::max(0, p.getThirst() - calculateRandomCharacteristic(2, 5)));
@@ -441,7 +442,7 @@ std::string Event::getRandomCategory() const {
 	else if(x < 5) {
 		return "Products";
 	}
-	
+
 	return "Armor";
 }
 
@@ -531,7 +532,7 @@ void Event::armorShop(Player &p) {
 				std::cout << "If you don't have enough money, I'm afraid I can't offer my wares at a discount. Perhaps another time when your purse is heavier." << std::endl;
 			}
 		}
-		
+
 	} while(choice != 0);
 }
 
@@ -539,7 +540,7 @@ void Event::productsShop(Player &p) {
 	std::cout << "\n/*Products shop*/" << std::endl;
 
 	int choice{};
-	do{
+	do {
 		std::cout << "\n(0) - Go back" << std::endl;
 		for(size_t i = 0, j = 1; i <= 2; i++, j++) {
 			std::shared_ptr<Product> product = std::make_shared<Product>(*dynamic_cast<Product *>(itemsToSell[i].get()));

@@ -44,27 +44,21 @@ protected:
     int statPoints, skillPoints;
     int money;
     int radiation;
+    int distanceTravelled;
     Inventory inventory;
     std::shared_ptr<Item> weapon;
     std::shared_ptr<Item> armorHead;
     std::shared_ptr<Item> armorChest;
     std::shared_ptr<Item> armorLeggs;
     std::shared_ptr<Item> armorBoots;
-    int distanceTravelled;
 public:
     //Constructors
     Player();
     virtual ~Player() = default;
 
-    virtual std::string getName() const override { return this->name; }
     //Accessors
-    int getHealth() const { return health; }
-    int getMaxHealth() const { return maxHealth; }
-    int getMinDamage() const { return minDamage; }
-    int getMaxDamage() const { return maxDamage; }
     int getExp() const { return exp; }
     int getExpNext() const { return expNext; }
-    int getLevel() const { return level; }
     int getStamina() const { return stamina; }
     int getStaminaMax() const { return staminaMax; }
     int getHunger() const { return hunger; }
@@ -72,7 +66,6 @@ public:
     int getThirst() const { return thirst; }
     int getThirstMax() const { return thirstMax; }
     int getRadiation() const { return radiation; }
-    int getDefence() const { return defence; }
     int getStrength() const { return strength; }
     int getDexterity() const { return dexterity; }
     int getIntelligence() const { return intelligence; }
@@ -85,19 +78,19 @@ public:
     std::shared_ptr<Item> getArmorHead() const { return armorHead; }
 
     //Modifiers
-    void setHealth(int health) { this->health = health; }
-    void setMaxHealth(int maxHealth) { this->maxHealth = maxHealth; }
-    void setMinDamage(int minDamage) { this->minDamage = minDamage; }
-    void setMaxDamage(int maxDamage) { this->maxDamage = maxDamage; }
+    //void setHealth(int health) { this->health = health; }
+    //void setMaxHealth(int maxHealth) { this->maxHealth = maxHealth; }
+    //void setMinDamage(int minDamage) { this->minDamage = minDamage; }
+    //void setMaxDamage(int maxDamage) { this->maxDamage = maxDamage; }
     void setExp(int exp) { this->exp = exp; }
     void setExpNext(int expNext) { this->expNext = expNext; }
-    void setLevel(int level) { this->level = level; }
+    //void setLevel(int level) { this->level = level; }
     void setStamina(int stamina) { this->stamina = stamina; }
     void setStaminaMax(int staminaMax) { this->staminaMax = staminaMax; }
     void setHunger(int hunger) { this->hunger = hunger; }
     void setThirst(int thirst) { this->thirst = thirst; }
     void setRadiation(int radiation) { this->radiation = radiation; }
-    void setDefence(int defence) { this->defence = defence; }
+    //void setDefence(int defence) { this->defence = defence; }
     void setStrength(int strength) { this->strength = strength; }
     void setDexterity(int dexterity) { this->dexterity = dexterity; }
     void setIntelligence(int intelligence) { this->intelligence = intelligence; }
@@ -109,9 +102,6 @@ public:
     void setDistanceTravelled(int distanceTravelled) { this->distanceTravelled = distanceTravelled; }
 
     //Methods
-    bool isAlive() const;
-    int inflictDamage();
-    void takeDamage(int damage);
     void initialize(const std::string &name);
     void levelUp();
     void showStats();
@@ -126,8 +116,6 @@ public:
     void showEquipment();
     void writeToTxtFile(std::ofstream &outfile) const;
     void readFromTxtFile(std::ifstream &infile);
-    bool serialize(std::ofstream &outfile) const;
-    bool deserialize(std::ifstream &infile);
     void previewPlayer() const;
     void sleep();
     void useProduct(std::shared_ptr<Item> &item);

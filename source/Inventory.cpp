@@ -62,7 +62,7 @@ void Inventory::writeToTxtFile(std::ofstream &outfile) const {
 
 void Inventory::readFromTxtFile(std::ifstream &infile) {
     infile >> sizeOfInventory;
-    
+
     int itemCount{};
     infile >> itemCount;
     std::string itemCategory{};
@@ -80,43 +80,6 @@ void Inventory::readFromTxtFile(std::ifstream &infile) {
             item = std::make_shared<Product>();
         }
         item->readFromTxtFile(infile);
-        addItem(item);
-    }
-}
-
-void Inventory::serialize(std::ofstream &outfile) const {
-    outfile.write(reinterpret_cast<const char *>(&sizeOfInventory), sizeof(sizeOfInventory));
-
-    size_t itemCount = inventory.size();
-    outfile.write(reinterpret_cast<const char *>(&itemCount), sizeof(itemCount));
-
-    for(const auto &item : inventory) {
-        std::string itemCategory = item->getCategory();
-        outfile.write(reinterpret_cast<const char *>(&itemCategory), sizeof(itemCategory));
-        item->serialize(outfile);
-    }
-}
-
-void Inventory::deserialize(std::ifstream &infile) {
-    infile.read(reinterpret_cast<char *>(&sizeOfInventory), sizeof(sizeOfInventory));
-
-    size_t itemCount;
-    infile.read(reinterpret_cast<char *>(&itemCount), sizeof(itemCount));
-    std::string itemCategory{};
-    for(size_t i = 0; i < itemCount; i++) {
-        infile.read(reinterpret_cast<char *>(&itemCategory), sizeof(itemCategory));
-
-        std::shared_ptr<Item> item;
-        if(itemCategory == "Weapon") {
-            item = std::make_shared<Weapon>();
-        }
-        else if(itemCategory == "Armor") {
-            item = std::make_shared<Armor>();
-        }
-        else if(itemCategory == "Product") {
-            item = std::make_shared<Product>();
-        }
-        item->deserialize(infile);
         addItem(item);
     }
 }

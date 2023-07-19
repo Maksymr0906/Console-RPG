@@ -1,7 +1,5 @@
 #pragma once
 
-#include <conio.h>
-#include <limits>
 #include "GameOption.hpp"
 #include "Event.hpp"
 

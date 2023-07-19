@@ -4,7 +4,6 @@
 
 #include <fstream>
 #include <string>
-#include <iostream>
 #include <iomanip>
 #include <limits>
 
@@ -47,11 +46,9 @@ public:
     
     virtual ~Item() = default;
 
-    virtual void equip() = 0;
-    virtual void unequip() = 0;
+    void equip();
+    void unequip();
     virtual void writeToTxtFile(std::ofstream &outfile) const = 0;
     virtual void readFromTxtFile(std::ifstream &infile) = 0;
-    virtual void serialize(std::ofstream &outfile) const = 0;
-    virtual void deserialize(std::ifstream &infile) = 0;
     bool operator==(const Item &other) const;
 };

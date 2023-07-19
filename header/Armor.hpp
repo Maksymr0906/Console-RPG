@@ -24,12 +24,8 @@ public:
     Armor(const Armor &obj);
     virtual ~Armor() = default;
 
-    virtual void equip() override;
-    virtual void unequip() override;
     virtual void writeToTxtFile(std::ofstream &outfile) const override;
     virtual void readFromTxtFile(std::ifstream &infile) override;
-    virtual void serialize(std::ofstream &outfile) const override;
-    virtual void deserialize(std::ifstream &infile) override;
     virtual void print(std::ostream &os) const override;
 
     int getType() const { return type; }

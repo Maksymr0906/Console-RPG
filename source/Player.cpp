@@ -18,13 +18,13 @@ Player::Player()
     statPoints{ def_stat_points },
     skillPoints{ def_skill_points },
     money{ def_money },
+    distanceTravelled{ def_distance_travelled },
+    radiation{ def_radiation },
     weapon{ std::make_shared<Weapon>()},
     armorHead{ std::make_shared<Armor>() },
     armorChest{ std::make_shared<Armor>() },
     armorLeggs{ std::make_shared<Armor>() },
-    armorBoots{ std::make_shared<Armor>() },
-    distanceTravelled{ def_distance_travelled },
-    radiation{ def_radiation } {}
+    armorBoots{ std::make_shared<Armor>() } {}
 
 void Player::initialize(const std::string &name) {
     this->name = name;
@@ -51,14 +51,14 @@ void Player::initialize(const std::string &name) {
     this->statPoints = def_stat_points;
     this->skillPoints = def_skill_points;
     this->money = def_money;
+    this->distanceTravelled = def_distance_travelled;
+    this->radiation = def_radiation;
+    this->inventory.initialize();
     this->weapon = def_weapon;
     this->armorHead = def_armor;
     this->armorChest = def_armor;
     this->armorLeggs = def_armor;
     this->armorBoots = def_armor;
-    this->distanceTravelled = def_distance_travelled;
-    this->radiation = def_radiation;
-    this->inventory.initialize();
 }
 
 void Player::showStats() {
@@ -210,23 +210,6 @@ void Player::previewPlayer() const {
     std::cout << std::setfill(' ') << std::endl;
 }
 
-bool Player::isAlive() const {
-    return health > 0 ? true : false;
-}
-
-int Player::inflictDamage() {
-    int givenDamage{};
-
-    givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
-
-    return givenDamage;
-}
-
-void Player::takeDamage(int damage) {
-    int effectiveDamage = std::max(damage - (defence / 3), 0);
-    this->health = std::max(this->health - effectiveDamage, 0);
-}
-
 void Player::writeToTxtFile(std::ofstream &outfile) const {
     Entity::writeToTxtFile(outfile);
     outfile << thirst << '\n'
@@ -302,129 +285,6 @@ void Player::readFromTxtFile(std::ifstream &infile) {
                 armorBoots = item;
             }
         }
-    }
-}
-
-bool Player::serialize(std::ofstream &outfile) const {
-    try {
-        int nameLength = name.length();
-        outfile.write(reinterpret_cast<const char *>(&nameLength), sizeof(nameLength));
-        outfile.write(name.c_str(), nameLength);
-
-        outfile.write(reinterpret_cast<const char *>(&health), sizeof(health));
-        outfile.write(reinterpret_cast<const char *>(&maxHealth), sizeof(maxHealth));
-        outfile.write(reinterpret_cast<const char *>(&thirst), sizeof(thirst));
-        outfile.write(reinterpret_cast<const char *>(&thirstMax), sizeof(thirstMax));
-        outfile.write(reinterpret_cast<const char *>(&hunger), sizeof(hunger));
-        outfile.write(reinterpret_cast<const char *>(&hungerMax), sizeof(hungerMax));
-        outfile.write(reinterpret_cast<const char *>(&minDamage), sizeof(minDamage));
-        outfile.write(reinterpret_cast<const char *>(&maxDamage), sizeof(maxDamage));
-        outfile.write(reinterpret_cast<const char *>(&exp), sizeof(exp));
-        outfile.write(reinterpret_cast<const char *>(&expNext), sizeof(expNext));
-        outfile.write(reinterpret_cast<const char *>(&level), sizeof(level));
-        outfile.write(reinterpret_cast<const char *>(&stamina), sizeof(stamina));
-        outfile.write(reinterpret_cast<const char *>(&staminaMax), sizeof(staminaMax));
-        outfile.write(reinterpret_cast<const char *>(&defence), sizeof(defence));
-        outfile.write(reinterpret_cast<const char *>(&strength), sizeof(strength));
-        outfile.write(reinterpret_cast<const char *>(&vitality), sizeof(vitality));
-        outfile.write(reinterpret_cast<const char *>(&dexterity), sizeof(dexterity));
-        outfile.write(reinterpret_cast<const char *>(&intelligence), sizeof(intelligence));
-        outfile.write(reinterpret_cast<const char *>(&luck), sizeof(luck));
-        outfile.write(reinterpret_cast<const char *>(&statPoints), sizeof(statPoints));
-        outfile.write(reinterpret_cast<const char *>(&skillPoints), sizeof(skillPoints));
-        outfile.write(reinterpret_cast<const char *>(&radiation), sizeof(radiation));
-        outfile.write(reinterpret_cast<const char *>(&distanceTravelled), sizeof(distanceTravelled));
-
-        inventory.serialize(outfile);
-        weapon->serialize(outfile);
-        armorHead->serialize(outfile);
-        armorChest->serialize(outfile);
-        armorLeggs->serialize(outfile);
-        armorBoots->serialize(outfile);
-        return true;
-    }
-    catch(...) {
-        return false;
-    }
-}
-
-bool Player::deserialize(std::ifstream &infile) {
-    try {
-        int nameLength{};
-        infile.read(reinterpret_cast<char *>(&nameLength), sizeof(nameLength));
-        if(nameLength == 0) {
-            throw 0;
-        }
-        char *nameBuffer = new char[nameLength + 1];
-        infile.read(nameBuffer, nameLength);
-        nameBuffer[nameLength] = '\0';
-        name = nameBuffer;
-        delete[] nameBuffer;
-
-        infile.read(reinterpret_cast<char *>(&health), sizeof(health));
-        infile.read(reinterpret_cast<char *>(&maxHealth), sizeof(maxHealth));
-        infile.read(reinterpret_cast<char *>(&thirst), sizeof(thirst));
-        infile.read(reinterpret_cast<char *>(&thirstMax), sizeof(thirstMax));
-        infile.read(reinterpret_cast<char *>(&hunger), sizeof(hunger));
-        infile.read(reinterpret_cast<char *>(&hungerMax), sizeof(hungerMax));
-        infile.read(reinterpret_cast<char *>(&minDamage), sizeof(minDamage));
-        infile.read(reinterpret_cast<char *>(&maxDamage), sizeof(maxDamage));
-        infile.read(reinterpret_cast<char *>(&exp), sizeof(exp));
-        infile.read(reinterpret_cast<char *>(&expNext), sizeof(expNext));
-        infile.read(reinterpret_cast<char *>(&level), sizeof(level));
-        infile.read(reinterpret_cast<char *>(&stamina), sizeof(stamina));
-        infile.read(reinterpret_cast<char *>(&staminaMax), sizeof(staminaMax));
-        infile.read(reinterpret_cast<char *>(&defence), sizeof(defence));
-        infile.read(reinterpret_cast<char *>(&strength), sizeof(strength));
-        infile.read(reinterpret_cast<char *>(&vitality), sizeof(vitality));
-        infile.read(reinterpret_cast<char *>(&dexterity), sizeof(dexterity));
-        infile.read(reinterpret_cast<char *>(&intelligence), sizeof(intelligence));
-        infile.read(reinterpret_cast<char *>(&luck), sizeof(luck));
-        infile.read(reinterpret_cast<char *>(&statPoints), sizeof(statPoints));
-        infile.read(reinterpret_cast<char *>(&skillPoints), sizeof(skillPoints));
-        infile.read(reinterpret_cast<char *>(&radiation), sizeof(radiation));
-        infile.read(reinterpret_cast<char *>(&distanceTravelled), sizeof(distanceTravelled));
-
-        inventory.deserialize(infile);
-        weapon = std::make_shared<Weapon>();
-        weapon->deserialize(infile);
-
-        armorHead = std::make_shared<Armor>();
-        armorHead->deserialize(infile);
-
-        armorChest = std::make_shared<Armor>();
-        armorChest->deserialize(infile);
-
-        armorLeggs = std::make_shared<Armor>();
-        armorLeggs->deserialize(infile);
-
-        armorBoots = std::make_shared<Armor>();
-        armorBoots->deserialize(infile);
-
-        for(const auto &item : inventory.getInventory()) {
-            if(item->getStatus() == "Equipped") {
-                if(*item == *weapon) {
-                    weapon = item;
-                }
-                else if(*item == *armorHead) {
-                    armorHead = item;
-                }
-                else if(*item == *armorChest) {
-                    armorChest = item;
-                }
-                else if(*item == *armorLeggs) {
-                    armorLeggs = item;
-                }
-                else if(*item == *armorBoots) {
-                    armorBoots = item;
-                }
-            }
-        }
-
-        return true;
-    }
-    catch(...) {
-        return false;
     }
 }
 
