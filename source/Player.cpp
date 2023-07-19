@@ -1,7 +1,7 @@
 #include "Player.hpp"
 
 Player::Player()
-    : Entity{def_name, def_health, def_max_health, def_min_damage, def_max_damage, def_level, def_defence},
+    : Entity{ def_name, def_health, def_max_health, def_min_damage, def_max_damage, def_level, def_defence },
     thirst{ def_thirst },
     thirstMax{ def_thirst_max },
     hunger{ def_hunger },
@@ -18,9 +18,9 @@ Player::Player()
     statPoints{ def_stat_points },
     skillPoints{ def_skill_points },
     money{ def_money },
-    distanceTravelled{ def_distance_travelled },
     radiation{ def_radiation },
-    weapon{ std::make_shared<Weapon>()},
+    distanceTravelled{ def_distance_travelled },
+    weapon{ std::make_shared<Weapon>() },
     armorHead{ std::make_shared<Armor>() },
     armorChest{ std::make_shared<Armor>() },
     armorLeggs{ std::make_shared<Armor>() },
@@ -146,7 +146,7 @@ bool Player::useItemInCombat() {
         return false;
     }
     std::cout << "\nI can use only one item per turn!" << std::endl;
-    
+
     this->inventory.showInventory();
     int selectedItemIndex{};
     selectedItemIndex = getValidateAnswer("Your choice: ", "Incorrect choice", 0, this->inventory.getInventory().size());
@@ -213,23 +213,23 @@ void Player::previewPlayer() const {
 void Player::writeToTxtFile(std::ofstream &outfile) const {
     Entity::writeToTxtFile(outfile);
     outfile << thirst << '\n'
-            << hunger << '\n'
-            << thirstMax << '\n'
-            << hungerMax << '\n'
-            << exp << '\n'
-            << expNext << '\n'
-            << stamina << '\n'
-            << staminaMax << '\n'
-            << strength << '\n'
-            << vitality << '\n'
-            << dexterity << '\n'
-            << intelligence << '\n'
-            << luck << '\n'
-            << statPoints << '\n'
-            << skillPoints << '\n'
-            << money << '\n'
-            << radiation << '\n'
-            << distanceTravelled << '\n';
+        << hunger << '\n'
+        << thirstMax << '\n'
+        << hungerMax << '\n'
+        << exp << '\n'
+        << expNext << '\n'
+        << stamina << '\n'
+        << staminaMax << '\n'
+        << strength << '\n'
+        << vitality << '\n'
+        << dexterity << '\n'
+        << intelligence << '\n'
+        << luck << '\n'
+        << statPoints << '\n'
+        << skillPoints << '\n'
+        << money << '\n'
+        << radiation << '\n'
+        << distanceTravelled << '\n';
     this->inventory.writeToTxtFile(outfile);
     this->weapon->writeToTxtFile(outfile);
     this->armorHead->writeToTxtFile(outfile);
@@ -241,15 +241,15 @@ void Player::writeToTxtFile(std::ofstream &outfile) const {
 void Player::readFromTxtFile(std::ifstream &infile) {
     Entity::readFromTxtFile(infile);
     infile >> thirst >> hunger
-           >> thirstMax >> hungerMax
-           >> exp >> expNext
-           >> stamina >> staminaMax
-           >> strength >> vitality >> dexterity >> intelligence
-           >> luck
-           >> statPoints >> skillPoints
-           >> money 
-           >> radiation
-           >> distanceTravelled;
+        >> thirstMax >> hungerMax
+        >> exp >> expNext
+        >> stamina >> staminaMax
+        >> strength >> vitality >> dexterity >> intelligence
+        >> luck
+        >> statPoints >> skillPoints
+        >> money
+        >> radiation
+        >> distanceTravelled;
     this->inventory.readFromTxtFile(infile);
     infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     this->weapon->readFromTxtFile(infile);
@@ -265,23 +265,18 @@ void Player::readFromTxtFile(std::ifstream &infile) {
     for(const auto &item : this->inventory.getInventory()) {
         if(item->getStatus() == "Equipped") {
             if(*item == *weapon) {
-                weapon.reset();
                 weapon = item;
             }
             else if(*item == *armorHead) {
-                armorHead.reset();
                 armorHead = item;
             }
             else if(*item == *armorChest) {
-                armorChest.reset();
                 armorChest = item;
             }
             else if(*item == *armorLeggs) {
-                armorLeggs.reset();
                 armorLeggs = item;
             }
             else if(*item == *armorBoots) {
-                armorBoots.reset();
                 armorBoots = item;
             }
         }
@@ -377,9 +372,9 @@ bool Player::buyItem(std::shared_ptr<Item> &item) {
 
 void Player::sellItem(const int &position) {
     std::shared_ptr<Item> &item = this->getInventory().getInventory()[position];
-    this->money = this->money + this->getInventory().getInventory()[position]->getSalePrice();
-    if(this->getInventory().getInventory()[position]->getStatus() == "Equipped") {
-        unequipItem(this->getInventory().getInventory()[position]);
+    this->money = this->money + item->getSalePrice();
+    if(item->getStatus() == "Equipped") {
+        unequipItem(item);
     }
     this->getInventory().removeItem(position);
 }
@@ -437,7 +432,6 @@ void Player::unequipItem(std::shared_ptr<Item> &item) {
     if(item->getCategory() == "Weapon") {
         std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
         if(weaponItem) {
-            this->weapon.reset();
             this->weapon = def_weapon;
             this->minDamage -= weaponItem->getMinDamage();
             this->maxDamage -= weaponItem->getMaxDamage();
@@ -447,20 +441,16 @@ void Player::unequipItem(std::shared_ptr<Item> &item) {
         std::shared_ptr<Armor> armorItem = std::dynamic_pointer_cast<Armor>(item);
         if(armorItem) {
             if(armorItem->getType() == 1) {
-                this->armorHead.reset();
                 this->armorHead = def_armor;
                 std::cout << *armorHead << std::endl;
             }
             else if(armorItem->getType() == 2) {
-                this->armorChest.reset();
                 this->armorChest = def_armor;
             }
             else if(armorItem->getType() == 3) {
-                this->armorLeggs.reset();
                 this->armorLeggs = def_armor;
             }
             else if(armorItem->getType() == 4) {
-                this->armorBoots.reset();
                 this->armorBoots = def_armor;
             }
 
@@ -472,6 +462,8 @@ void Player::unequipItem(std::shared_ptr<Item> &item) {
 bool Player::operator==(const Player &rhs) const {
     if(this->name == rhs.name)
         return true;
+    else
+        return false;
 }
 
 Player &Player::operator=(const Player &rhs) {
@@ -510,11 +502,13 @@ Player &Player::operator=(const Player &rhs) {
     this->armorBoots = rhs.armorBoots;
     this->distanceTravelled = rhs.distanceTravelled;
     this->inventory = rhs.inventory;
+
+    return *this;
 }
 
 void Player::explore() {
     this->distanceTravelled++;
-    int usedRadiation = rand() % 4 == 0? 1 : 0;
+    int usedRadiation = rand() % 4 == 0 ? 1 : 0;
     int usedStamina = calculateRandomCharacteristic(7, 11);
     int usedHunger = calculateRandomCharacteristic(2, 6);
     int usedThirst = calculateRandomCharacteristic(2, 6);

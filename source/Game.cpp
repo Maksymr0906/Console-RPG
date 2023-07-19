@@ -138,7 +138,7 @@ void Game::backstory() const {
 
     std::cout << std::endl << std::setw(70) << std::right << "/*/*Press Enter to continue*/*/" << std::endl;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    system("CLS");
+    CLEAR_SCREEN;
 }
 
 void Game::explore() {
@@ -244,7 +244,7 @@ std::vector<Player> Game::loadPlayers(const std::string &filePath) {
         return {};
     }
 
-    int numOfPlayers{};
+    size_t numOfPlayers{};
     inFile >> numOfPlayers;
     std::vector<Player> result;
     while(result.size() < numOfPlayers) {

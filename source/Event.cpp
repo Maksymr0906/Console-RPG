@@ -564,7 +564,7 @@ void Event::productsShop(Player &p) {
 void Event::increaseBackpack(Player &p) {
 	std::cout << "\nWelcome to Backpack shop. Hope something suits you!" << std::endl;
 	int choice{};
-	std::vector<std::pair<int, int>> backpacks{ {1000, 9}, {3200, 13}, {8000, 19}, {14000, 23}, {20000, 25} };
+	const std::vector<std::pair<int, size_t>> backpacks{ {1000, 9}, {3200, 13}, {8000, 19}, {14000, 23}, {20000, 25} };
 	do {
 		choice = getValidateAnswer("\n(0) - Go back\n(1) - School backpack (+4 slots) Cost: 1000G\n(2) - Pioneer backpack (+8 slots) Cost: 3200G\n(3) - Duffel bag (+14 slots) Cost: 8000G\n(4) - Tourist backpack (+18 slots) Cost: 14000G\n(5) - Army backpack (+20 slots) Cost: 20000G\nYour choice: ", "Incorrect choice", 0, 5);
 		if(choice == 1) {
@@ -590,7 +590,7 @@ void Event::increaseBackpack(Player &p) {
 	} while(choice != 0);
 }
 
-bool Event::setNewBackpack(Player &p, const std::pair<int, int> &backpack) {
+bool Event::setNewBackpack(Player &p, const std::pair<int, size_t> &backpack) {
 	if(p.getInventory().getSizeOfInventory() >= backpack.second) {
 		std::cout << "\nI guess you already have a bigger backpack than that" << std::endl;
 		return false;

@@ -35,8 +35,8 @@ private:
     const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
     static constexpr const int def_distance_travelled = 0;
 protected:
-    int thirst, hunger;
-    int thirstMax, hungerMax;
+    int thirst, thirstMax;
+    int hunger, hungerMax;
     int exp, expNext;
     int stamina, staminaMax;
     int strength, vitality, dexterity, intelligence;

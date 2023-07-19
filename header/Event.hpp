@@ -17,7 +17,7 @@ private:
 	void displayMessageAboutFoundItem(const std::string &nameOfItem) const;
 	int calculateRandomEvent() const;
 	void increaseBackpack(Player &p);
-	bool setNewBackpack(Player &p, const std::pair<int, int> &backpack);
+	bool setNewBackpack(Player &p, const std::pair<int, size_t> &backpack);
 	void weaponShop(Player &p);
 	void armorShop(Player &p);
 	void productsShop(Player &p);

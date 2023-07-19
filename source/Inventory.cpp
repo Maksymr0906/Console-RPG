@@ -11,7 +11,6 @@ void Inventory::initialize() {
 void Inventory::addItem(std::shared_ptr<Item> &item) {
     if(inventory.size() < sizeOfInventory) {
         inventory.push_back(std::move(item));
-        item.reset();
     }
     else {
         std::cout << "Not enough space in inventory for" << std::endl;
@@ -35,12 +34,11 @@ void Inventory::showInventory() {
     }
 }
 
-void Inventory::removeItem(int position) {
-    if(position < 0 || position >= inventory.size()) {
+void Inventory::removeItem(size_t position) {
+    if(position >= inventory.size()) {
         std::cout << "Invalid position" << std::endl;
     }
     else {
-        inventory[position].reset();
         inventory.erase(inventory.begin() + position);
     }
 }
@@ -63,7 +61,7 @@ void Inventory::writeToTxtFile(std::ofstream &outfile) const {
 void Inventory::readFromTxtFile(std::ifstream &infile) {
     infile >> sizeOfInventory;
 
-    int itemCount{};
+    size_t itemCount{};
     infile >> itemCount;
     std::string itemCategory{};
     for(size_t i = 0; i < itemCount; i++) {

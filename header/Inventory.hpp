@@ -20,7 +20,7 @@ public:
 
     void addItem(std::shared_ptr<Item> &item);
     void showInventory();
-    void removeItem(int position);
+    void removeItem(size_t position);
     void expand(int numberOfNewCells);
     void initialize();
     bool is_empty() { return inventory.empty(); }
