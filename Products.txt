@@ -1,9 +1,9 @@
 Canned Rations
-Product
 Unequipped
 600
 300
 1
+3
 1
 40
 10
@@ -11,11 +11,11 @@ Unequipped
 10
 0
 Dried Jerky
-Product
 Unequipped
 800
 400
 1
+3
 1
 30
 20
@@ -23,11 +23,11 @@ Unequipped
 -20
 0
 Survivor's Stew
-Product
 Unequipped
 900
 450
 1
+3
 1
 50
 20
@@ -35,11 +35,11 @@ Unequipped
 0
 -1
 Protein Bars
-Product
 Unequipped
 600
 300
 1
+3
 1
 20
 40
@@ -47,11 +47,11 @@ Unequipped
 0
 0
 MRE
-Product
 Unequipped
 1000
 500
 1
+3
 1
 60
 30
@@ -59,11 +59,11 @@ Unequipped
 60
 -3
 Nutrient Packs
-Product
 Unequipped
 700
 350
 1
+3
 1
 10
 10
@@ -71,11 +71,11 @@ Unequipped
 0
 -5
 Purified Water
-Product
 Unequipped
 400
 200
 1
+3
 1
 0
 5
@@ -83,11 +83,11 @@ Unequipped
 40
 -1
 Energy Drink
-Product
 Unequipped
 800
 400
 1
+3
 1
 0
 50
@@ -95,11 +95,11 @@ Unequipped
 30
 -2
 Nutrient Shake
-Product
 Unequipped
 900
 450
 1
+3
 1
 0
 10
@@ -107,11 +107,11 @@ Unequipped
 30
 -5
 Freshly Brewed Coffee
-Product
 Unequipped
 400
 200
 1
+3
 1
 0
 30
@@ -119,11 +119,11 @@ Unequipped
 15
 0
 Tea
-Product
 Unequipped
 400
 200
 1
+3
 1
 0
 10
@@ -131,11 +131,11 @@ Unequipped
 15
 0
 Sports Drink
-Product
 Unequipped
 1000
 500
 1
+3
 1
 0
 80

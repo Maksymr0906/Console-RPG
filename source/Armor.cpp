@@ -1,23 +1,33 @@
 #include "Armor.hpp"
 
 void Armor::print(std::ostream& os) const {
-    os << "\nName: " << this->name << "\nCategory: " << this->category << "\nDefence: "
-        << this->defence << "\nStatus: " << this->status
-        << "\nPurchase/Sale price: " << this->purchasePrice << " / " << this->salePrice
-        << "\nType: ";
-    if(type == 1) {
+    Item::print(os);
+    os << "\nType: ";
+    if(type == ArmorType::HELMET) {
         os << "Helmet";
     }
-    else if(type == 2) {
+    else if(type == ArmorType::CHESTPLATE) {
         os << "Chestplate";
     }
-    else if(type == 3) {
+    else if(type == ArmorType::LEGGINGS) {
         os << "Leggings";
     }
-    else if(type == 4) {
+    else if(type == ArmorType::BOOTS) {
         os << "Boots";
     }
-    os << "\nLevel: " << this->level << "\nRarity: " << this->rarity;
+    os << "\nDefence: " << this->defence << std::endl;
+}
+
+void Armor::printStatus(std::ostream &os) const {
+    Item::printStatus(os);
+}
+
+void Armor::printLevel(std::ostream &os) const {
+    Item::printLevel(os);
+}
+
+void Armor::printRarity(std::ostream &os) const {
+    Item::printRarity(os);
 }
 
 Armor::Armor(const Armor &obj) 
@@ -27,19 +37,18 @@ Armor::Armor(const Armor &obj)
 void Armor::writeToTxtFile(std::ofstream &outfile) const {
     Item::writeToTxtFile(outfile);
     outfile << defence << "\n"
-            << type << "\n";
+            << static_cast<int>(type) << "\n";
 }
 
 void Armor::readFromTxtFile(std::ifstream &infile) {
     Item::readFromTxtFile(infile);
-    infile >> defence >> type;
+    int typeInt{};
+    infile >> defence >> typeInt;
+    type = static_cast<ArmorType>(typeInt);
 }
 
 bool Armor::operator==(const Armor &other) const {
-    const Item &item1 = *this;
-    const Item &item2 = other;
-
-    return item1 == item2 &&
+    return Item::operator==(other) &&
         defence == other.defence &&
         type == other.type;
 }

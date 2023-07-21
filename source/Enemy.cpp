@@ -1,37 +1,40 @@
 #include "Enemy.hpp"
 
 Enemy::Enemy() :
-	Entity{ def_name, def_health, def_health, def_min_damage, def_max_damage, def_level, def_defence }, dropChance{ 0 }, droppedItem{nullptr} {}
+	Entity{ def_name, def_health, def_health, def_min_damage, def_max_damage, def_level, def_defence }, dropChance{ 0 }, droppedItem{ nullptr } {}
 
-Enemy::Enemy(int level) : 
-  Entity{def_name,
-  level * 100,
-  level * 100,
-  level * 2,
-  level * 3,
-  level,
-  level * 3},
-  dropChance{level * 15} {}
+Enemy::Enemy(int level) :
+	Entity{ def_name,
+	level * 100,
+	level * 100,
+	level * 2,
+	level * 3,
+	level,
+	level * 3 },
+	dropChance{ level * 15 },
+	droppedItem{ nullptr } {}
 
 void Enemy::readFromTxtFile(std::ifstream &infile) {
 	Entity::readFromTxtFile(infile);
-	infile >> dropChance;
-	std::string itemCategory{};
-	infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	std::getline(infile, itemCategory);
-	if(itemCategory == "Weapon")
+	int itemCategory{};
+	infile >> dropChance >> itemCategory;
+
+	if(itemCategory == 1)
 		droppedItem = std::make_shared<Weapon>();
-	if(itemCategory == "Armor")
+	if(itemCategory == 2)
 		droppedItem = std::make_shared<Armor>();
-	if(itemCategory == "Product")
+	if(itemCategory == 3)
 		droppedItem = std::make_shared<Product>();
-	droppedItem->readFromTxtFile(infile);
+	if(droppedItem) {
+		infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		droppedItem->readFromTxtFile(infile);
+	}
 }
 
 void Enemy::writeToTxtFile(std::ofstream &outfile) const {
 	Entity::writeToTxtFile(outfile);
 	outfile << dropChance << '\n'
-			<< droppedItem->getCategory() << '\n';
+		<< static_cast<int>(droppedItem->getCategory()) << '\n';
 	droppedItem->writeToTxtFile(outfile);
 }
 
@@ -59,13 +62,13 @@ void Enemy::updateCharacteristics(int playerLevel) {
 
 std::shared_ptr<Item> Enemy::getDroppedItem() {
 	std::shared_ptr<Item> itemToDrop;
-	
-	std::string itemCategory = droppedItem->getCategory();
-	if(itemCategory == "Weapon")
+
+	Category itemCategory = droppedItem->getCategory();
+	if(itemCategory == Category::WEAPON)
 		itemToDrop = std::make_shared<Weapon>(*dynamic_cast<Weapon *>(droppedItem.get()));
-	if(itemCategory == "Armor")
+	if(itemCategory == Category::ARMOR)
 		itemToDrop = std::make_shared<Armor>(*dynamic_cast<Armor *>(droppedItem.get()));
-	if(itemCategory == "Product")
+	if(itemCategory == Category::PRODUCT)
 		itemToDrop = std::make_shared<Product>(*dynamic_cast<Product *>(droppedItem.get()));
 
 	return itemToDrop;

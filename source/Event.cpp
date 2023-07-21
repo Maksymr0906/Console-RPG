@@ -591,7 +591,7 @@ void Event::increaseBackpack(Player &p) {
 }
 
 bool Event::setNewBackpack(Player &p, const std::pair<int, size_t> &backpack) {
-	if(p.getInventory().getSizeOfInventory() >= backpack.second) {
+	if(p.getInventory().getMaxNumberOfItems() >= backpack.second) {
 		std::cout << "\nI guess you already have a bigger backpack than that" << std::endl;
 		return false;
 	}
@@ -601,7 +601,7 @@ bool Event::setNewBackpack(Player &p, const std::pair<int, size_t> &backpack) {
 		return false;
 	}
 
-	p.getInventory().setSizeOfInventory(backpack.second);
+	p.getInventory().setMaxNumberOfItems(backpack.second);
 	p.setMoney(p.getMoney() - backpack.first);
 	return true;
 }
@@ -612,15 +612,15 @@ void Event::sellItems(Player &p) {
 	int choice{};
 
 	do {
-		if(inventory.getInventory().size() > 0) {
+		if(inventory.getItems().size() > 0) {
 			inventory.showInventory();
-			choice = getValidateAnswer("Choose item that you want to sell: ", "Incorrect choice", 0, inventory.getInventory().size());
+			choice = getValidateAnswer("Choose item that you want to sell: ", "Incorrect choice", 0, inventory.getItems().size());
 
 			if(choice == 0) {
 				return;
 			}
 			else {
-				std::string nameOfSoldItem = inventory.getInventory()[choice - 1]->getName();
+				std::string nameOfSoldItem = inventory.getItems()[choice - 1]->getName();
 				p.sellItem(choice - 1);
 				std::cout << nameOfSoldItem << " sold" << std::endl;
 			}

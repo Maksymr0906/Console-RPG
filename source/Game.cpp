@@ -124,26 +124,26 @@ void Game::printGameMenu() const {
         << "(1) - Explore world" << std::endl
         << "(2) - Return to shelter" << std::endl
         << "(3) - Visit Merchant" << std::endl
-        << "(4) - Player's characteristics" << std::endl
-        << "(5) - Player's inventory" << std::endl
+        << "(4) - My characteristics" << std::endl
+        << "(5) - My Inventory" << std::endl
         << "(6) - Upgrade characteristics" << std::endl
-        << "(7) - Save player" << std::endl << std::endl;
+        << "(7) - Save game" << std::endl << std::endl;
 }
 
 void Game::backstory() const {
-    std::cout << "Zombie Project - a simple console game in which you have to survive in an unfair world full of zombies." << std::endl
+    std::cout << "Zombie Project - a simple console-based RPG game in which you have to survive in an unfair world full of zombies." << std::endl
         << "You come to your senses in an empty New York, which is full of zombies." << std::endl
         << "For now, all you need is to survive, and how to achieve this depends on you." << std::endl
         << "So get up and don't waste a single moment on empty thoughts, otherwise you simply won't survive." << std::endl;
 
-    std::cout << std::endl << std::setw(70) << std::right << "/*/*Press Enter to continue*/*/" << std::endl;
+    std::cout << std::endl << std::setw(70) << std::right << "=== Press Enter to continue ===" << std::endl;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     CLEAR_SCREEN;
 }
 
 void Game::explore() {
     Inventory &inventory = players[indexOfActivePlayer].getInventory();
-    if(inventory.getInventory().size() == inventory.getSizeOfInventory()) {
+    if(inventory.getItems().size() == inventory.getMaxNumberOfItems()) {
         std::cout << "My backpack is full. I need to do something about this and continue searching..." << std::endl;
         return;
     }
@@ -175,12 +175,9 @@ void Game::createNewPlayer() {
     else {
         int number{};
         do {
-            number = getNumber("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ");
+            number = getValidateAnswer("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
 
-            if(number < 1 || number > 2) {
-                std::cout << "\nIncorrect choice. Choose correct number." << std::endl;
-            }
-            else if(number == 1) {
+            if(number == 1) {
                 Player player;
                 indexOfActivePlayer = indexOfPlayerWithSameName;
                 player.initialize(name);
@@ -209,7 +206,7 @@ int Game::findPlayerIndexByName(const std::string &name) const {
 
 void Game::savePlayers() {
     std::ofstream outFile("players.txt", std::ios::binary);
-    int numOfPlayers = players.size();
+    size_t numOfPlayers = players.size();
     outFile << numOfPlayers << '\n';
     for(const auto &player : players) {
         player.writeToTxtFile(outFile);
@@ -244,7 +241,7 @@ std::vector<Player> Game::loadPlayers(const std::string &filePath) {
         return {};
     }
 
-    size_t numOfPlayers{};
+    int numOfPlayers{};
     inFile >> numOfPlayers;
     std::vector<Player> result;
     while(result.size() < numOfPlayers) {
@@ -283,14 +280,15 @@ void Game::shelter() {
             return;
         }
         else if(choice == 1) {
+            std::cout << "\nHere I can sleep and restore my energy" << std::endl;
             sleep();
         }
         else if(choice == 2) {
-            std::cout << "Here I can upgrade your items, such as armor and weapons" << std::endl;
+            std::cout << "\nHere I can upgrade your items, such as armor and weapons" << std::endl;
             players[indexOfActivePlayer].upgradeItems();
         }
         else if(choice == 3) {
-            std::cout << "My box" << std::endl;
+            std::cout << "\nHere I can store my items. (Not working now)" << std::endl;
         }
     } while(choice != 0);
 }

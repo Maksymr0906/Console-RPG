@@ -16,14 +16,17 @@ void Product::readFromTxtFile(std::ifstream &infile) {
 }
 
 void Product::print(std::ostream &os) const {
-	os << std::setw(30) << std::right << this->name << std::endl
-		<< std::left << "Health: " << this->healthRestored << std::endl
-		<< std::left << "Energy: " << this->energyRestored << std::endl
-		<< std::left << "Thirst: " << this->thirstRestored << std::endl
-		<< std::left << "Hunger: " << this->hungerRestored << std::endl
-		<< std::left << "Radiation: " << this->radiationRestored << std::endl
-		<< std::left << "Purchase/Sell Price: " << this->purchasePrice << " / " << this->salePrice << std::endl;
+	Item::print(os);
+	os << std::left << "\nHealth: " << this->healthRestored
+		<< std::left << "\nEnergy: " << this->energyRestored
+		<< std::left << "\nThirst: " << this->thirstRestored
+		<< std::left << "\nHunger: " << this->hungerRestored
+		<< std::left << "\nRadiation: " << this->radiationRestored << std::endl;
 }
+
+void Product::printStatus(std::ostream &os) const {}
+void Product::printLevel(std::ostream &os) const {}
+void Product::printRarity(std::ostream &os) const {}
 
 bool Product::operator==(const Product &other) const {
 	return Item::operator==(other) && hungerRestored == other.hungerRestored &&

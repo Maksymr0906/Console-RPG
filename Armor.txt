@@ -1,360 +1,360 @@
 Sentinel Helmet
-Armor
 Unequipped
 1200
 600
 1
+2
 3
 4
 1
 Sentinel Chestplate
-Armor
 Unequipped
 1500
 750
 1
+2
 3
 6
 2
 Sentinel Leggings
-Armor
 Unequipped
 1400
 700
 1
+2
 3
 5
 3
 Sentinel Boots
-Armor
 Unequipped
 1200
 600
 1
+2
 3
 4
 4
 Ironclad Helm
-Armor
 Unequipped
 600
 300
 1
+2
 1
 1
 1
 Ironclad Body Armor
-Armor
 Unequipped
 800
 400
 1
+2
 1
 2
 2
 Ironclad Legguards
-Armor
 Unequipped
 700
 350
 1
+2
 1
 2
 3
 Ironclad Boots
-Armor
 Unequipped
 600
 300
 1
+2
 1
 1
 4
 Shadow Visage
-Armor
 Unequipped
 2000
 1000
 1
+2
 4
 5
 1
 Shadow Plate
-Armor
 Unequipped
 2500
 1250
 1
+2
 4
 7
 2
 Shadow Leggings
-Armor
 Unequipped
 2250
 1125
 1
+2
 4
 6
 3
 Shadow Boots
-Armor
 Unequipped
 2000
 1000
 1
+2
 4
 5
 4
 Defender Helm
-Armor
 Unequipped
 1000
 500
 1
+2
 2
 2
 1
 Defender Chestguard
-Armor
 Unequipped
 1200
 600
 1
+2
 2
 3
 2
 Defender Legplates
-Armor
 Unequipped
 1200
 600
 1
 2
+2
 3
 3
 Defender Boots
-Armor
 Unequipped
 1000
 500
 1
 2
 2
+2
 4
 Embrace Helmet
-Armor
 Unequipped
 1100
 550
 1
+2
 2
 3
 1
 Embrace Chestplate
-Armor
 Unequipped
 1400
 700
 1
+2
 2
 4
 2
 Embrace Leggings
-Armor
 Unequipped
 1400
 700
 1
 2
+2
 4
 3
 Embrace Boots
-Armor
 Unequipped
 1100
 550
 1
 2
+2
 3
 4
 Resolve Helmet
-Armor
 Unequipped
 2500
 1250
 1
+2
 4
 6
 1
 Resolve Chestplate
-Armor
 Unequipped
 2800
 1400
 1
+2
 4
 8
 2
 Resolve Legguards
-Armor
 Unequipped
 2600
 1300
 1
+2
 4
 7
 3
 Resolve Boots
-Armor
 Unequipped
 2500
 1250
 1
+2
 4
 6
 4
 Protector Helmet
-Armor
 Unequipped
 600
 300
 1
+2
 1
 1
 1
 Protector Chestplate
-Armor
 Unequipped
 900
 450
 1
+2
 1
 3
 2
 Protector Leggings
-Armor
 Unequipped
 800
 400
 1
+2
 1
 2
 3
 Protector Boots
-Armor
 Unequipped
 600
 300
 1
+2
 1
 1
 4
 Scout Hood
-Armor
 Unequipped
 600
 300
 1
+2
 1
 1
 1
 Scout Tunic
-Armor
 Unequipped
 800
 400
 1
+2
 1
 2
 2
 Scout Leggings
-Armor
 Unequipped
 800
 400
 1
+2
 1
 2
 3
 Scout Boots
-Armor
 Unequipped
 800
 400
 1
+2
 1
 2
 4
 Sanctuary Helm
-Armor
 Unequipped
 1500
 750
 1
+2
 3
 6
 1
 Sanctuary Chestplate
-Armor
 Unequipped
 1750
 825
 1
+2
 3
 7
 2
 Sanctuary Legguards
-Armor
 Unequipped
 1600
 800
 1
+2
 3
 6
 3
 Sanctuary Boots
-Armor
 Unequipped
 1500
 750
 1
+2
 3
 6
 4
 Regal Helm
-Armor
 Unequipped
 3000
 1500
 1
+2
 5
 10
 1
 Regal Chestplate
-Armor
 Unequipped
 4000
 2000
 1
+2
 5
 14
 2
 Regal Leggings
-Armor
 Unequipped
 3500
 1750
 1
+2
 5
 12
 3
 Regal Boots
-Armor
 Unequipped
 3000
 1500
 1
+2
 5
 10
-1
+4
