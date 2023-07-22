@@ -149,35 +149,36 @@ void Event::readEmptyEventMessagesFromFile() {
 }
 
 void Event::readPuzzlesFromFile() {
-	std::ifstream infile("Puzzle.txt");
+    std::ifstream infile("Puzzle.txt");
 
-	if(!infile.is_open()) {
-		std::cerr << "Error opening file" << std::endl;
-		return;
-	}
-	while(!infile.eof()) {
+    if (!infile.is_open()) {
+        std::cerr << "Error opening file" << std::endl;
+        return;
+    }
 
-		std::string answer{};
-		int indexOfCorrectAnswer{};
-		size_t numOfAnswers{};
-		std::string question;
-		std::getline(infile, question);
-		infile >> numOfAnswers;
-		infile.ignore();
+    std::string line;
+    while (std::getline(infile, line)) {
+        std::string answer{};
+        int indexOfCorrectAnswer{};
+        size_t numOfAnswers{};
+        std::string question = line;
+        std::getline(infile, line);
+        std::istringstream iss(line);
+        iss >> numOfAnswers;
 
-		std::vector<std::string> answers;
-		for(size_t i = 0; i < numOfAnswers; i++) {
-			std::getline(infile, answer);
-			answers.push_back(answer);
-		}
+        std::vector<std::string> answers;
+        for (size_t i = 0; i < numOfAnswers; i++) {
+            std::getline(infile, answer);
+            answers.push_back(answer);
+        }
 
-		infile >> indexOfCorrectAnswer;
-		infile.ignore();
+        infile >> indexOfCorrectAnswer;
+        infile.ignore();
 
-		puzzles.emplace_back(question, indexOfCorrectAnswer, answers);
-	}
+        puzzles.emplace_back(question, indexOfCorrectAnswer, answers);
+    }
 
-	infile.close();
+    infile.close();
 }
 
 int Event::calculateRandomEvent() const {
