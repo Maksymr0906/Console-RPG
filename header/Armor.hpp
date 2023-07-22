@@ -11,7 +11,7 @@ enum class ArmorType {
 
 class Armor : public Item {
 private:
-    static constexpr const char* def_name = "Unnamed";
+    static constexpr const char* def_name = "Unnamed Armor";
     static constexpr const char* def_status = "Unequipped";
     static constexpr const int def_purchase_price = 200;
     static constexpr const int def_sale_price = 160;
@@ -37,13 +37,13 @@ public:
     void setDefence(int defence) { this->defence = defence; }
     void setType(int type) { this->type = static_cast<ArmorType>(type); }
 
+    virtual void print(std::ostream &os) const override;
     virtual void printStatus(std::ostream &os) const override;
     virtual void printLevel(std::ostream &os) const override;
     virtual void printRarity(std::ostream &os) const override;
     
     virtual void writeToTxtFile(std::ofstream &outfile) const override;
     virtual void readFromTxtFile(std::ifstream &infile) override;
-    virtual void print(std::ostream &os) const override;
 
     bool operator==(const Armor &other) const;
 };

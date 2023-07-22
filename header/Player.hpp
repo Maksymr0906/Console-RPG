@@ -7,21 +7,21 @@
 
 class Player : public Entity {
 private:
+    static constexpr const char *def_name = "Unnamed Player";
     static constexpr const int def_health = 100;
     static constexpr const int def_max_health = 100;
+    static constexpr const int def_min_damage = 2;
+    static constexpr const int def_max_damage = 5;
+    static constexpr const int def_level = 1;
+    static constexpr const int def_defence = 1;
     static constexpr const int def_thirst = 100;
     static constexpr const int def_thirst_max = 100;
     static constexpr const int def_hunger = 100;
     static constexpr const int def_hunger_max = 100;
-    static constexpr const int def_min_damage = 2;
-    static constexpr const int def_max_damage = 5;
     static constexpr const int def_exp = 0;
     static constexpr const int def_exp_next = 100;
-    static constexpr const int def_level = 1;
-    static constexpr const char *def_name = "Unnamed";
     static constexpr const int def_stamina = 100;
     static constexpr const int def_stamina_max = 100;
-    static constexpr const int def_defence = 1;
     static constexpr const int def_strength = 5;
     static constexpr const int def_vitality = 5;
     static constexpr const int def_dexterity = 5;
@@ -31,9 +31,9 @@ private:
     static constexpr const int def_skill_points = 0;
     static constexpr const int def_money = 30;
     static constexpr const int def_radiation = 0;
+    static constexpr const int def_distance_travelled = 0;
     const std::shared_ptr<Item> def_weapon = std::make_shared<Weapon>("None");
     const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
-    static constexpr const int def_distance_travelled = 0;
 protected:
     int thirst, thirstMax;
     int hunger, hungerMax;
@@ -75,22 +75,15 @@ public:
     int getMoney() const { return money; }
     Inventory &getInventory() { return inventory; }
     int getDistanceTravelled() const { return distanceTravelled; }
-    std::shared_ptr<Item> getArmorHead() const { return armorHead; }
 
     //Modifiers
-    //void setHealth(int health) { this->health = health; }
-    //void setMaxHealth(int maxHealth) { this->maxHealth = maxHealth; }
-    //void setMinDamage(int minDamage) { this->minDamage = minDamage; }
-    //void setMaxDamage(int maxDamage) { this->maxDamage = maxDamage; }
     void setExp(int exp) { this->exp = exp; }
     void setExpNext(int expNext) { this->expNext = expNext; }
-    //void setLevel(int level) { this->level = level; }
     void setStamina(int stamina) { this->stamina = stamina; }
     void setStaminaMax(int staminaMax) { this->staminaMax = staminaMax; }
     void setHunger(int hunger) { this->hunger = hunger; }
     void setThirst(int thirst) { this->thirst = thirst; }
     void setRadiation(int radiation) { this->radiation = radiation; }
-    //void setDefence(int defence) { this->defence = defence; }
     void setStrength(int strength) { this->strength = strength; }
     void setDexterity(int dexterity) { this->dexterity = dexterity; }
     void setIntelligence(int intelligence) { this->intelligence = intelligence; }
@@ -98,7 +91,6 @@ public:
     void setStatPoints(int statPoints) { this->statPoints = statPoints; }
     void setSkillPoints(int skillPoints) { this->skillPoints = skillPoints; }
     void setMoney(int money) { this->money = money; }
-    void setName(std::string name) { this->name = name; }
     void setDistanceTravelled(int distanceTravelled) { this->distanceTravelled = distanceTravelled; }
 
     //Methods

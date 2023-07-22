@@ -24,9 +24,9 @@ void Product::print(std::ostream &os) const {
 		<< std::left << "\nRadiation: " << this->radiationRestored << std::endl;
 }
 
-void Product::printStatus(std::ostream &os) const {}
-void Product::printLevel(std::ostream &os) const {}
-void Product::printRarity(std::ostream &os) const {}
+void Product::printStatus(std::ostream &os) const {os << std::right;}
+void Product::printLevel(std::ostream &os) const {os << std::right;}
+void Product::printRarity(std::ostream &os) const {os << std::right;}
 
 bool Product::operator==(const Product &other) const {
 	return Item::operator==(other) && hungerRestored == other.hungerRestored &&

@@ -223,7 +223,7 @@ int Game::selectPlayer() {
     int choice{};
     displayAllPlayers();
     choice = getValidateAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 0, players.size());
-    
+
     return choice;
 }
 
@@ -241,7 +241,7 @@ std::vector<Player> Game::loadPlayers(const std::string &filePath) {
         return {};
     }
 
-    int numOfPlayers{};
+    size_t numOfPlayers{};
     inFile >> numOfPlayers;
     std::vector<Player> result;
     while(result.size() < numOfPlayers) {
@@ -263,7 +263,7 @@ void Game::deletePlayer() {
     displayAllPlayers();
     int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Incorrect choice. Try again", 0, players.size());
     if(choice != 0) {
-        deletePlayerByIndex(choice-1);
+        deletePlayerByIndex(choice - 1);
     }
 }
 

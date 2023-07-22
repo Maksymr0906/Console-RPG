@@ -23,7 +23,7 @@ enum class Category {
 
 class Item : public I_Printable {
 private:
-    static constexpr const char* def_name = "Unnamed";
+    static constexpr const char* def_name = "Unnamed Item";
     static constexpr const char* def_status = "Unequipped";
     static constexpr const int def_purchase_price = 100;
     static constexpr const int def_sale_price = 80;

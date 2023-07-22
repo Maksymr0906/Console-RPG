@@ -7,7 +7,13 @@
 
 class Entity {
 private:
-
+	static constexpr const char *def_name = "Unnamed Entity";
+	static constexpr const int def_health = 100;
+	static constexpr const int def_max_health = 100;
+	static constexpr const int def_min_damage = 2;
+	static constexpr const int def_max_damage = 5;
+	static constexpr const int def_level = 1;
+	static constexpr const int def_defence = 1;
 protected:
 	std::string name;
 	int health, maxHealth;
@@ -15,7 +21,8 @@ protected:
 	int level;
 	int defence;
 public:
-	Entity(std::string name, int health, int maxHealth, int minDamage, int maxDamage, int level, int defence) 
+	Entity(const char *name = def_name, int health = def_health, int maxHealth = def_max_health, 
+		   int minDamage = def_min_damage, int maxDamage = def_max_damage, int level= def_level, int defence = def_defence) 
 		: name{ name }, health{ health }, maxHealth{ maxHealth }, minDamage{ minDamage }, maxDamage{ maxDamage }, level{ level }, defence{ defence } {}
 	virtual ~Entity() = default;
 	
@@ -38,15 +45,8 @@ public:
 	void writeToTxtFile(std::ofstream &outfile) const;
 	void readFromTxtFile(std::ifstream &infile);
 
-	int inflictDamage() {
-		int givenDamage{};
-		givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
-		return givenDamage;
-	}
-	void takeDamage(int damage) {
-		int effectiveDamage = std::max(damage - (defence / 3), 0);
-		this->health = std::max(this->health - effectiveDamage, 0);
-	}
-	bool isAlive() { return health > 0; }
+	int inflictDamage() const;
+	void takeDamage(int damage);
+	bool isAlive() const;
 };
 

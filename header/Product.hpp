@@ -5,7 +5,7 @@
 
 class Product : public Item {
 private:
-	static constexpr const char *def_name = "Unnamed";
+	static constexpr const char *def_name = "Unnamed Product";
 	static constexpr const char *def_status = "Unequipped";
 	static constexpr const int def_purchase_price = 100;
 	static constexpr const int def_sale_price = 80;
@@ -50,12 +50,13 @@ public:
 	void setThirstRestored(int thirstRestored) { this->thirstRestored = thirstRestored; }
 	void setRadiationRestored(int radiationRestored) { this->radiationRestored = radiationRestored; }
 
+	virtual void print(std::ostream &os) const override;
 	virtual void printStatus(std::ostream &os) const override;
 	virtual void printLevel(std::ostream &os) const override;
 	virtual void printRarity(std::ostream &os) const override;
+
 	virtual void writeToTxtFile(std::ofstream &outfile) const override;
 	virtual void readFromTxtFile(std::ifstream &infile) override;
-	virtual void print(std::ostream &os) const override;
 
 	bool operator==(const Product &other) const;
 };

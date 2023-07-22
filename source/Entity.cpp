@@ -20,3 +20,17 @@ void Entity::readFromTxtFile(std::ifstream &infile) {
 	infile >> defence;
 }
 
+int Entity::inflictDamage() const {
+	int givenDamage{};
+	givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
+	return givenDamage;
+}
+
+void Entity::takeDamage(int damage) {
+	int effectiveDamage = std::max(damage - (defence / 3), 0);
+	this->health = std::max(this->health - effectiveDamage, 0);
+}
+
+bool Entity::isAlive() const { 
+	return health > 0; 
+}
