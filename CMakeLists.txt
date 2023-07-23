@@ -11,7 +11,7 @@ file(GLOB SOURCES "source/*.cpp")
 set(TXT_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # List of text files to copy
-set(TXT_FILES Armor.txt EmptyEventMessages.txt Enemies.txt FoundItemMessages.txt players.txt Products.txt Puzzle.txt Weapons.txt)
+set(TXT_FILES Armor.txt EmptyEventMessages.txt Enemies.txt FoundItemMessages.txt Products.txt Puzzle.txt Weapons.txt)
 
 # Loop through the list and copy each txt file
 foreach(TXT_FILE ${TXT_FILES})

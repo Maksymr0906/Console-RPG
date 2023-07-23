@@ -28,19 +28,18 @@ Player::Player()
 
 void Player::initialize(const std::string &name) {
     this->name = name;
-    this->maxHealth = def_max_health + (int)(strength / 2) - 2;
+    this->maxHealth = def_max_health + (int)(vitality / 2) - 2;
     this->health = this->maxHealth;
     this->thirst = def_thirst;
     this->thirstMax = def_thirst_max;
     this->hunger = def_hunger;
     this->hungerMax = def_hunger_max;
-    this->minDamage = def_min_damage + (int)(strength / 4 + vitality / 4) - 2;
-    this->maxDamage = def_max_damage + (int)(strength / 4 + vitality / 4) - 2;
+    this->minDamage = def_min_damage + (int)(strength / 2) - 2;
+    this->maxDamage = def_max_damage + (int)(strength / 2) - 2;
     this->exp = def_exp;
-    this->expNext = (def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5) + 100;
-    //+150 exp to next level per level
+    this->expNext = (def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5) + 100; //+150 exp to next level per level
     this->level = def_level;
-    this->staminaMax = def_stamina_max + (int)(vitality / 2) - 2;
+    this->staminaMax = def_stamina_max + (int)(dexterity / 2) - 2;
     this->stamina = this->staminaMax;
     this->defence = def_defence + (intelligence / 2) - 2;
     this->strength = def_strength;
@@ -59,155 +58,6 @@ void Player::initialize(const std::string &name) {
     this->armorChest = def_armor;
     this->armorLeggs = def_armor;
     this->armorBoots = def_armor;
-}
-
-void Player::showStats() {
-    std::cout << std::endl << "/* Player stats */" << std::endl
-        << "Name: " << this->name << std::endl
-        << "Level: " << this->level << std::endl
-        << "XP: " << this->exp << " / " << this->expNext << std::endl
-        << "Health: " << this->health << " / " << this->maxHealth << std::endl
-        << "Hunger: " << this->hunger << " / " << this->hungerMax << std::endl
-        << "Thirst: " << this->thirst << " / " << this->thirstMax << std::endl
-        << "Stamina: " << this->stamina << " / " << this->staminaMax << std::endl
-        << "Radiation: " << this->radiation << std::endl
-        << "Damage: " << this->minDamage << " - " << this->maxDamage << std::endl
-        << "Defence: " << this->defence << std::endl
-        << std::endl
-        << "/* Player Atributtes */" << std::endl
-        << "Strength: " << this->strength << std::endl
-        << "Vitality: " << this->vitality << std::endl
-        << "Dexterity: " << this->dexterity << std::endl
-        << "Intelligence: " << this->intelligence << std::endl
-        << "Luck: " << this->luck << std::endl
-        << "Available stats points: " << this->statPoints << std::endl
-        << "Available skill points: " << this->skillPoints << std::endl
-        << "Money: " << this->money << std::endl
-        << std::endl << "/*Equipment*/" << std::endl
-        << "Equipped weapon: " << this->weapon->getName() << std::endl
-        << "Equipped helmet: " << this->armorHead->getName() << std::endl
-        << "Equipped chestplate: " << this->armorChest->getName() << std::endl
-        << "Equipped leggings: " << this->armorLeggs->getName() << std::endl
-        << "Equipped boots: " << this->armorBoots->getName() << std::endl;
-}
-
-
-//Refactor code below
-void Player::showInventory() {
-    if(this->inventory.is_empty()) {
-        std::cout << "\nYour inventory is empty\n" << std::endl;
-        return;
-    }
-
-    int selectedItemIndex{};
-
-    do {
-        this->inventory.showInventory();
-        selectedItemIndex = getValidateAnswer("Your choice: ", "Incorrect choice", 0, this->inventory.getItems().size());
-        if(selectedItemIndex == 0) {
-            return;
-        }
-        else {
-            std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
-            std::cout << *selectedItem << std::endl;
-            int choice{};
-            //std::cout << "\n(0) - Go back\n(1) - Equip/Use\n(2) - Info\n(3) - Delete Item\n";
-            if(selectedItem->getCategory() == Category::PRODUCT) {
-                choice = getValidateAnswer("Do you want to use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
-                if(choice == 1) {
-                    this->useProduct(selectedItem);
-                    this->getInventory().removeItem(selectedItemIndex - 1);
-                    continue;
-                }
-            }
-            else {
-                if(selectedItem->getStatus() == "Equipped") {
-                    choice = getValidateAnswer("Do you want to unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
-
-                    if(choice == 1) {
-                        unequipItem(selectedItem);
-                    }
-                }
-                else {
-                    choice = getValidateAnswer("Do you want to equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
-
-                    if(choice == 1) {
-                        equipItem(selectedItem);
-                    }
-                }
-            }
-        }
-    } while(selectedItemIndex != 0);
-}
-
-bool Player::useItemInCombat() {
-    if(this->getInventory().is_empty()) {
-        std::cout << "\nMy Inventory is empty" << std::endl;
-        return false;
-    }
-    std::cout << "\nI can use only one item per turn!" << std::endl;
-
-    this->inventory.showInventory();
-    int selectedItemIndex{};
-    selectedItemIndex = getValidateAnswer("Your choice: ", "Incorrect choice", 0, this->inventory.getItems().size());
-    if(selectedItemIndex == 0) {
-        return false;
-    }
-
-    int choice{};
-    do {
-        std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
-        std::cout << *selectedItem << std::endl;
-
-        if(selectedItem->getCategory() == Category::PRODUCT) {
-            choice = getValidateAnswer("Should I use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
-            if(choice == 1) {
-                this->useProduct(selectedItem);
-                this->getInventory().removeItem(selectedItemIndex - 1);
-                return true;
-            }
-        }
-        else {
-            if(selectedItem->getStatus() == "Equipped") {
-                choice = getValidateAnswer("Should I unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
-
-                if(choice == 1) {
-                    unequipItem(selectedItem);
-                    return true;
-                }
-            }
-            else {
-                choice = getValidateAnswer("Should I equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
-
-                if(choice == 1) {
-                    equipItem(selectedItem);
-                    return true;
-                }
-            }
-        }
-    } while(choice != 2);
-    return false;
-}
-
-void Player::showEquipment() {
-    std::cout << "(1) - Weapon: " << this->weapon->getName() << std::endl;
-    std::cout << "(2) - Head: " << this->armorHead->getName() << std::endl;
-    std::cout << "(3) - Chest: " << this->armorChest->getName() << std::endl;
-    std::cout << "(4) - Leggs: " << this->armorLeggs->getName() << std::endl;
-    std::cout << "(5) - Boots: " << this->armorBoots->getName() << std::endl;
-}
-
-void Player::previewPlayer() const {
-    std::cout << std::endl;
-    std::cout << std::setw(41) << std::setfill('=') << " " << std::endl;
-    std::cout << std::left << std::setw(40) << "== " + this->name + " " << std::endl;
-    std::cout << std::left << std::setw(40) << "== Level: " + std::to_string(this->level) + " " << std::endl;
-    std::cout << std::right << std::setw(41) << std::setfill('=') << " " << std::endl;
-    std::cout << std::left << std::setw(40) << "== Hp: " + std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + " " << std::endl;
-    std::cout << std::left << std::setw(40) << "== Stamina: " + std::to_string(this->stamina) + "/" + std::to_string(this->staminaMax) + " " << std::endl;
-    std::cout << std::left << std::setw(40) << "== Hunger: " + std::to_string(this->hunger) + "/" + std::to_string(this->hungerMax) + " | Thirst: " + std::to_string(this->thirst) + "/" + std::to_string(this->thirstMax) + " " << std::endl;
-    std::cout << std::right << std::setw(41) << std::setfill('=') << " " << std::endl;
-    std::cout << std::setfill(' ') << std::endl;
 }
 
 void Player::writeToTxtFile(std::ofstream &outfile) const {
@@ -261,101 +111,311 @@ void Player::readFromTxtFile(std::ifstream &infile) {
     this->armorLeggs->readFromTxtFile(infile);
     infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     this->armorBoots->readFromTxtFile(infile);
-
     for(const auto &item : this->inventory.getItems()) {
         if(item->getStatus() == "Equipped") {
-            if(*item == *weapon) {
+            if(*item == *weapon) 
                 weapon = item;
-            }
-            else if(*item == *armorHead) {
+            else if(*item == *armorHead)
                 armorHead = item;
-            }
-            else if(*item == *armorChest) {
+            else if(*item == *armorChest)
                 armorChest = item;
-            }
-            else if(*item == *armorLeggs) {
+            else if(*item == *armorLeggs)
                 armorLeggs = item;
-            }
-            else if(*item == *armorBoots) {
+            else if(*item == *armorBoots)
                 armorBoots = item;
-            }
         }
     }
+}
+
+void Player::printStats() const {
+    int labelSize{ 25 }, valueSize{ 18 };
+    std::cout << std::endl;
+    printDivider('=', labelSize + valueSize + 4);
+    std::cout << std::right << std::setw(labelSize) << std::setfill('=') << "== My stats ==" << std::setw(valueSize + 4) << " " << std::endl;
+    printDivider('=', labelSize + valueSize + 4);
+    printFormattedLine("== Name:", "| " + this->name, labelSize, valueSize);
+    printFormattedLine("== Level:", "| " + std::to_string(this->level) + " (" + std::to_string(this->exp) + " / " + std::to_string(this->expNext) + ")", labelSize, valueSize);
+    printFormattedLine("== Health:", "| " + std::to_string(this->health) + " / " + std::to_string(this->maxHealth), labelSize, valueSize);
+    printFormattedLine("== Stamina:", "| " + std::to_string(this->stamina) + " / " + std::to_string(this->staminaMax), labelSize, valueSize);
+    printFormattedLine("== Hunger:", "| " + std::to_string(this->hunger) + " / " + std::to_string(this->hungerMax), labelSize, valueSize);
+    printFormattedLine("== Thirst:", "| " + std::to_string(this->thirst) + " / " + std::to_string(this->thirstMax), labelSize, valueSize);
+    printFormattedLine("== Radiation:", "| " + std::to_string(this->radiation), labelSize, valueSize);
+    printFormattedLine("== Money:", "| " + std::to_string(this->money), labelSize, valueSize);
+    printFormattedLine("== Damage:", "| " + std::to_string(this->minDamage) + " / " + std::to_string(this->maxDamage), labelSize, valueSize);
+    printFormattedLine("== Defence:", "| " + std::to_string(this->defence), labelSize, valueSize);
+    printFormattedLine("== Strength:", "| " + std::to_string(this->strength), labelSize, valueSize);
+    printFormattedLine("== Vitality:", "| " + std::to_string(this->vitality), labelSize, valueSize);
+    printFormattedLine("== Dexterity:", "| " + std::to_string(this->dexterity), labelSize, valueSize);
+    printFormattedLine("== Intelligence:", "| " + std::to_string(this->intelligence), labelSize, valueSize);
+    printFormattedLine("== Luck:", "| " + std::to_string(this->luck), labelSize, valueSize);
+    printFormattedLine("== Stats points:", "| " + std::to_string(this->statPoints), labelSize, valueSize);
+    printFormattedLine("== Equipped weapon:", "| " + this->weapon->getName(), labelSize, valueSize);
+    printFormattedLine("== Equipped helmet:", "| " + this->armorHead->getName(), labelSize, valueSize);
+    printFormattedLine("== Equipped chestplate:", "| " + this->armorChest->getName(), labelSize, valueSize);
+    printFormattedLine("== Equipped leggings:", "| " + this->armorLeggs->getName(), labelSize, valueSize);
+    printFormattedLine("== Equipped boots:", "| " + this->armorBoots->getName(), labelSize, valueSize);
+    printDivider('=', labelSize + valueSize + 4);
+    std::cout << std::setfill(' ');
+}
+
+void Player::previewPlayer() const {
+    std::cout << std::endl;
+    printDivider('=', 41);
+    std::cout << std::left << std::setw(40) << "== " + this->name + " " << std::endl;
+    std::cout << std::left << std::setw(40) << formatLabelValue("Level", std::to_string(this->level)) << std::endl;
+    printDivider('=', 41);
+    std::cout << std::left << std::setw(40) << formatLabelValue("Hp", std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + " | Radiation: " + std::to_string(this->radiation)) << std::endl;
+    std::cout << std::left << std::setw(40) << formatLabelValue("Stamina", std::to_string(this->stamina) + "/" + std::to_string(this->staminaMax)) << std::endl;
+    std::cout << std::left << std::setw(40) << formatLabelValue("Hunger", std::to_string(this->hunger) + "/" + std::to_string(this->hungerMax) + " | Thirst: " + std::to_string(this->thirst) + "/" + std::to_string(this->thirstMax)) << std::endl;
+    printDivider('=', 41);
+    std::cout << std::setfill(' ') << std::endl;
+}
+
+void Player::sleep() {
+    if(thirst >= MIN_ATTRIBUTE_VALUE_FOR_SLEEP && hunger >= MIN_ATTRIBUTE_VALUE_FOR_SLEEP) {
+        const int thirstDecrease = getRandomNumberInRange(35, MIN_ATTRIBUTE_VALUE_FOR_SLEEP);
+        const int hungerDecrease = getRandomNumberInRange(35, MIN_ATTRIBUTE_VALUE_FOR_SLEEP);
+        const int healthIncrease = getRandomNumberInRange(20, 40);
+        const int radiationDecrease = getRandomNumberInRange(0, 4);
+
+        decreaseVitalAttribute(this->thirst, thirstDecrease);
+        decreaseVitalAttribute(this->hunger, hungerDecrease);
+        decreaseVitalAttribute(this->radiation, radiationDecrease);
+        this->stamina = this->staminaMax;
+        this->health = std::min(this->health + healthIncrease, 100);
+        std::cout << "\nI slept well. My energy are restored" << std::endl;
+    }
+    else
+        std::cout << "\nI need to raise my hunger and thirst to " << MIN_ATTRIBUTE_VALUE_FOR_SLEEP << " or I won't be able to sleep" << std::endl;
+}
+
+void Player::explore() {
+    this->distanceTravelled++;
+    const int usedRadiation = getRandomNumberInRange(0, 6) == 0 ? 1 : 0;
+    const int usedStamina = getRandomNumberInRange(7, 11);
+    const int usedHunger = getRandomNumberInRange(2, 6);
+    const int usedThirst = getRandomNumberInRange(2, 6);
+
+    decreaseVitalAttribute(stamina, usedStamina);
+    decreaseVitalAttribute(hunger, usedHunger);
+    decreaseVitalAttribute(thirst, usedThirst);
+    radiation = std::min(radiation + usedRadiation, MAX_RADIATION);
+    
+    if(stamina == MIN_ATTRIBUTE_VALUE || hunger == MIN_ATTRIBUTE_VALUE || thirst == MIN_ATTRIBUTE_VALUE) {
+        const int usedHealth = getRandomNumberInRange(4, 10);
+        decreaseVitalAttribute(health, usedHealth);
+        std::cout << "I feel bad. I need to eat, drink and rest regularly, otherwise I start to lose hp" << std::endl;
+    }
+
+    exp += getRandomNumberInRange(MIN_EXP_GAIN + (3 * this->level), MAX_EXP_GAIN + (3 * this->level));
+    money += getRandomNumberInRange(MIN_MONEY_GAIN + (this->luck * 2), MAX_MONEY_GAIN + (this->luck * 2));
+
+    if(radiation >= RADIATION_THRESHOLD) {
+        std::cout << "High radiation. I feel bad. I need to reduce radiation, or I will die." << std::endl;
+        decreaseVitalAttribute(hunger, HIGH_RADIATION_REDUCTION);
+        decreaseVitalAttribute(thirst, HIGH_RADIATION_REDUCTION);
+        decreaseVitalAttribute(health, HIGH_RADIATION_REDUCTION);
+    }
+}
+
+void Player::decreaseVitalAttribute(int &attribute, int amount) {
+    attribute = std::max(attribute - amount, MIN_ATTRIBUTE_VALUE);
 }
 
 void Player::levelUp() {
     if(exp >= expNext) {
         level++;
-        exp -= expNext;
-
-        expNext = (def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5) + 100;
         skillPoints++;
-        statPoints += 5;
-        this->hunger = this->hungerMax;
-        this->thirst = this->thirstMax;
-        this->health = this->maxHealth;
-        this->stamina = this->staminaMax;
-        std::cout << "\nLEVEL UP!" << std::endl;
-        std::cout << "Congratulations! Your level has increased to " << this->level << ". You have also received 5 extra stat points to allocate." << std::endl;
-        std::cout << "You now have a total of " << this->statPoints << " stat points available for further improvement." << std::endl;
-        std::cout << "All your vital parameters have been fully restored." << std::endl;
+        statPoints += STAT_POINTS_PER_LEVEL;
+        exp -= expNext;
+        expNext = (def_exp_next * (level - 1) + def_exp_next * (level - 1) * 0.5) + def_exp_next;
+        restoreVitalAttributes();
+        printLevelUpMessage();
     }
 }
 
-void Player::increaseAttributes() {
-    char continueChoice{ 'n' };
+void Player::restoreVitalAttributes() {
+    this->hunger = this->hungerMax;
+    this->thirst = this->thirstMax;
+    this->health = this->maxHealth;
+    this->stamina = this->staminaMax;
+    int radiationDecreased = getRandomNumberInRange(0, 5);
+    decreaseVitalAttribute(this->radiation, radiationDecreased);
+}
+
+void Player::printLevelUpMessage() const {
+    std::cout << std::endl;
+    printDivider('=', 110);
+    std::cout << "LEVEL UP!" << std::endl;
+    std::cout << "Congratulations! My level has increased to " << this->level << ". I've also received 5 extra stat points to allocate." << std::endl;
+    std::cout << "I now have a total of " << this->statPoints << " stat points available for further improvement." << std::endl;
+    std::cout << "All my vital parameters have been fully restored." << std::endl;
+    printDivider('=', 110);
+}
+
+void Player::increaseStatAttributes() {
+    int continueChoice{};
     do {
         if(this->statPoints > 0) {
-            std::cout << "(1) - Strength" << std::endl
-                << "(2) - Vitality" << std::endl
-                << "(3) - Dexterity" << std::endl
-                << "(4) - Intelligence" << std::endl
-                << "(5) - Luck" << std::endl;
-            int attributeChoice = getValidateAnswer("Enter which attribute you want to increase: ", "\nInvalid attribute choice. Please try again.", 1, 5);
+            printAttributeOptions();
+            AttributeChoice attributeChoice = static_cast<AttributeChoice>(getValidateAnswer("\nEnter which attribute I should increase: ", "\nInvalid choice. I don't have such an attribute.", 1, 5));
             switch(attributeChoice) {
-                case 1:
-                    this->strength++;
-                    break;
-                case 2:
-                    this->vitality++;
-                    break;
-                case 3:
-                    this->dexterity++;
-                    break;
-                case 4:
-                    this->intelligence++;
-                    break;
-                case 5:
-                    this->luck++;
-                    break;
-                default:
-                    std::cout << "\nInvalid attribute choice" << std::endl;
-                    break;
+                case AttributeChoice::STRENGTH:     increaseStatAttribute(this->strength, "Strength"); break;
+                case AttributeChoice::VITALITY:     increaseStatAttribute(this->vitality, "Vitality"); break;
+                case AttributeChoice::DEXTERITY:    increaseStatAttribute(this->dexterity, "Dexterity"); break;
+                case AttributeChoice::INTELLIGENCE: increaseStatAttribute(this->intelligence, "Intelligence"); break;
+                case AttributeChoice::LUCK:         increaseStatAttribute(this->luck, "Luck"); break;
+                default: std::cout << "\nInvalid attribute choice" << std::endl; break;
             }
-            this->statPoints--;
-            this->updateCharacteristics();
+        }
+        else
+            return;
+
+        if(this->statPoints > 0) {
+            continueChoice = getValidateAnswer("\nShould I continue? (1) - Yes (2) - No\n Your choice: ", "Invalid choice", 1, 2);
+            if(continueChoice == 0)
+                return;
         }
         else {
-            std::cout << "\nYou don't have enough stats points" << std::endl;
             return;
         }
-        if(this->statPoints > 0) {
-            std::cout << "\nYou have " << this->statPoints << " points left.\nDo you want to continue? (y/n)";
-            std::cin >> continueChoice;
-        }
-        else {
-            std::cout << "\nYou don't have enough stat points" << std::endl;
-            break;
-        }
-    } while(this->statPoints > 0 && continueChoice != 'n');
+    } while(this->statPoints > 0 && continueChoice != 0);
+}
+
+void Player::printAttributeOptions() const {
+    std::cout << "(1) - Strength (Increase damage)" << std::endl
+              << "(2) - Vitality (Increase health)" << std::endl
+              << "(3) - Dexterity (Increase stamina)" << std::endl
+              << "(4) - Intelligence (Increase defence)" << std::endl
+              << "(5) - Luck (Increase received money and exp)" << std::endl;
+}
+
+void Player::increaseStatAttribute(int &attribute, const std::string &attributeName) {
+    attribute++;
+    this->statPoints--;
+    this->updateCharacteristics();
+    std::cout << "\nI have increased " << attributeName << ". I have " << this->statPoints << " points left.\n";
 }
 
 void Player::updateCharacteristics() {
-    this->maxHealth = def_max_health + (int)(vitality / 2) - 2;
-    this->minDamage = def_min_damage + (int)(strength / 4 + vitality / 4) - 2;
-    this->maxDamage = def_max_damage + (int)(strength / 4 + vitality / 4) - 2;
-    this->staminaMax = def_stamina_max + (int)(dexterity / 2) - 2;
-    this->defence = def_defence + (intelligence / 2) - 2;
+    int maxHealthBonus = calculateAttributeBonus(vitality), staminaMaxBonus = calculateAttributeBonus(dexterity);
+    int minDamageBonus = calculateAttributeBonus(strength), maxDamageBonus = calculateAttributeBonus(strength);
+    int defenceBonus = calculateAttributeBonus(intelligence);
+
+    if(this->health == this->maxHealth) {
+        this->maxHealth = def_max_health + maxHealthBonus;
+        this->health = this->maxHealth;
+    }
+    else 
+        this->maxHealth = def_max_health + maxHealthBonus;
+    if(stamina == staminaMax) {
+        this->staminaMax = def_stamina_max + staminaMaxBonus;
+        this->stamina = this->staminaMax;
+    }
+    else
+        this->staminaMax = def_stamina_max + staminaMaxBonus;
+    this->minDamage = def_min_damage + minDamageBonus;
+    this->maxDamage = def_max_damage + maxDamageBonus;
+    this->defence = def_defence + defenceBonus;
+}
+
+int Player::calculateAttributeBonus(const int &attribute) const {
+    return (attribute / ATTRIBUTE_BONUS_FACTOR) - (ATTRIBUTE_BASE_VALUE / ATTRIBUTE_BONUS_FACTOR);
+}
+
+void Player::printInventory() {
+    if(this->inventory.is_empty()) {
+        std::cout << "\My inventory is empty\n" << std::endl;
+        return;
+    }
+
+    int selectedItemIndex{};
+
+    do {
+        this->inventory.printInventory();
+        selectedItemIndex = getValidateAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
+        if(selectedItemIndex == 0) {
+            return;
+        }
+        else {
+            std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
+            std::cout << *selectedItem << std::endl;
+            int choice{};
+            if(selectedItem->getCategory() == Category::PRODUCT) {
+                choice = getValidateAnswer("Do you want to use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                if(choice == 1) {
+                    this->useProduct(selectedItem);
+                    this->getInventory().removeItem(selectedItemIndex - 1);
+                    continue;
+                }
+            }
+            else {
+                if(selectedItem->getStatus() == "Equipped") {
+                    choice = getValidateAnswer("Do you want to unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+
+                    if(choice == 1) {
+                        unequipItem(selectedItem);
+                    }
+                }
+                else {
+                    choice = getValidateAnswer("Do you want to equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+
+                    if(choice == 1) {
+                        equipItem(selectedItem);
+                    }
+                }
+            }
+        }
+    } while(selectedItemIndex != 0);
+}
+
+bool Player::useItemInCombat() {
+    if(this->getInventory().is_empty()) {
+        std::cout << "\nMy Inventory is empty" << std::endl;
+        return false;
+    }
+    std::cout << "\nI can use only one item per turn!" << std::endl;
+
+    this->inventory.printInventory();
+    int selectedItemIndex{};
+    selectedItemIndex = getValidateAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
+    if(selectedItemIndex == 0) {
+        return false;
+    }
+
+    int choice{};
+    do {
+        std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
+        std::cout << *selectedItem << std::endl;
+
+        if(selectedItem->getCategory() == Category::PRODUCT) {
+            choice = getValidateAnswer("Should I use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+            if(choice == 1) {
+                this->useProduct(selectedItem);
+                this->getInventory().removeItem(selectedItemIndex - 1);
+                return true;
+            }
+        }
+        else {
+            if(selectedItem->getStatus() == "Equipped") {
+                choice = getValidateAnswer("Should I unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+
+                if(choice == 1) {
+                    unequipItem(selectedItem);
+                    return true;
+                }
+            }
+            else {
+                choice = getValidateAnswer("Should I equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+
+                if(choice == 1) {
+                    equipItem(selectedItem);
+                    return true;
+                }
+            }
+        }
+    } while(choice != 2);
+    return false;
 }
 
 bool Player::buyItem(std::shared_ptr<Item> &item) {
@@ -510,47 +570,6 @@ Player &Player::operator=(const Player &rhs) {
     return *this;
 }
 
-void Player::explore() {
-    this->distanceTravelled++;
-    int usedRadiation = rand() % 4 == 0 ? 1 : 0;
-    int usedStamina = calculateRandomCharacteristic(7, 11);
-    int usedHunger = calculateRandomCharacteristic(2, 6);
-    int usedThirst = calculateRandomCharacteristic(2, 6);
-    int usedHealth = calculateRandomCharacteristic(4, 10);
-
-    if(stamina != 0 && hunger != 0 && thirst != 0) {
-        stamina = std::max(stamina - usedStamina, 0);
-        hunger = std::max(hunger - usedHunger, 0);
-        thirst = std::max(thirst - usedThirst, 0);
-        radiation = std::min(radiation + usedRadiation, 15);
-    }
-    else {
-        health = std::max(health - usedHealth, 0);
-        stamina = std::max(stamina - usedStamina, 0);
-        hunger = std::max(hunger - usedHunger, 0);
-        thirst = std::max(thirst - usedThirst, 0);
-        radiation = std::min(radiation + usedRadiation, 15);
-
-    }
-
-    exp += calculateRandomCharacteristic(5 + (3 * this->level), 10 + (3 * this->level));
-    money += calculateRandomCharacteristic(20 + (this->luck * 2), 30 + (this->luck * 2));
-
-    if(radiation >= 10) {
-        std::cout << "High radiation. I feel bad. I need to reduce radiation, or I will die." << std::endl;
-        hunger = std::max(hunger - 10, 0);
-        thirst = std::max(thirst - 10, 0);
-        health = std::max(health - 10, 0);
-    }
-}
-
-void Player::sleep() {
-    this->thirst = std::max(this->thirst - calculateRandomCharacteristic(35, 40), 0);
-    this->hunger = std::max(this->hunger - calculateRandomCharacteristic(35, 40), 0);
-    this->stamina = this->staminaMax;
-    this->health = std::min(100, this->health + calculateRandomCharacteristic(20, 40));
-}
-
 void Player::useProduct(std::shared_ptr<Item> &item) {
     std::shared_ptr<Product> product = std::dynamic_pointer_cast<Product>(item);
     this->hunger = std::min(this->hunger + product->getHungerRestored(), 100);
@@ -561,10 +580,10 @@ void Player::useProduct(std::shared_ptr<Item> &item) {
 }
 
 void Player::restoreStaminaInCombat() {
-    this->stamina = std::min(100, this->stamina + calculateRandomCharacteristic(40, 50));
+    this->stamina = std::min(100, this->stamina + getRandomNumberInRange(40, 50));
 
-    this->hunger = std::max(0, this->hunger - calculateRandomCharacteristic(8, 12));
-    this->thirst = std::max(0, this->thirst - calculateRandomCharacteristic(8, 12));
+    this->hunger = std::max(0, this->hunger - getRandomNumberInRange(8, 12));
+    this->thirst = std::max(0, this->thirst - getRandomNumberInRange(8, 12));
 }
 
 void Player::upgradeItems() {
@@ -575,8 +594,8 @@ void Player::upgradeItems() {
 
     int selectedItemIndex{};
 
-    this->inventory.showInventory();
-    selectedItemIndex = getValidateAnswer("Choose the item I want to upgrade: ", "Incorrect choice", 0, this->inventory.getItems().size());
+    this->inventory.printInventory();
+    selectedItemIndex = getValidateAnswer("Choose the item I want to upgrade: ", "Invalid choice", 0, this->inventory.getItems().size());
 
     if(selectedItemIndex == 0)
         return;
@@ -596,7 +615,7 @@ void Player::upgradeWeapon(int indexOfWeapon) {
     std::string status = weaponToUpgrade->getStatus();
     int spendedMoney = weaponToUpgrade->getPurchasePrice() / 10;
     std::cout << "To upgrade " << weaponToUpgrade->getName() << " I need to spend " << spendedMoney << " money" << std::endl;
-    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
     if(choice == 2)
         return;
     if(spendedMoney > this->money) {
@@ -641,7 +660,7 @@ void Player::upgradeArmor(int indexOfArmor) {
     std::string status = armorToUpgrade->getStatus();
     int spendedMoney = armorToUpgrade->getPurchasePrice() / 10;
     std::cout << "To upgrade " << armorToUpgrade->getName() << " I need to spend " << spendedMoney << "money" << std::endl;
-    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
     if(choice == 2)
         return;
     if(spendedMoney > this->money) {
@@ -677,7 +696,4 @@ void Player::upgradeArmor(int indexOfArmor) {
 
         std::cout << "I upgraded " << armorToUpgrade->getName() << " and defence upgraded on " << defenceAdded << std::endl;
     }
-        
-
-    
 }

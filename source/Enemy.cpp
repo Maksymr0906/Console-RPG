@@ -29,6 +29,7 @@ void Enemy::readFromTxtFile(std::ifstream &infile) {
 		droppedItem = std::make_shared<Armor>();
 	if(static_cast<Category>(itemCategory) == Category::PRODUCT)
 		droppedItem = std::make_shared<Product>();
+
 	if(droppedItem) {
 		infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 		droppedItem->readFromTxtFile(infile);

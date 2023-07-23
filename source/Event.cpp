@@ -149,36 +149,35 @@ void Event::readEmptyEventMessagesFromFile() {
 }
 
 void Event::readPuzzlesFromFile() {
-    std::ifstream infile("Puzzle.txt");
+	std::ifstream infile("Puzzle.txt");
 
-    if (!infile.is_open()) {
-        std::cerr << "Error opening file" << std::endl;
-        return;
-    }
+	if(!infile.is_open()) {
+		std::cerr << "Error opening file" << std::endl;
+		return;
+	}
+	while(!infile.eof()) {
 
-    std::string line;
-    while (std::getline(infile, line)) {
-        std::string answer{};
-        int indexOfCorrectAnswer{};
-        size_t numOfAnswers{};
-        std::string question = line;
-        std::getline(infile, line);
-        std::istringstream iss(line);
-        iss >> numOfAnswers;
+		std::string answer{};
+		int indexOfCorrectAnswer{};
+		size_t numOfAnswers{};
+		std::string question;
+		std::getline(infile, question);
+		infile >> numOfAnswers;
+		infile.ignore();
 
-        std::vector<std::string> answers;
-        for (size_t i = 0; i < numOfAnswers; i++) {
-            std::getline(infile, answer);
-            answers.push_back(answer);
-        }
+		std::vector<std::string> answers;
+		for(size_t i = 0; i < numOfAnswers; i++) {
+			std::getline(infile, answer);
+			answers.push_back(answer);
+		}
 
-        infile >> indexOfCorrectAnswer;
-        infile.ignore();
+		infile >> indexOfCorrectAnswer;
+		infile.ignore();
 
-        puzzles.emplace_back(question, indexOfCorrectAnswer, answers);
-    }
+		puzzles.emplace_back(question, indexOfCorrectAnswer, answers);
+	}
 
-    infile.close();
+	infile.close();
 }
 
 int Event::calculateRandomEvent() const {
@@ -246,8 +245,8 @@ void Event::puzzleEncouter(Player &p) {
 
 		if(playerAnswer == puzzle.getIndexOfCorrectAnswer()) {
 			completed = true;
-			int expGained = calculateRandomCharacteristic(10 * (p.getLevel() + (p.getLuck() / 2)), 15 * (p.getLevel() + (p.getLuck() / 2)));
-			int moneyGained = calculateRandomCharacteristic(10 * (p.getLevel() + (p.getLuck() / 2)), 15 * (p.getLevel() + (p.getLuck() / 2)));
+			int expGained = getRandomNumberInRange(10 * (p.getLevel() + (p.getLuck() / 2)), 15 * (p.getLevel() + (p.getLuck() / 2)));
+			int moneyGained = getRandomNumberInRange(10 * (p.getLevel() + (p.getLuck() / 2)), 15 * (p.getLevel() + (p.getLuck() / 2)));
 			p.setExp(p.getExp() + expGained);
 			p.setMoney(p.getMoney() + moneyGained);
 			std::cout << "\nI chose the right answer, the safe opened and I received " << expGained << " exp and " << moneyGained << " money" << std::endl;
@@ -350,9 +349,9 @@ void Event::fightEncouter(Player &p) {
 				p.takeDamage(rand() % 10 + 1);
 			}
 
-			p.setStamina(std::max(0, p.getStamina() - calculateRandomCharacteristic(3, 8)));
-			p.setHunger(std::max(0, p.getHunger() - calculateRandomCharacteristic(2, 5)));
-			p.setThirst(std::max(0, p.getThirst() - calculateRandomCharacteristic(2, 5)));
+			p.setStamina(std::max(0, p.getStamina() - getRandomNumberInRange(3, 8)));
+			p.setHunger(std::max(0, p.getHunger() - getRandomNumberInRange(2, 5)));
+			p.setThirst(std::max(0, p.getThirst() - getRandomNumberInRange(2, 5)));
 			isPlayerTurn = false;
 			isEnemyTurn = true;
 		}
@@ -367,8 +366,8 @@ void Event::fightEncouter(Player &p) {
 
 
 		if(!enemy.isAlive()) {
-			p.setMoney(p.getMoney() + calculateRandomCharacteristic(10 * enemy.getLevel(), 50 * enemy.getLevel()));
-			p.setExp(p.getExp() + calculateRandomCharacteristic(10 * enemy.getLevel(), 30 * enemy.getLevel()));
+			p.setMoney(p.getMoney() + getRandomNumberInRange(10 * enemy.getLevel(), 50 * enemy.getLevel()));
+			p.setExp(p.getExp() + getRandomNumberInRange(10 * enemy.getLevel(), 30 * enemy.getLevel()));
 			int drop = rand() % 100 + 1;
 			if(drop <= enemy.getDropChance()) {
 				std::shared_ptr<Item> givenItem = enemy.getDroppedItem();
@@ -461,7 +460,7 @@ void Event::shop(Player &p) {
 	int choice{}, moneyBefore{ p.getMoney() };
 	do {
 		std::cout << "My money: " << p.getMoney() << std::endl;
-		choice = getValidateAnswer("\n(0) - Leave the shop\n(1) - Weapons\n(2) - Armor\n(3) - Products\n(4) - Increase backpack\n(5) - Sell items\nYour choice: ", "Incorrect choice", 0, 5);
+		choice = getValidateAnswer("\n(0) - Leave the shop\n(1) - Weapons\n(2) - Armor\n(3) - Products\n(4) - Increase backpack\n(5) - Sell items\nYour choice: ", "Invalid choice", 0, 5);
 		if(choice == 1) {
 			weaponShop(p);
 		}
@@ -498,7 +497,7 @@ void Event::weaponShop(Player &p) {
 			std::cout << "(" << j << ") - " << weapon->getName() << " (+" << weapon->getMinDamage() << "-" << weapon->getMaxDamage() << ") : cost " << weapon->getPurchasePrice() << "G" << std::endl;
 		}
 
-		choice = getValidateAnswer("\nYour choice: ", "Incorrect choice", 0, 3);
+		choice = getValidateAnswer("\nYour choice: ", "Invalid choice", 0, 3);
 		if(choice != 0) {
 			std::shared_ptr<Item> weapon = std::make_shared<Weapon>(*dynamic_cast<Weapon *>(itemsToSell[choice + 2].get()));
 			if(p.buyItem(weapon)) {
@@ -523,7 +522,7 @@ void Event::armorShop(Player &p) {
 			std::cout << "(" << j << ") - " << armor->getName() << " (+" << armor->getDefence() << ") : cost " << armor->getPurchasePrice() << "G" << std::endl;
 		}
 
-		choice = getValidateAnswer("\nYour choice: ", "Incorrect choice", 0, 3);
+		choice = getValidateAnswer("\nYour choice: ", "Invalid choice", 0, 3);
 		if(choice != 0) {
 			std::shared_ptr<Item> armor = std::make_shared<Armor>(*dynamic_cast<Armor *>(itemsToSell[choice + 5].get()));
 			if(p.buyItem(armor)) {
@@ -548,7 +547,7 @@ void Event::productsShop(Player &p) {
 			std::cout << "(" << j << ") - " << product->getName() << " (+" << product->getEnergyRestored() << ") : cost " << product->getPurchasePrice() << "G" << std::endl;
 		}
 
-		choice = getValidateAnswer("\nYour choice: ", "Incorrect choice", 0, 3);
+		choice = getValidateAnswer("\nYour choice: ", "Invalid choice", 0, 3);
 		if(choice != 0) {
 			std::shared_ptr<Item> product = std::make_shared<Product>(*dynamic_cast<Product *>(itemsToSell[choice - 1].get()));
 			if(p.buyItem(product)) {
@@ -567,7 +566,7 @@ void Event::increaseBackpack(Player &p) {
 	int choice{};
 	const std::vector<std::pair<int, size_t>> backpacks{ {1000, 9}, {3200, 13}, {8000, 19}, {14000, 23}, {20000, 25} };
 	do {
-		choice = getValidateAnswer("\n(0) - Go back\n(1) - School backpack (+4 slots) Cost: 1000G\n(2) - Pioneer backpack (+8 slots) Cost: 3200G\n(3) - Duffel bag (+14 slots) Cost: 8000G\n(4) - Tourist backpack (+18 slots) Cost: 14000G\n(5) - Army backpack (+20 slots) Cost: 20000G\nYour choice: ", "Incorrect choice", 0, 5);
+		choice = getValidateAnswer("\n(0) - Go back\n(1) - School backpack (+4 slots) Cost: 1000G\n(2) - Pioneer backpack (+8 slots) Cost: 3200G\n(3) - Duffel bag (+14 slots) Cost: 8000G\n(4) - Tourist backpack (+18 slots) Cost: 14000G\n(5) - Army backpack (+20 slots) Cost: 20000G\nYour choice: ", "Invalid choice", 0, 5);
 		if(choice == 1) {
 			if(setNewBackpack(p, backpacks[choice - 1]))
 				std::cout << "\nYou bought a School backpack" << std::endl;
@@ -614,8 +613,8 @@ void Event::sellItems(Player &p) {
 
 	do {
 		if(inventory.getItems().size() > 0) {
-			inventory.showInventory();
-			choice = getValidateAnswer("Choose item that you want to sell: ", "Incorrect choice", 0, inventory.getItems().size());
+			inventory.printInventory();
+			choice = getValidateAnswer("Choose item that you want to sell: ", "Invalid choice", 0, inventory.getItems().size());
 
 			if(choice == 0) {
 				return;

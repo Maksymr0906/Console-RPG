@@ -5,8 +5,31 @@
 #include "Inventory.hpp"
 #include "Entity.hpp"
 
+
+enum class AttributeChoice {
+    STRENGTH = 1,
+    VITALITY,
+    DEXTERITY,
+    INTELLIGENCE,
+    LUCK
+};
+
+
 class Player : public Entity {
 private:
+    static constexpr const int MAX_RADIATION = 15;
+    static constexpr const int RADIATION_THRESHOLD = 10;
+    static constexpr const int MIN_ATTRIBUTE_VALUE = 0;
+    static constexpr const int MIN_ATTRIBUTE_VALUE_FOR_SLEEP = 40;
+    static constexpr const int HIGH_RADIATION_REDUCTION = 10;
+    static constexpr const int MIN_EXP_GAIN = 5;
+    static constexpr const int MAX_EXP_GAIN = 10;
+    static constexpr const int MIN_MONEY_GAIN = 20;
+    static constexpr const int MAX_MONEY_GAIN = 30;
+    static constexpr const int STAT_POINTS_PER_LEVEL = 5;
+    static constexpr const int ATTRIBUTE_BONUS_FACTOR = 2;
+    static constexpr const int ATTRIBUTE_BASE_VALUE = 5;
+
     static constexpr const char *def_name = "Unnamed Player";
     static constexpr const int def_health = 100;
     static constexpr const int def_max_health = 100;
@@ -95,21 +118,27 @@ public:
 
     //Methods
     void initialize(const std::string &name);
+    void writeToTxtFile(std::ofstream &outfile) const;
+    void readFromTxtFile(std::ifstream &infile);
+    
+    void printStats() const;
+    void previewPlayer() const;
+    void sleep();
+    void explore();
+    void decreaseVitalAttribute(int &attribute, int amount);
     void levelUp();
-    void showStats();
-    void increaseAttributes();
+    void printLevelUpMessage() const;
+    void restoreVitalAttributes();
+    void increaseStatAttributes();
+    void printAttributeOptions() const;
+    void increaseStatAttribute(int &attribute, const std::string &attributeName);
+    void updateCharacteristics();
+    int calculateAttributeBonus(const int &attribute) const;
     bool buyItem(std::shared_ptr<Item> &item);
     void sellItem(const int &position);
     void equipItem(std::shared_ptr<Item> &item);
     void unequipItem(std::shared_ptr<Item> &item);
-    void showInventory();
-    void updateCharacteristics();
-    void explore();
-    void showEquipment();
-    void writeToTxtFile(std::ofstream &outfile) const;
-    void readFromTxtFile(std::ifstream &infile);
-    void previewPlayer() const;
-    void sleep();
+    void printInventory();
     void useProduct(std::shared_ptr<Item> &item);
     bool useItemInCombat();
     void restoreStaminaInCombat();

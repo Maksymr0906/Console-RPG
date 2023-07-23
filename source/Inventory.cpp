@@ -5,15 +5,13 @@ void Inventory::initialize() {
 }
 
 void Inventory::addItem(std::shared_ptr<Item> &item) {
-    if(items.size() < maxNumberOfItems) {
+    if(items.size() < maxNumberOfItems)
         items.push_back(std::move(item));
-    }
-    else {
+    else
         std::cout << "Not enough space in inventory for " << item->getName() << std::endl;
-    }
 }
 
-void Inventory::showInventory() const {
+void Inventory::printInventory() const {
     if(this->items.empty()) {
         std::cout << "\nMy inventory is empty" << std::endl;
         return;
@@ -22,23 +20,20 @@ void Inventory::showInventory() const {
     std::cout << "(0) - Go back" << std::endl;
     for(size_t i = 0; i < this->items.size(); i++) {
         std::cout << "(" << i + 1 << ") - " << this->items.at(i)->getName();
-        if(this->items.at(i)->getStatus() == "Equipped") {
+        if(this->items.at(i)->getStatus() == "Equipped")
             std::cout << " (Equipped)";
-        }
         std::cout << std::endl;
     }
 }
 
 void Inventory::removeItem(size_t position) {
-    if(position >= items.size()) {
+    if(position >= items.size())
         std::cout << "Invalid position" << std::endl;
-    }
-    else {
+    else
         items.erase(items.begin() + position);
-    }
 }
 
-void Inventory::expand(int numberOfNewCells) {
+void Inventory::expand(const int &numberOfNewCells) {
     this->maxNumberOfItems += numberOfNewCells;
 }
 

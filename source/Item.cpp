@@ -38,15 +38,12 @@ void Item::print(std::ostream &os) const {
 
 void Item::printCategory(std::ostream &os) const {
     os << "\nCategory: ";
-    if(category == Category::WEAPON) {
+    if(category == Category::WEAPON)
         os << "Weapon";
-    }
-    else if(category == Category::ARMOR) {
+    else if(category == Category::ARMOR)
         os << "Armor";
-    }
-    else if(category == Category::PRODUCT) {
+    else if(category == Category::PRODUCT)
         os << "Product";
-    }
 }
 
 void Item::printStatus(std::ostream &os) const {

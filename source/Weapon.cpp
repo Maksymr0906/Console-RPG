@@ -13,7 +13,7 @@ void Weapon::readFromTxtFile(std::ifstream &infile) {
 
 void Weapon::print(std::ostream& os) const {
     Item::print(os);
-    std::cout << "\nMin/Max damage: " << this->minDamage << " / " << this->maxDamage << std::endl;
+    os << "\nMin/Max damage: " << this->minDamage << " / " << this->maxDamage << std::endl;
 }
 
 void Weapon::printStatus(std::ostream &os) const {

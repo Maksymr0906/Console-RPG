@@ -19,9 +19,9 @@ public:
 
     void initialize();
     void addItem(std::shared_ptr<Item> &item);
-    void showInventory() const;
+    void printInventory() const;
     void removeItem(size_t position);
-    void expand(int numberOfNewCells);
+    void expand(const int &numberOfNewCells);
     bool is_empty() const { return items.empty(); }
 
     void writeToTxtFile(std::ofstream &outfile) const;

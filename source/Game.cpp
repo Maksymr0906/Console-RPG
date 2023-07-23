@@ -15,12 +15,14 @@ void Game::initialize() {
 }
 
 void Game::mainMenu() {
+    CLEAR_SCREEN;
+    this->timeToUpdateStore = 0;
     players.clear();
     players = loadPlayers("players.txt");
     indexOfActivePlayer = -1;
 
     do {
-        int choice = getValidateAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n(3) - Delete characters\n\nEnter your choice: ", "\nIncorrect choice", 0, 3);
+        int choice = getValidateAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n(3) - Delete characters\n\nEnter your choice: ", "\nInvalid choice", 0, 3);
 
         if(choice == 0) {
             playing = false;
@@ -82,19 +84,19 @@ void Game::gameMenu() {
             shop();
             break;
         case GameOption::VIEW_STATS:
-            players[indexOfActivePlayer].showStats();
+            players[indexOfActivePlayer].printStats();
             break;
         case GameOption::VIEW_INVENTORY:
-            players[indexOfActivePlayer].showInventory();
+            players[indexOfActivePlayer].printInventory();
             break;
         case GameOption::UPGRADE_CHARACTERISTICS:
-            players[indexOfActivePlayer].increaseAttributes();
+            players[indexOfActivePlayer].increaseStatAttributes();
             break;
         case GameOption::SAVE_PLAYER:
             savePlayers();
             break;
         default:
-            std::cout << "Incorrect choice" << std::endl;
+            std::cout << "Invalid choice" << std::endl;
             break;
     }
 
@@ -110,7 +112,7 @@ void Game::askToSavePlayer() {
     if(!isPlayerSaved) {
         int choice{};
         do {
-            choice = getValidateAnswer("\nDo you want to save the player before returning to the main menu?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+            choice = getValidateAnswer("\nDo you want to save the player before returning to the main menu?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
             if(choice == 1) {
                 savePlayers();
             }
@@ -135,9 +137,9 @@ void Game::backstory() const {
         << "You come to your senses in an empty New York, which is full of zombies." << std::endl
         << "For now, all you need is to survive, and how to achieve this depends on you." << std::endl
         << "So get up and don't waste a single moment on empty thoughts, otherwise you simply won't survive." << std::endl;
-
+    std::string input{};
     std::cout << std::endl << std::setw(70) << std::right << "=== Press Enter to continue ===" << std::endl;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, input);
     CLEAR_SCREEN;
 }
 
@@ -175,7 +177,7 @@ void Game::createNewPlayer() {
     else {
         int number{};
         do {
-            number = getValidateAnswer("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ", "Incorrect choice", 1, 2);
+            number = getValidateAnswer("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
 
             if(number == 1) {
                 Player player;
@@ -261,7 +263,7 @@ void Game::deletePlayer() {
     savePlayers();
     players = loadPlayers("players.txt");
     displayAllPlayers();
-    int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Incorrect choice. Try again", 0, players.size());
+    int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Invalid choice. Try again", 0, players.size());
     if(choice != 0) {
         deletePlayerByIndex(choice - 1);
     }
@@ -275,12 +277,11 @@ void Game::deletePlayerByIndex(int index) {
 void Game::shelter() {
     int choice{};
     do {
-        choice = getValidateAnswer("\n(0) - Back to the street\n(1) - My bed\n(2) - WorkBench\n(3) - My box\nYour choice: ", "Incorrect choice", 0, 3);
+        choice = getValidateAnswer("\n(0) - Back to the street\n(1) - My bed\n(2) - WorkBench\n(3) - My box\nYour choice: ", "Invalid choice", 0, 3);
         if(choice == 0) {
             return;
         }
         else if(choice == 1) {
-            std::cout << "\nHere I can sleep and restore my energy" << std::endl;
             sleep();
         }
         else if(choice == 2) {
@@ -294,13 +295,14 @@ void Game::shelter() {
 }
 
 void Game::sleep() {
-    if(players[indexOfActivePlayer].getHunger() < 40 || players[indexOfActivePlayer].getThirst() < 40) {
-        std::cout << "\nI need to raise my hunger and thirst to 40 or I won't be able to sleep" << std::endl;
-    }
-    else {
+    std::cout << "\nHere I can sleep and restore my energy" << std::endl;
+    std::cout << "My stamina: " << players[indexOfActivePlayer].getStamina() << " / " << players[indexOfActivePlayer].getStaminaMax() << std::endl;
+    int choice = getValidateAnswer("Should I sleep?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+    
+    if(choice == 1)
         players[indexOfActivePlayer].sleep();
-        std::cout << "\nI slept well. My energy are restored" << std::endl;
-    }
+    else
+        std::cout << "I chose not to waste time sleeping" << std::endl;
 }
 
 void Game::shop() {

@@ -3,18 +3,14 @@
 void Armor::print(std::ostream& os) const {
     Item::print(os);
     os << "\nType: ";
-    if(type == ArmorType::HELMET) {
+    if(type == ArmorType::HELMET)
         os << "Helmet";
-    }
-    else if(type == ArmorType::CHESTPLATE) {
+    else if(type == ArmorType::CHESTPLATE)
         os << "Chestplate";
-    }
-    else if(type == ArmorType::LEGGINGS) {
+    else if(type == ArmorType::LEGGINGS)
         os << "Leggings";
-    }
-    else if(type == ArmorType::BOOTS) {
+    else if(type == ArmorType::BOOTS)
         os << "Boots";
-    }
     os << "\nDefence: " << this->defence << std::endl;
 }
 
