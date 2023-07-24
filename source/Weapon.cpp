@@ -11,6 +11,18 @@ void Weapon::readFromTxtFile(std::ifstream &infile) {
     infile >> minDamage >> maxDamage;
 }
 
+void Weapon::upgrade() {
+    Item::upgrade();
+
+    int minDamageAdded = std::max(minDamage / DAMAGE_ADDED_PERCENTAGE, 1);
+    int maxDamageAdded = std::max(maxDamage / DAMAGE_ADDED_PERCENTAGE, 1);
+
+    minDamage += minDamageAdded;
+    maxDamage += maxDamageAdded;
+
+    std::cout << "I upgraded " << getName() << " and damage upgraded on " << minDamageAdded << " / " << maxDamageAdded << std::endl;
+}
+
 void Weapon::print(std::ostream& os) const {
     Item::print(os);
     os << "\nMin/Max damage: " << this->minDamage << " / " << this->maxDamage << std::endl;

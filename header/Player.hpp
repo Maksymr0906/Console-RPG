@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ctime>
+#include <map>
 
 #include "Inventory.hpp"
 #include "Entity.hpp"
@@ -137,14 +138,16 @@ public:
     bool buyItem(std::shared_ptr<Item> &item);
     void sellItem(const int &position);
     void equipItem(std::shared_ptr<Item> &item);
+    void equipWeapon(std::shared_ptr<Item> &item);
+    void equipArmor(std::shared_ptr<Item> &item);
     void unequipItem(std::shared_ptr<Item> &item);
-    void printInventory();
+    void unequipWeapon(std::shared_ptr<Item> &item);
+    void unequipArmor(std::shared_ptr<Item> &item);
     void useProduct(std::shared_ptr<Item> &item);
-    bool useItemInCombat();
     void restoreStaminaInCombat();
-    void upgradeItems();
-    void upgradeWeapon(int indexOfWeapon);
-    void upgradeArmor(int indexOfArmor);
+    void upgradeItem();
+    void printInventory();
+    bool useItemInCombat();
 
     //Overloaded operators
     bool operator==(const Player &rhs) const;

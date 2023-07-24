@@ -4,6 +4,7 @@
 
 class Weapon : public Item {
 private:
+    static constexpr const int DAMAGE_ADDED_PERCENTAGE = 10;
     static constexpr const char* def_name = "Unnamed Weapon";
     static constexpr const char* def_status = "Unequipped";
     static constexpr const int def_purchase_price = 100;
@@ -31,6 +32,7 @@ public:
     void setMinDamage(int minDamage) { this->minDamage = minDamage; }
     void setMaxDamage(int maxDamage) { this->maxDamage = maxDamage; }
 
+    virtual void upgrade() override;
     virtual void print(std::ostream &os) const override;
     virtual void printStatus(std::ostream &os) const override;
     virtual void printLevel(std::ostream &os) const override;

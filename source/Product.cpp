@@ -15,6 +15,10 @@ void Product::readFromTxtFile(std::ifstream &infile) {
 		   >> thirstRestored >> radiationRestored;
 }
 
+void Product::upgrade() {
+	std::cout << "Can't upgrade products" << std::endl;
+}
+
 void Product::print(std::ostream &os) const {
 	Item::print(os);
 	os  << std::left << "\nHealth: " << this->healthRestored

@@ -50,6 +50,7 @@ public:
 	void setThirstRestored(int thirstRestored) { this->thirstRestored = thirstRestored; }
 	void setRadiationRestored(int radiationRestored) { this->radiationRestored = radiationRestored; }
 
+	virtual void upgrade() override;
 	virtual void print(std::ostream &os) const override;
 	virtual void printStatus(std::ostream &os) const override;
 	virtual void printLevel(std::ostream &os) const override;

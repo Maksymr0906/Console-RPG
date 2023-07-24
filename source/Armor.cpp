@@ -1,5 +1,27 @@
 #include "Armor.hpp"
 
+void Armor::writeToTxtFile(std::ofstream &outfile) const {
+    Item::writeToTxtFile(outfile);
+    outfile << defence << "\n"
+        << static_cast<int>(type) << "\n";
+}
+
+void Armor::readFromTxtFile(std::ifstream &infile) {
+    Item::readFromTxtFile(infile);
+    int typeInt{};
+    infile >> defence >> typeInt;
+    type = static_cast<ArmorType>(typeInt);
+}
+
+void Armor::upgrade() {
+    Item::upgrade();
+
+    int defenceAdded = std::max(defence / DEFENCE_ADDED_PERCENTAGE, 1);
+    defence += defenceAdded;
+
+    std::cout << "I upgraded " << getName() << " and defence upgraded on " << defenceAdded << std::endl;
+}
+
 void Armor::print(std::ostream& os) const {
     Item::print(os);
     os << "\nType: ";
@@ -28,19 +50,6 @@ void Armor::printRarity(std::ostream &os) const {
 
 Armor::Armor(const Armor &obj) 
     :Item(obj), defence{ obj.defence }, type{ obj.type } {
-}
-
-void Armor::writeToTxtFile(std::ofstream &outfile) const {
-    Item::writeToTxtFile(outfile);
-    outfile << defence << "\n"
-            << static_cast<int>(type) << "\n";
-}
-
-void Armor::readFromTxtFile(std::ifstream &infile) {
-    Item::readFromTxtFile(infile);
-    int typeInt{};
-    infile >> defence >> typeInt;
-    type = static_cast<ArmorType>(typeInt);
 }
 
 bool Armor::operator==(const Armor &other) const {

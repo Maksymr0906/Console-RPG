@@ -22,7 +22,7 @@ void Game::mainMenu() {
     indexOfActivePlayer = -1;
 
     do {
-        int choice = getValidateAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n(3) - Delete characters\n\nEnter your choice: ", "\nInvalid choice", 0, 3);
+        int choice = getValidatedAnswer("(0) - Exit\n(1) - Create a new character\n(2) - Load characters\n(3) - Delete characters\n\nEnter your choice: ", "\nInvalid choice", 0, 3);
 
         if(choice == 0) {
             playing = false;
@@ -112,7 +112,7 @@ void Game::askToSavePlayer() {
     if(!isPlayerSaved) {
         int choice{};
         do {
-            choice = getValidateAnswer("\nDo you want to save the player before returning to the main menu?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+            choice = getValidatedAnswer("\nDo you want to save the player before returning to the main menu?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
             if(choice == 1) {
                 savePlayers();
             }
@@ -177,7 +177,7 @@ void Game::createNewPlayer() {
     else {
         int number{};
         do {
-            number = getValidateAnswer("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+            number = getValidatedAnswer("\nCharacter with entered name is already exist. Do you want to exchange him?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
 
             if(number == 1) {
                 Player player;
@@ -224,7 +224,7 @@ int Game::selectPlayer() {
 
     int choice{};
     displayAllPlayers();
-    choice = getValidateAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 0, players.size());
+    choice = getValidatedAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 0, players.size());
 
     return choice;
 }
@@ -263,7 +263,7 @@ void Game::deletePlayer() {
     savePlayers();
     players = loadPlayers("players.txt");
     displayAllPlayers();
-    int choice = getValidateAnswer("Choose the index of player you wanna delete: ", "Invalid choice. Try again", 0, players.size());
+    int choice = getValidatedAnswer("Choose the index of player you wanna delete: ", "Invalid choice. Try again", 0, players.size());
     if(choice != 0) {
         deletePlayerByIndex(choice - 1);
     }
@@ -277,7 +277,7 @@ void Game::deletePlayerByIndex(int index) {
 void Game::shelter() {
     int choice{};
     do {
-        choice = getValidateAnswer("\n(0) - Back to the street\n(1) - My bed\n(2) - WorkBench\n(3) - My box\nYour choice: ", "Invalid choice", 0, 3);
+        choice = getValidatedAnswer("\n(0) - Back to the outside\n(1) - My bed\n(2) - WorkBench\nYour choice: ", "Invalid choice", 0, 2);
         if(choice == 0) {
             return;
         }
@@ -286,10 +286,7 @@ void Game::shelter() {
         }
         else if(choice == 2) {
             std::cout << "\nHere I can upgrade your items, such as armor and weapons" << std::endl;
-            players[indexOfActivePlayer].upgradeItems();
-        }
-        else if(choice == 3) {
-            std::cout << "\nHere I can store my items. (Not working now)" << std::endl;
+            players[indexOfActivePlayer].upgradeItem();
         }
     } while(choice != 0);
 }
@@ -297,7 +294,7 @@ void Game::shelter() {
 void Game::sleep() {
     std::cout << "\nHere I can sleep and restore my energy" << std::endl;
     std::cout << "My stamina: " << players[indexOfActivePlayer].getStamina() << " / " << players[indexOfActivePlayer].getStaminaMax() << std::endl;
-    int choice = getValidateAnswer("Should I sleep?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+    int choice = getValidatedAnswer("Should I sleep?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
     
     if(choice == 1)
         players[indexOfActivePlayer].sleep();

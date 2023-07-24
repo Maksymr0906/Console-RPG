@@ -11,7 +11,7 @@
 #endif
 
 int getNumber(const std::string &message);
-int getValidateAnswer(const std::string &message, const std::string &errorMessage,const int &leftBorder, const int &rightBorder);
+int getValidatedAnswer(const std::string &message, const std::string &errorMessage,const int &leftBorder, const int &rightBorder);
 int getRandomNumberInRange(int leftBorder, int rightBorder);
 void printFormattedLine(const std::string &label, const std::string &value, int labelSize, int valueSize);
 void printDivider(const char &divideSymbol, int sizeOfDivider);

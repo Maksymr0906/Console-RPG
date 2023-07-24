@@ -128,10 +128,10 @@ void Player::readFromTxtFile(std::ifstream &infile) {
 }
 
 void Player::printStats() const {
-    int labelSize{ 25 }, valueSize{ 18 };
+    int labelSize{ 25 }, valueSize{ 30 };
     std::cout << std::endl;
     printDivider('=', labelSize + valueSize + 4);
-    std::cout << std::right << std::setw(labelSize) << std::setfill('=') << "== My stats ==" << std::setw(valueSize + 4) << " " << std::endl;
+    std::cout << std::right << std::setw(labelSize) << std::setfill('=') << " " << std::setw(valueSize + 3) << std::left << "My stats " << std::endl;
     printDivider('=', labelSize + valueSize + 4);
     printFormattedLine("== Name:", "| " + this->name, labelSize, valueSize);
     printFormattedLine("== Level:", "| " + std::to_string(this->level) + " (" + std::to_string(this->exp) + " / " + std::to_string(this->expNext) + ")", labelSize, valueSize);
@@ -182,7 +182,7 @@ void Player::sleep() {
         decreaseVitalAttribute(this->hunger, hungerDecrease);
         decreaseVitalAttribute(this->radiation, radiationDecrease);
         this->stamina = this->staminaMax;
-        this->health = std::min(this->health + healthIncrease, 100);
+        this->health = std::min(this->health + healthIncrease, this->maxHealth);
         std::cout << "\nI slept well. My energy are restored" << std::endl;
     }
     else
@@ -204,7 +204,7 @@ void Player::explore() {
     if(stamina == MIN_ATTRIBUTE_VALUE || hunger == MIN_ATTRIBUTE_VALUE || thirst == MIN_ATTRIBUTE_VALUE) {
         const int usedHealth = getRandomNumberInRange(4, 10);
         decreaseVitalAttribute(health, usedHealth);
-        std::cout << "I feel bad. I need to eat, drink and rest regularly, otherwise I start to lose hp" << std::endl;
+        std::cout << "I feel bad. I need to eat, drink and rest regularly, otherwise I will start to lose hp" << std::endl;
     }
 
     exp += getRandomNumberInRange(MIN_EXP_GAIN + (3 * this->level), MAX_EXP_GAIN + (3 * this->level));
@@ -258,7 +258,7 @@ void Player::increaseStatAttributes() {
     do {
         if(this->statPoints > 0) {
             printAttributeOptions();
-            AttributeChoice attributeChoice = static_cast<AttributeChoice>(getValidateAnswer("\nEnter which attribute I should increase: ", "\nInvalid choice. I don't have such an attribute.", 1, 5));
+            AttributeChoice attributeChoice = static_cast<AttributeChoice>(getValidatedAnswer("\nEnter which attribute I should increase: ", "\nInvalid choice. I don't have such an attribute.", 1, 5));
             switch(attributeChoice) {
                 case AttributeChoice::STRENGTH:     increaseStatAttribute(this->strength, "Strength"); break;
                 case AttributeChoice::VITALITY:     increaseStatAttribute(this->vitality, "Vitality"); break;
@@ -268,16 +268,15 @@ void Player::increaseStatAttributes() {
                 default: std::cout << "\nInvalid attribute choice" << std::endl; break;
             }
         }
-        else
+        else {
+            std::cout << "I don't have enough points to update my attributes" << std::endl;
             return;
+        }
 
         if(this->statPoints > 0) {
-            continueChoice = getValidateAnswer("\nShould I continue? (1) - Yes (2) - No\n Your choice: ", "Invalid choice", 1, 2);
+            continueChoice = getValidatedAnswer("\nShould I continue? (1) - Yes (2) - No\n Your choice: ", "Invalid choice", 1, 2);
             if(continueChoice == 0)
                 return;
-        }
-        else {
-            return;
         }
     } while(this->statPoints > 0 && continueChoice != 0);
 }
@@ -301,19 +300,17 @@ void Player::updateCharacteristics() {
     int maxHealthBonus = calculateAttributeBonus(vitality), staminaMaxBonus = calculateAttributeBonus(dexterity);
     int minDamageBonus = calculateAttributeBonus(strength), maxDamageBonus = calculateAttributeBonus(strength);
     int defenceBonus = calculateAttributeBonus(intelligence);
-
-    if(this->health == this->maxHealth) {
-        this->maxHealth = def_max_health + maxHealthBonus;
+    
+    int previousMaxHealth = this->maxHealth;
+    this->maxHealth = def_max_health + maxHealthBonus;
+    if(this->health == previousMaxHealth)
         this->health = this->maxHealth;
-    }
-    else 
-        this->maxHealth = def_max_health + maxHealthBonus;
-    if(stamina == staminaMax) {
-        this->staminaMax = def_stamina_max + staminaMaxBonus;
+
+    int previousStaminaMax = this->staminaMax;
+    this->staminaMax = def_stamina_max + staminaMaxBonus;
+    if(stamina == previousStaminaMax)
         this->stamina = this->staminaMax;
-    }
-    else
-        this->staminaMax = def_stamina_max + staminaMaxBonus;
+
     this->minDamage = def_min_damage + minDamageBonus;
     this->maxDamage = def_max_damage + maxDamageBonus;
     this->defence = def_defence + defenceBonus;
@@ -323,6 +320,182 @@ int Player::calculateAttributeBonus(const int &attribute) const {
     return (attribute / ATTRIBUTE_BONUS_FACTOR) - (ATTRIBUTE_BASE_VALUE / ATTRIBUTE_BONUS_FACTOR);
 }
 
+bool Player::buyItem(std::shared_ptr<Item> &item) {
+    int purchasePrice = item->getPurchasePrice();
+    if(this->money < purchasePrice) {
+        std::cout << "I don't have enough money to buy " << item->getName() << std::endl;
+        return false;
+    }
+
+    if(this->inventory.getItems().size() >= this->inventory.getMaxNumberOfItems()) {
+        std::cout << "My backpack is full. I can't buy " << item->getName() << std::endl;
+        return false;
+    }
+
+    std::cout << "\n/*I've bought the " << item->getName() << "*/" << std::endl;
+    this->money -= purchasePrice;
+    this->inventory.addItem(item);
+    return true;
+}
+
+void Player::sellItem(const int &position) {
+    std::shared_ptr<Item> &item = this->getInventory().getItems().at(position);
+    this->money += item->getSalePrice();
+    if(item->getStatus() == "Equipped")
+        unequipItem(item);
+
+    this->getInventory().removeItem(position);
+}
+
+void Player::equipItem(std::shared_ptr<Item> &item) {
+    item->equip();
+    Category itemCategory = item->getCategory();
+
+    if(itemCategory == Category::WEAPON)
+        equipWeapon(item);
+    else if(itemCategory == Category::ARMOR)
+        equipArmor(item);
+}
+
+void Player::equipWeapon(std::shared_ptr<Item> &item) {
+    std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
+
+    if(!weaponItem) {
+        std::cerr << "Bad convert to Weapon" << std::endl;
+        return;
+    }
+
+    if(this->weapon->getName() != "None")
+        unequipItem(this->weapon);
+
+    this->weapon = weaponItem;
+    this->minDamage += weaponItem->getMinDamage();
+    this->maxDamage += weaponItem->getMaxDamage();
+}
+
+void Player::equipArmor(std::shared_ptr<Item> &item) {
+    std::shared_ptr<Armor> armorItem = std::dynamic_pointer_cast<Armor>(item);
+
+    if(!armorItem) {
+        std::cerr << "Bad convert to Armor" << std::endl;
+        return;
+    }
+
+    ArmorType armorType = armorItem->getType();
+    std::map<ArmorType, std::shared_ptr<Item>&> armorSlots = {
+        {ArmorType::HELMET, this->armorHead},
+        {ArmorType::CHESTPLATE, this->armorChest},
+        {ArmorType::LEGGINGS, this->armorLeggs},
+        {ArmorType::BOOTS, this->armorBoots}
+    };
+
+    auto it = armorSlots.find(armorType);
+    if(it != armorSlots.end()) {
+        if(it->second->getName() != "None")
+            unequipItem(it->second);
+        it->second = armorItem;
+    }
+
+    this->defence += armorItem->getDefence();
+}
+
+void Player::unequipItem(std::shared_ptr<Item> &item) {
+    item->unequip();
+    Category itemCategory = item->getCategory();
+
+    if(itemCategory == Category::WEAPON)
+        unequipWeapon(item);
+    else if(itemCategory == Category::ARMOR)
+        unequipArmor(item);
+}
+
+void Player::unequipWeapon(std::shared_ptr<Item> &item) {
+    std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
+    if(!weaponItem) {
+        std::cerr << "Bad convert to Weapon" << std::endl;
+        return;
+    }
+
+    this->weapon = def_weapon;
+    this->minDamage -= weaponItem->getMinDamage();
+    this->maxDamage -= weaponItem->getMaxDamage();
+}
+
+void Player::unequipArmor(std::shared_ptr<Item> &item) {
+    std::shared_ptr<Armor> armorItem = std::dynamic_pointer_cast<Armor>(item);
+
+    if(!armorItem) {
+        std::cerr << "Bad convert to Armor" << std::endl;
+        return;
+    }
+
+    ArmorType armorType = armorItem->getType();
+    std::map<ArmorType, std::shared_ptr<Item> &> armorSlots = {
+        {ArmorType::HELMET, this->armorHead},
+        {ArmorType::CHESTPLATE, this->armorChest},
+        {ArmorType::LEGGINGS, this->armorLeggs},
+        {ArmorType::BOOTS, this->armorBoots}
+    };
+
+    auto it = armorSlots.find(armorType);
+    if(it != armorSlots.end())
+        it->second = def_armor;
+
+    this->defence -= armorItem->getDefence();
+}
+
+void Player::useProduct(std::shared_ptr<Item> &item) {
+    std::shared_ptr<Product> product = std::dynamic_pointer_cast<Product>(item);
+    this->hunger = std::min(this->hunger + product->getHungerRestored(), this->hungerMax);
+    this->stamina = std::min(this->stamina + product->getEnergyRestored(), this->staminaMax);
+    this->health = std::min(this->health + product->getHealthRestored(), this->maxHealth);
+    this->thirst = std::min(this->thirst + product->getThirstRestored(), this->thirstMax);
+    this->radiation = std::max(this->radiation + product->getRadiationRestored(), MIN_ATTRIBUTE_VALUE);
+}
+
+void Player::restoreStaminaInCombat() {
+    this->stamina = std::min(this->staminaMax, this->stamina + getRandomNumberInRange(40, 50));
+    this->hunger = std::max(MIN_ATTRIBUTE_VALUE, this->hunger - getRandomNumberInRange(8, 12));
+    this->thirst = std::max(MIN_ATTRIBUTE_VALUE, this->thirst - getRandomNumberInRange(8, 12));
+}
+
+void Player::upgradeItem() {
+    if(this->inventory.is_empty()) {
+        std::cout << "\nMy inventory is empty" << std::endl;
+        return;
+    }
+    this->inventory.printInventory();
+    int selectedItemIndex = getValidatedAnswer("Choose the item I want to upgrade: ", "Invalid choice", 0, this->inventory.getItems().size());
+    if(selectedItemIndex == 0)
+        return;
+
+    std::shared_ptr<Item> &item = this->inventory.getItems()[selectedItemIndex - 1];
+    if(item->getCategory() == Category::PRODUCT) {
+        std::cout << "\nI can't upgrade products" << std::endl;
+        return;
+    }
+
+    int moneyToSpend = item->getPurchasePrice() / 10;
+    std::cout << "To upgrade " << item->getName() << " I need to spend " << moneyToSpend << " money" << std::endl;
+
+    int choice = getValidatedAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+    if(choice == 2)
+        return;
+    if(moneyToSpend > this->money) {
+        std::cout << "I don't have enough money to spend" << std::endl;
+        return;
+    }
+
+    this->money -= moneyToSpend;
+
+    std::string status = item->getStatus();
+    if(status == "Equipped")
+        unequipItem(item);
+    item->upgrade();
+    if(status == "Equipped")
+        equipItem(item);
+}
+
 void Player::printInventory() {
     if(this->inventory.is_empty()) {
         std::cout << "\My inventory is empty\n" << std::endl;
@@ -330,40 +503,33 @@ void Player::printInventory() {
     }
 
     int selectedItemIndex{};
-
     do {
         this->inventory.printInventory();
-        selectedItemIndex = getValidateAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
-        if(selectedItemIndex == 0) {
+        selectedItemIndex = getValidatedAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
+        if(selectedItemIndex == 0)
             return;
+       
+        std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
+        std::cout << *selectedItem << std::endl;
+        int choice{};
+        if(selectedItem->getCategory() == Category::PRODUCT) {
+            choice = getValidatedAnswer("Do you want to use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+            if(choice == 1) {
+                this->useProduct(selectedItem);
+                this->getInventory().removeItem(selectedItemIndex - 1);
+            }
         }
         else {
-            std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
-            std::cout << *selectedItem << std::endl;
-            int choice{};
-            if(selectedItem->getCategory() == Category::PRODUCT) {
-                choice = getValidateAnswer("Do you want to use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
-                if(choice == 1) {
-                    this->useProduct(selectedItem);
-                    this->getInventory().removeItem(selectedItemIndex - 1);
-                    continue;
-                }
+            std::string status = selectedItem->getStatus();
+            if(status == "Equipped") {
+                choice = getValidatedAnswer("Do you want to unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                if(choice == 1) 
+                    unequipItem(selectedItem);
             }
             else {
-                if(selectedItem->getStatus() == "Equipped") {
-                    choice = getValidateAnswer("Do you want to unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
-
-                    if(choice == 1) {
-                        unequipItem(selectedItem);
-                    }
-                }
-                else {
-                    choice = getValidateAnswer("Do you want to equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
-
-                    if(choice == 1) {
-                        equipItem(selectedItem);
-                    }
-                }
+                choice = getValidatedAnswer("Do you want to equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                if(choice == 1) 
+                    equipItem(selectedItem);
             }
         }
     } while(selectedItemIndex != 0);
@@ -378,7 +544,7 @@ bool Player::useItemInCombat() {
 
     this->inventory.printInventory();
     int selectedItemIndex{};
-    selectedItemIndex = getValidateAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
+    selectedItemIndex = getValidatedAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
     if(selectedItemIndex == 0) {
         return false;
     }
@@ -389,7 +555,7 @@ bool Player::useItemInCombat() {
         std::cout << *selectedItem << std::endl;
 
         if(selectedItem->getCategory() == Category::PRODUCT) {
-            choice = getValidateAnswer("Should I use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+            choice = getValidatedAnswer("Should I use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
             if(choice == 1) {
                 this->useProduct(selectedItem);
                 this->getInventory().removeItem(selectedItemIndex - 1);
@@ -398,7 +564,7 @@ bool Player::useItemInCombat() {
         }
         else {
             if(selectedItem->getStatus() == "Equipped") {
-                choice = getValidateAnswer("Should I unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                choice = getValidatedAnswer("Should I unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
 
                 if(choice == 1) {
                     unequipItem(selectedItem);
@@ -406,7 +572,7 @@ bool Player::useItemInCombat() {
                 }
             }
             else {
-                choice = getValidateAnswer("Should I equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                choice = getValidatedAnswer("Should I equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
 
                 if(choice == 1) {
                     equipItem(selectedItem);
@@ -416,111 +582,6 @@ bool Player::useItemInCombat() {
         }
     } while(choice != 2);
     return false;
-}
-
-bool Player::buyItem(std::shared_ptr<Item> &item) {
-    if(this->money >= item->getPurchasePrice()) {
-        std::cout << "\n/*You bought a " << item->getName() << "*/" << std::endl;
-        this->money -= item->getPurchasePrice();
-        if(this->inventory.getMaxNumberOfItems() > this->inventory.getItems().size()) {
-            this->inventory.addItem(item);
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        return false;
-    }
-}
-
-void Player::sellItem(const int &position) {
-    std::shared_ptr<Item> &item = this->getInventory().getItems()[position];
-    this->money = this->money + item->getSalePrice();
-    if(item->getStatus() == "Equipped") {
-        unequipItem(item);
-    }
-    this->getInventory().removeItem(position);
-}
-
-void Player::equipItem(std::shared_ptr<Item> &item) {
-    item->equip();
-    if(item->getCategory() == Category::WEAPON) {
-        std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
-
-        if(weaponItem) {
-            if(this->weapon->getName() != "None") {
-                unequipItem(this->weapon);
-            }
-            this->weapon = weaponItem;
-            this->minDamage += weaponItem->getMinDamage();
-            this->maxDamage += weaponItem->getMaxDamage();
-        }
-    }
-    else if(item->getCategory() == Category::ARMOR) {
-        std::shared_ptr<Armor> armorItem = std::dynamic_pointer_cast<Armor>(item);
-
-        if(armorItem) {
-            if(armorItem->getType() == ArmorType::HELMET) {
-                if(this->armorHead->getName() != "None") {
-                    unequipItem(this->armorHead);
-                }
-                this->armorHead = armorItem;
-            }
-            else if(armorItem->getType() == ArmorType::CHESTPLATE) {
-                if(this->armorChest->getName() != "None") {
-                    unequipItem(this->armorChest);
-                }
-                this->armorChest = armorItem;
-            }
-            else if(armorItem->getType() == ArmorType::LEGGINGS) {
-                if(this->armorLeggs->getName() != "None") {
-                    unequipItem(this->armorLeggs);
-                }
-                this->armorLeggs = armorItem;
-            }
-            else if(armorItem->getType() == ArmorType::BOOTS) {
-                if(this->armorBoots->getName() != "None") {
-                    unequipItem(this->armorBoots);
-                }
-                this->armorBoots = armorItem;
-            }
-
-            this->defence += armorItem->getDefence();
-        }
-    }
-}
-
-void Player::unequipItem(std::shared_ptr<Item> &item) {
-    item->unequip();
-    if(item->getCategory() == Category::WEAPON) {
-        std::shared_ptr<Weapon> weaponItem = std::dynamic_pointer_cast<Weapon>(item);
-        if(weaponItem) {
-            this->weapon = def_weapon;
-            this->minDamage -= weaponItem->getMinDamage();
-            this->maxDamage -= weaponItem->getMaxDamage();
-        }
-    }
-    else if(item->getCategory() == Category::ARMOR) {
-        std::shared_ptr<Armor> armorItem = std::dynamic_pointer_cast<Armor>(item);
-        if(armorItem) {
-            if(armorItem->getType() == ArmorType::HELMET) {
-                this->armorHead = def_armor;
-            }
-            else if(armorItem->getType() == ArmorType::CHESTPLATE) {
-                this->armorChest = def_armor;
-            }
-            else if(armorItem->getType() == ArmorType::LEGGINGS) {
-                this->armorLeggs = def_armor;
-            }
-            else if(armorItem->getType() == ArmorType::BOOTS) {
-                this->armorBoots = def_armor;
-            }
-
-            this->defence -= armorItem->getDefence();
-        }
-    }
 }
 
 bool Player::operator==(const Player &rhs) const {
@@ -568,132 +629,4 @@ Player &Player::operator=(const Player &rhs) {
     this->inventory = rhs.inventory;
 
     return *this;
-}
-
-void Player::useProduct(std::shared_ptr<Item> &item) {
-    std::shared_ptr<Product> product = std::dynamic_pointer_cast<Product>(item);
-    this->hunger = std::min(this->hunger + product->getHungerRestored(), 100);
-    this->stamina = std::min(this->stamina + product->getEnergyRestored(), 100);
-    this->health = std::min(this->health + product->getHealthRestored(), 100);
-    this->thirst = std::min(this->thirst + product->getThirstRestored(), 100);
-    this->radiation = std::max(this->radiation + product->getRadiationRestored(), 0);
-}
-
-void Player::restoreStaminaInCombat() {
-    this->stamina = std::min(100, this->stamina + getRandomNumberInRange(40, 50));
-
-    this->hunger = std::max(0, this->hunger - getRandomNumberInRange(8, 12));
-    this->thirst = std::max(0, this->thirst - getRandomNumberInRange(8, 12));
-}
-
-void Player::upgradeItems() {
-    if(this->inventory.is_empty()) {
-        std::cout << "\nYour inventory is empty\n" << std::endl;
-        return;
-    }
-
-    int selectedItemIndex{};
-
-    this->inventory.printInventory();
-    selectedItemIndex = getValidateAnswer("Choose the item I want to upgrade: ", "Invalid choice", 0, this->inventory.getItems().size());
-
-    if(selectedItemIndex == 0)
-        return;
-    if(this->inventory.getItems()[selectedItemIndex - 1]->getCategory() == Category::PRODUCT) {
-        std::cout << "I can't upgrade products!" << std::endl;
-    }
-    else if(this->inventory.getItems()[selectedItemIndex - 1]->getCategory() == Category::WEAPON) {
-        upgradeWeapon(selectedItemIndex - 1);
-    }
-    else if(this->inventory.getItems()[selectedItemIndex - 1]->getCategory() == Category::ARMOR) {
-        upgradeArmor(selectedItemIndex - 1);
-    }
-}
-
-void Player::upgradeWeapon(int indexOfWeapon) {
-    std::shared_ptr<Weapon> weaponToUpgrade = std::dynamic_pointer_cast<Weapon>(this->inventory.getItems()[indexOfWeapon]);
-    std::string status = weaponToUpgrade->getStatus();
-    int spendedMoney = weaponToUpgrade->getPurchasePrice() / 10;
-    std::cout << "To upgrade " << weaponToUpgrade->getName() << " I need to spend " << spendedMoney << " money" << std::endl;
-    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
-    if(choice == 2)
-        return;
-    if(spendedMoney > this->money) {
-        std::cout << "I don't have enough resources to spend" << std::endl;
-        return;
-    }
-    if(status == "Equipped") {
-        unequipItem(this->inventory.getItems()[indexOfWeapon]);
-
-        int minDamageAdded = std::max(weaponToUpgrade->getMinDamage() / 10, 1);
-        int maxDamageAdded = std::max(weaponToUpgrade->getMaxDamage() / 10, 1);
-        int purchasePriceAdded = std::max(weaponToUpgrade->getPurchasePrice() / 10, 80);
-        int salePriceAdded = std::max(weaponToUpgrade->getSalePrice() / 10, 40);
-        weaponToUpgrade->setPurchasePrice(weaponToUpgrade->getPurchasePrice() + purchasePriceAdded);
-        weaponToUpgrade->setSalePrice(weaponToUpgrade->getSalePrice() + salePriceAdded);
-        weaponToUpgrade->setMinDamage(weaponToUpgrade->getMinDamage() + minDamageAdded);
-        weaponToUpgrade->setMaxDamage(weaponToUpgrade->getMaxDamage() + maxDamageAdded);
-        weaponToUpgrade->setLevel(weaponToUpgrade->getLevel() + 1);
-        this->money -= spendedMoney;
-
-        std::cout << "I upgraded " << weaponToUpgrade->getName() << " and damage upgraded on " << minDamageAdded << " / " << maxDamageAdded << std::endl;
-        equipItem(this->inventory.getItems()[indexOfWeapon]);
-    }
-    else if(status == "Unequipped") {
-        int minDamageAdded = std::max(weaponToUpgrade->getMinDamage() / 10, 1);
-        int maxDamageAdded = std::max(weaponToUpgrade->getMaxDamage() / 10, 1);
-        int purchasePriceAdded = std::max(weaponToUpgrade->getPurchasePrice() / 10, 80);
-        int salePriceAdded = std::max(weaponToUpgrade->getSalePrice() / 10, 40);
-        weaponToUpgrade->setPurchasePrice(weaponToUpgrade->getPurchasePrice() + purchasePriceAdded);
-        weaponToUpgrade->setSalePrice(weaponToUpgrade->getSalePrice() + salePriceAdded);
-        weaponToUpgrade->setMinDamage(weaponToUpgrade->getMinDamage() + minDamageAdded);
-        weaponToUpgrade->setMaxDamage(weaponToUpgrade->getMaxDamage() + maxDamageAdded);
-        weaponToUpgrade->setLevel(weaponToUpgrade->getLevel() + 1);
-        this->money -= spendedMoney;
-
-        std::cout << "I upgraded " << weaponToUpgrade->getName() << " and damage upgraded on " << minDamageAdded << " / " << maxDamageAdded << std::endl;
-    }
-}
-
-void Player::upgradeArmor(int indexOfArmor) {
-    std::shared_ptr<Armor> armorToUpgrade = std::dynamic_pointer_cast<Armor>(this->inventory.getItems()[indexOfArmor]);
-    std::string status = armorToUpgrade->getStatus();
-    int spendedMoney = armorToUpgrade->getPurchasePrice() / 10;
-    std::cout << "To upgrade " << armorToUpgrade->getName() << " I need to spend " << spendedMoney << "money" << std::endl;
-    int choice = getValidateAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
-    if(choice == 2)
-        return;
-    if(spendedMoney > this->money) {
-        std::cout << "I don't have enough resources to spend" << std::endl;
-        return;
-    }
-    if(status == "Equipped") {
-        unequipItem(this->inventory.getItems()[indexOfArmor]);
-
-        int defenceAdded = std::max(armorToUpgrade->getDefence() / 10, 1);
-        int purchasePriceAdded = std::max(armorToUpgrade->getPurchasePrice() / 10, 80);
-        int salePriceAdded = std::max(armorToUpgrade->getSalePrice() / 10, 40);
-        armorToUpgrade->setDefence(armorToUpgrade->getDefence() + defenceAdded);
-        armorToUpgrade->setPurchasePrice(armorToUpgrade->getPurchasePrice() + purchasePriceAdded);
-        armorToUpgrade->setSalePrice(armorToUpgrade->getSalePrice() + salePriceAdded);
-        armorToUpgrade->setLevel(armorToUpgrade->getLevel() + 1);
-
-        this->money -= spendedMoney;
-
-        std::cout << "I upgraded " << armorToUpgrade->getName() << " and defence upgraded on " << defenceAdded << std::endl;
-        equipItem(this->inventory.getItems()[indexOfArmor]);
-    }
-    else if(status == "Unequipped") {
-        int defenceAdded = std::max(armorToUpgrade->getDefence() / 10, 1);
-        int purchasePriceAdded = std::max(armorToUpgrade->getPurchasePrice() / 10, 80);
-        int salePriceAdded = std::max(armorToUpgrade->getSalePrice() / 10, 40);
-        armorToUpgrade->setDefence(armorToUpgrade->getDefence() + defenceAdded);
-        armorToUpgrade->setPurchasePrice(armorToUpgrade->getPurchasePrice() + purchasePriceAdded);
-        armorToUpgrade->setSalePrice(armorToUpgrade->getSalePrice() + salePriceAdded);
-        armorToUpgrade->setLevel(armorToUpgrade->getLevel() + 1);
-
-        this->money -= spendedMoney;
-
-        std::cout << "I upgraded " << armorToUpgrade->getName() << " and defence upgraded on " << defenceAdded << std::endl;
-    }
 }

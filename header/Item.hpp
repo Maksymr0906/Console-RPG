@@ -23,6 +23,9 @@ enum class Category {
 
 class Item : public I_Printable {
 private:
+    static constexpr const int UPGRADE_COST_PERCENTAGE = 10;
+    static constexpr const int MIN_PURCHASE_PRICE_ADDED = 80;
+    static constexpr const int MIN_SALE_PRICE_ADDED = 40;
     static constexpr const char* def_name = "Unnamed Item";
     static constexpr const char* def_status = "Unequipped";
     static constexpr const int def_purchase_price = 100;
@@ -64,6 +67,7 @@ public:
     void unequip();
     void printCategory(std::ostream &os) const;
 
+    virtual void upgrade() = 0;
     virtual void print(std::ostream &os) const override = 0;
     virtual void printStatus(std::ostream &os) const = 0;
     virtual void printLevel(std::ostream &os) const = 0;

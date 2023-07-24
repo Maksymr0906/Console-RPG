@@ -27,6 +27,15 @@ void Item::unequip() {
     this->status = "Unequipped";
 }
 
+void Item::upgrade() {
+    int purchasePriceAdded = std::max(purchasePrice / UPGRADE_COST_PERCENTAGE, MIN_PURCHASE_PRICE_ADDED);
+    int salePriceAdded = std::max(salePrice / UPGRADE_COST_PERCENTAGE, MIN_SALE_PRICE_ADDED);
+
+    purchasePrice += purchasePriceAdded;
+    salePrice += salePriceAdded;
+    level++;
+}
+
 void Item::print(std::ostream &os) const {
     os << "\nName: " << this->name
        << "\nPurchase/Sale price: " << this->purchasePrice << " / " << this->salePrice;
