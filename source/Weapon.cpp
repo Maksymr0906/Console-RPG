@@ -20,7 +20,7 @@ void Weapon::upgrade() {
     minDamage += minDamageAdded;
     maxDamage += maxDamageAdded;
 
-    std::cout << "I upgraded " << getName() << " and damage upgraded on " << minDamageAdded << " / " << maxDamageAdded << std::endl;
+    std::cout << "I upgraded " << name << " and damage upgraded on " << minDamageAdded << " / " << maxDamageAdded << std::endl;
 }
 
 void Weapon::print(std::ostream& os) const {

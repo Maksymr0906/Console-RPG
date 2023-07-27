@@ -51,6 +51,7 @@ void Game::mainMenu() {
             }
         }
     } while(players.empty() || indexOfActivePlayer == -1);
+    CLEAR_SCREEN;
 }
 
 void Game::gameMenu() {
@@ -137,13 +138,14 @@ void Game::backstory() const {
         << "You come to your senses in an empty New York, which is full of zombies." << std::endl
         << "For now, all you need is to survive, and how to achieve this depends on you." << std::endl
         << "So get up and don't waste a single moment on empty thoughts, otherwise you simply won't survive." << std::endl;
-    std::string input{};
     std::cout << std::endl << std::setw(70) << std::right << "=== Press Enter to continue ===" << std::endl;
+    std::string input{};
     std::getline(std::cin, input);
     CLEAR_SCREEN;
 }
 
 void Game::explore() {
+    CLEAR_SCREEN;
     Inventory &inventory = players[indexOfActivePlayer].getInventory();
     if(inventory.getItems().size() == inventory.getMaxNumberOfItems()) {
         std::cout << "My backpack is full. I need to do something about this and continue searching..." << std::endl;
@@ -167,7 +169,6 @@ void Game::createNewPlayer() {
     getline(std::cin, name);
 
     int indexOfPlayerWithSameName = findPlayerIndexByName(name);
-
 
     if(indexOfPlayerWithSameName == -1) {
         players.push_back(Player());
@@ -223,13 +224,13 @@ int Game::selectPlayer() {
     }
 
     int choice{};
-    displayAllPlayers();
+    printAllPlayers();
     choice = getValidatedAnswer("Which character you want to play: ", "\nThis character does not exist. Choose correct number.", 0, players.size());
 
     return choice;
 }
 
-void Game::displayAllPlayers() const {
+void Game::printAllPlayers() const {
     std::cout << "\n(0) - Exit" << std::endl;
     for(size_t i = 0; i < players.size(); i++) {
         std::cout << "(" << i + 1 << ") - " << players[i].getName() << std::endl;
@@ -262,7 +263,7 @@ std::vector<Player> Game::loadPlayers(const std::string &filePath) {
 void Game::deletePlayer() {
     savePlayers();
     players = loadPlayers("players.txt");
-    displayAllPlayers();
+    printAllPlayers();
     int choice = getValidatedAnswer("Choose the index of player you wanna delete: ", "Invalid choice. Try again", 0, players.size());
     if(choice != 0) {
         deletePlayerByIndex(choice - 1);

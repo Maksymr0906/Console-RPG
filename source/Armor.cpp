@@ -19,7 +19,7 @@ void Armor::upgrade() {
     int defenceAdded = std::max(defence / DEFENCE_ADDED_PERCENTAGE, 1);
     defence += defenceAdded;
 
-    std::cout << "I upgraded " << getName() << " and defence upgraded on " << defenceAdded << std::endl;
+    std::cout << "I upgraded " << name << " and defence upgraded on " << defenceAdded << std::endl;
 }
 
 void Armor::print(std::ostream& os) const {

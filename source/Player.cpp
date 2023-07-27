@@ -140,7 +140,7 @@ void Player::printStats() const {
     printFormattedLine("== Hunger:", "| " + std::to_string(this->hunger) + " / " + std::to_string(this->hungerMax), labelSize, valueSize);
     printFormattedLine("== Thirst:", "| " + std::to_string(this->thirst) + " / " + std::to_string(this->thirstMax), labelSize, valueSize);
     printFormattedLine("== Radiation:", "| " + std::to_string(this->radiation), labelSize, valueSize);
-    printFormattedLine("== Money:", "| " + std::to_string(this->money), labelSize, valueSize);
+    printFormattedLine("== G:", "| " + std::to_string(this->money), labelSize, valueSize);
     printFormattedLine("== Damage:", "| " + std::to_string(this->minDamage) + " / " + std::to_string(this->maxDamage), labelSize, valueSize);
     printFormattedLine("== Defence:", "| " + std::to_string(this->defence), labelSize, valueSize);
     printFormattedLine("== Strength:", "| " + std::to_string(this->strength), labelSize, valueSize);
@@ -286,7 +286,7 @@ void Player::printAttributeOptions() const {
               << "(2) - Vitality (Increase health)" << std::endl
               << "(3) - Dexterity (Increase stamina)" << std::endl
               << "(4) - Intelligence (Increase defence)" << std::endl
-              << "(5) - Luck (Increase received money and exp)" << std::endl;
+              << "(5) - Luck (Increase received G and exp)" << std::endl;
 }
 
 void Player::increaseStatAttribute(int &attribute, const std::string &attributeName) {
@@ -297,16 +297,16 @@ void Player::increaseStatAttribute(int &attribute, const std::string &attributeN
 }
 
 void Player::updateCharacteristics() {
-    int maxHealthBonus = calculateAttributeBonus(vitality), staminaMaxBonus = calculateAttributeBonus(dexterity);
-    int minDamageBonus = calculateAttributeBonus(strength), maxDamageBonus = calculateAttributeBonus(strength);
-    int defenceBonus = calculateAttributeBonus(intelligence);
+    const int maxHealthBonus = calculateAttributeBonus(vitality), staminaMaxBonus = calculateAttributeBonus(dexterity);
+    const int minDamageBonus = calculateAttributeBonus(strength), maxDamageBonus = calculateAttributeBonus(strength);
+    const int defenceBonus = calculateAttributeBonus(intelligence);
     
-    int previousMaxHealth = this->maxHealth;
+    const int previousMaxHealth = this->maxHealth;
     this->maxHealth = def_max_health + maxHealthBonus;
     if(this->health == previousMaxHealth)
         this->health = this->maxHealth;
 
-    int previousStaminaMax = this->staminaMax;
+    const int previousStaminaMax = this->staminaMax;
     this->staminaMax = def_stamina_max + staminaMaxBonus;
     if(stamina == previousStaminaMax)
         this->stamina = this->staminaMax;
@@ -321,9 +321,9 @@ int Player::calculateAttributeBonus(const int &attribute) const {
 }
 
 bool Player::buyItem(std::shared_ptr<Item> &item) {
-    int purchasePrice = item->getPurchasePrice();
+    const int purchasePrice = item->getPurchasePrice();
     if(this->money < purchasePrice) {
-        std::cout << "I don't have enough money to buy " << item->getName() << std::endl;
+        std::cout << "I don't have enough G to buy " << item->getName() << std::endl;
         return false;
     }
 
@@ -454,12 +454,16 @@ void Player::useProduct(std::shared_ptr<Item> &item) {
 }
 
 void Player::restoreStaminaInCombat() {
-    this->stamina = std::min(this->staminaMax, this->stamina + getRandomNumberInRange(40, 50));
+    int staminaRestored = getRandomNumberInRange(40, 50);
+    this->stamina = std::min(this->staminaMax, this->stamina + staminaRestored);
     this->hunger = std::max(MIN_ATTRIBUTE_VALUE, this->hunger - getRandomNumberInRange(8, 12));
     this->thirst = std::max(MIN_ATTRIBUTE_VALUE, this->thirst - getRandomNumberInRange(8, 12));
+
+    std::cout << "I restore " << staminaRestored << " stamina" << std::endl;
 }
 
 void Player::upgradeItem() {
+    CLEAR_SCREEN;
     if(this->inventory.is_empty()) {
         std::cout << "\nMy inventory is empty" << std::endl;
         return;
@@ -475,14 +479,14 @@ void Player::upgradeItem() {
         return;
     }
 
-    int moneyToSpend = item->getPurchasePrice() / 10;
-    std::cout << "To upgrade " << item->getName() << " I need to spend " << moneyToSpend << " money" << std::endl;
+    const int moneyToSpend = item->getPurchasePrice() / 10;
+    std::cout << "To upgrade " << item->getName() << " I need to spend " << moneyToSpend << " G" << std::endl;
 
     int choice = getValidatedAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
     if(choice == 2)
         return;
     if(moneyToSpend > this->money) {
-        std::cout << "I don't have enough money to spend" << std::endl;
+        std::cout << "I don't have enough G to spend" << std::endl;
         return;
     }
 
@@ -497,6 +501,7 @@ void Player::upgradeItem() {
 }
 
 void Player::printInventory() {
+    CLEAR_SCREEN;
     if(this->inventory.is_empty()) {
         std::cout << "\My inventory is empty\n" << std::endl;
         return;
@@ -505,6 +510,9 @@ void Player::printInventory() {
     int selectedItemIndex{};
     do {
         this->inventory.printInventory();
+        if(this->inventory.is_empty())
+            return;
+        
         selectedItemIndex = getValidatedAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
         if(selectedItemIndex == 0)
             return;
@@ -537,7 +545,7 @@ void Player::printInventory() {
 
 bool Player::useItemInCombat() {
     if(this->getInventory().is_empty()) {
-        std::cout << "\nMy Inventory is empty" << std::endl;
+        std::cout << "My Inventory is empty" << std::endl;
         return false;
     }
     std::cout << "\nI can use only one item per turn!" << std::endl;

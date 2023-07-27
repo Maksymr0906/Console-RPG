@@ -40,6 +40,10 @@ protected:
     int level;
     Category category;
     Rarity rarity;
+
+    virtual void printStatus(std::ostream &os) const = 0;
+    virtual void printLevel(std::ostream &os) const = 0;
+    virtual void printRarity(std::ostream &os) const = 0;
 public:
     Item(const char *name = def_name, const char *status = def_status, int purchasePrice = def_purchase_price, int salePrice = def_sale_price, int level = def_level, int category = def_category, int rarity = def_rarity)
         :name{ name }, status{status}, purchasePrice{purchasePrice}, salePrice{salePrice}, level{level}, category{ static_cast<Category>(category) }, rarity{static_cast<Rarity>(rarity)} {};
@@ -69,9 +73,6 @@ public:
 
     virtual void upgrade() = 0;
     virtual void print(std::ostream &os) const override = 0;
-    virtual void printStatus(std::ostream &os) const = 0;
-    virtual void printLevel(std::ostream &os) const = 0;
-    virtual void printRarity(std::ostream &os) const = 0;
 
     virtual void writeToTxtFile(std::ofstream &outfile) const = 0;
     virtual void readFromTxtFile(std::ifstream &infile) = 0;

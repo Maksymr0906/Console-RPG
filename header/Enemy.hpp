@@ -8,6 +8,7 @@
 
 class Enemy : public Entity {
 private:
+	static constexpr const double  LEVEL_SCALING_FACTOR = 0.10;
 	static constexpr const char *def_name = "Unnamed Enemy";
 	static constexpr const int def_health = 100;
 	static constexpr const int def_min_damage = 2;

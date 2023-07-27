@@ -50,11 +50,11 @@ void Enemy::print() const {
 void Enemy::updateCharacteristics(int playerLevel) {
 	if(playerLevel > 1) {
 		this->level = playerLevel;
-		this->maxHealth = this->maxHealth + (std::max((int)(this->maxHealth * 0.10), 1) * playerLevel);
+		this->maxHealth = this->maxHealth + (std::max((int)(this->maxHealth * LEVEL_SCALING_FACTOR), 1) * playerLevel);
 		this->health = this->maxHealth;
-		this->minDamage = this->minDamage + (std::max((int)(this->minDamage * 0.10), 1) * playerLevel);
-		this->maxDamage = this->maxDamage + (std::max((int)(this->maxDamage * 0.10), 1) * playerLevel);
-		this->defence = this->defence + (std::max((int)(this->defence * 0.10), 1) * playerLevel);
+		this->minDamage = this->minDamage + (std::max((int)(this->minDamage * LEVEL_SCALING_FACTOR), 1) * playerLevel);
+		this->maxDamage = this->maxDamage + (std::max((int)(this->maxDamage * LEVEL_SCALING_FACTOR), 1) * playerLevel);
+		this->defence = this->defence + (std::max((int)(this->defence * LEVEL_SCALING_FACTOR), 1) * playerLevel);
 	}
 }
 

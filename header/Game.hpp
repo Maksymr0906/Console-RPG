@@ -12,7 +12,7 @@ private:
     void savePlayers();
     int selectPlayer();
     std::vector<Player> loadPlayers(const std::string &filePath);
-    void displayAllPlayers() const;
+    void printAllPlayers() const;
     void printGameMenu() const;
     int findPlayerIndexByName(const std::string &name) const;
     void askToSavePlayer();
@@ -20,6 +20,7 @@ private:
     void deletePlayerByIndex(int index);
     void shelter();
     void sleep();
+    void shop();
 protected:
     GameOption gameOption;
     bool playing;
@@ -39,6 +40,5 @@ public:
     void initialize();
     void gameMenu();
     void mainMenu();
-    void shop();
 };
 

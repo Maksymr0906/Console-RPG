@@ -20,6 +20,10 @@ private:
 protected:
 	int hungerRestored, energyRestored;
 	int healthRestored, thirstRestored, radiationRestored;
+
+	virtual void printStatus(std::ostream &os) const override;
+	virtual void printLevel(std::ostream &os) const override;
+	virtual void printRarity(std::ostream &os) const override;
 public:
 	Product(const char *name = def_name, const char *status = def_status,
 			int purchasePrice = def_purchase_price, int salePrice = def_sale_price,
@@ -52,9 +56,6 @@ public:
 
 	virtual void upgrade() override;
 	virtual void print(std::ostream &os) const override;
-	virtual void printStatus(std::ostream &os) const override;
-	virtual void printLevel(std::ostream &os) const override;
-	virtual void printRarity(std::ostream &os) const override;
 
 	virtual void writeToTxtFile(std::ofstream &outfile) const override;
 	virtual void readFromTxtFile(std::ifstream &infile) override;

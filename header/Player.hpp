@@ -58,6 +58,21 @@ private:
     static constexpr const int def_distance_travelled = 0;
     const std::shared_ptr<Item> def_weapon = std::make_shared<Weapon>("None");
     const std::shared_ptr<Item> def_armor = std::make_shared<Armor>("None");
+
+    //Methods
+    void decreaseVitalAttribute(int &attribute, int amount);
+    void printLevelUpMessage() const;
+    void restoreVitalAttributes();
+    void printAttributeOptions() const;
+    void increaseStatAttribute(int &attribute, const std::string &attributeName);
+    void updateCharacteristics();
+    int calculateAttributeBonus(const int &attribute) const;
+    void equipItem(std::shared_ptr<Item> &item);
+    void equipWeapon(std::shared_ptr<Item> &item);
+    void equipArmor(std::shared_ptr<Item> &item);
+    void unequipItem(std::shared_ptr<Item> &item);
+    void unequipWeapon(std::shared_ptr<Item> &item);
+    void unequipArmor(std::shared_ptr<Item> &item);
 protected:
     int thirst, thirstMax;
     int hunger, hungerMax;
@@ -126,23 +141,10 @@ public:
     void previewPlayer() const;
     void sleep();
     void explore();
-    void decreaseVitalAttribute(int &attribute, int amount);
     void levelUp();
-    void printLevelUpMessage() const;
-    void restoreVitalAttributes();
     void increaseStatAttributes();
-    void printAttributeOptions() const;
-    void increaseStatAttribute(int &attribute, const std::string &attributeName);
-    void updateCharacteristics();
-    int calculateAttributeBonus(const int &attribute) const;
     bool buyItem(std::shared_ptr<Item> &item);
     void sellItem(const int &position);
-    void equipItem(std::shared_ptr<Item> &item);
-    void equipWeapon(std::shared_ptr<Item> &item);
-    void equipArmor(std::shared_ptr<Item> &item);
-    void unequipItem(std::shared_ptr<Item> &item);
-    void unequipWeapon(std::shared_ptr<Item> &item);
-    void unequipArmor(std::shared_ptr<Item> &item);
     void useProduct(std::shared_ptr<Item> &item);
     void restoreStaminaInCombat();
     void upgradeItem();
