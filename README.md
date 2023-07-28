@@ -9,16 +9,16 @@ Before you can build and play "Zombie Project" you'll need to ensure that your s
 * C++ Compiler. You need a C++ compiler to compile the C++ source code of "Zombie Project".  You can download it from the official website (https://gcc.gnu.org/).
 # Installation instructions
 1. Clone the Repository. Start by cloning the "Zombie Project" repository from GitHub to your local machine. Open a terminal or command prompt and enter the following command:
-git clone https://github.com/Maksymr0906/Zombie-Project
+`git clone https://github.com/Maksymr0906/Zombie-Project`
 2. Navigate to the Project Directory. Move into the "Zombie-Project" directory that was created after cloning the repository:
-cd zombie-project
+`cd zombie-project`
 3. Build the Project with CMake. "Zombie Project" uses CMake as its build system, which offers platform-independent building. Create a new "build" directory and navigate into it:
-mkdir build
-cd build
-4. Generate the Makefile. Use CMake to generate the build files:
-cmake ..
-5. Build the Game. Once the CMake configuration is complete, proceed to build the game using the build tool:
-cmake --build .
-6. Run the game. Execute the game from the command line or by double-clicking the executable. Executable may be located in Debug folder. For example, executing game using command line:
-cd .\Debug\
-.\ConsoleRPG.exe
+`mkdir build`
+`cd build`
+5. Generate the Makefile. Use CMake to generate the build files:
+`cmake ..`
+6. Build the Game. Once the CMake configuration is complete, proceed to build the game using the build tool:
+`cmake --build .`
+7. Run the game. Execute the game from the command line or by double-clicking the executable. Executable may be located in Debug folder. For example, executing game using command line:
+`cd .\Debug\`
+`.\ConsoleRPG.exe`
