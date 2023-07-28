@@ -11,7 +11,7 @@ Before you can build and play "Zombie Project" you'll need to ensure that your s
 1. Clone the Repository. Start by cloning the "Zombie Project" repository from GitHub to your local machine. Open a terminal or command prompt and enter the following command:
 git clone https://github.com/Maksymr0906/Zombie-Project
 2. Navigate to the Project Directory. Move into the "Zombie-Project" directory that was created after cloning the repository:
-cd zombie-chronicles
+cd zombie-project
 3. Build the Project with CMake. "Zombie Project" uses CMake as its build system, which offers platform-independent building. Create a new "build" directory and navigate into it:
 mkdir build
 cd build
