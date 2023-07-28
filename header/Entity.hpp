@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <algorithm>
 
+#include "Functions.hpp"
+
 class Entity {
 private:
 	static constexpr const char *def_name = "Unnamed Entity";

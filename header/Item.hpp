@@ -1,11 +1,11 @@
 #pragma once
 
-#include "I_Printable.hpp"
-
 #include <fstream>
 #include <string>
 #include <iomanip>
 #include <limits>
+
+#include "I_Printable.hpp"
 
 enum class Rarity {
     COMMON = 1,

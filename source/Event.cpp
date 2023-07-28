@@ -148,7 +148,7 @@ bool Event::itemExistsInItemsToSell(const std::vector<std::shared_ptr<Item>> &it
 }
 
 std::shared_ptr<Item> Event::getRandomItem(std::vector<std::shared_ptr<Item>> &items) {
-	int randomItemIndex = rand() % items.size();
+	int randomItemIndex = getRandomNumberInRange(0, items.size() - 1);
 	if(items[randomItemIndex]->getCategory() == Category::WEAPON)
 		return std::make_shared<Weapon>(*dynamic_cast<Weapon *>(items[randomItemIndex].get()));
 	else if(items[randomItemIndex]->getCategory() == Category::ARMOR)
@@ -179,7 +179,7 @@ void Event::generateEvent(Player &p) {
 }
 
 RandomEvent Event::calculateRandomEvent() const {
-	int event = rand() % 100 + 1;
+	int event = getRandomNumberInRange(1, 100);
 	if(event <= 60)
 		return RandomEvent::EMPTY_EVENT;
 	else if(event <= 75)
@@ -191,7 +191,7 @@ RandomEvent Event::calculateRandomEvent() const {
 }
 
 void Event::emptyEventEncouter() const {
-	std::cout << emptyEventMessages[std::rand() % emptyEventMessages.size()] << std::endl;
+	std::cout << emptyEventMessages[getRandomNumberInRange(0, emptyEventMessages.size() - 1)] << std::endl << std::endl;
 }
 
 void Event::puzzleEncouter(Player &p) {
@@ -211,8 +211,8 @@ void Event::puzzleEncouter(Player &p) {
 			return;
 		}
 	}
-
-	std::cout << "Unfortunately, my attempt to open the safe was unsuccessful." << std::endl;
+	CLEAR_SCREEN;
+	std::cout << "Unfortunately, my attempt to open the safe was unsuccessful." << std::endl << std::endl;
 }
 
 void Event::completePuzzle(Player &p) const {
@@ -222,11 +222,11 @@ void Event::completePuzzle(Player &p) const {
 	int moneyGained = getRandomNumberInRange(MIN_REWARD_FOR_COMPLETED_PUZZLE * rewardMultiplier, MAX_REWARD_FOR_COMPLETED_PUZZLE * rewardMultiplier);
 	p.setExp(p.getExp() + expGained);
 	p.setMoney(p.getMoney() + moneyGained);
-	std::cout << "I chose the right answer, the safe opened and I received " << expGained << " exp and " << moneyGained << " G" << std::endl;
+	std::cout << "I chose the right answer, the safe opened and I received " << expGained << " exp and " << moneyGained << " G" << std::endl << std::endl;
 }
 
 Puzzle Event::getRandomPuzzle() const {
-	return puzzles[std::rand() % puzzles.size()];
+	return puzzles[getRandomNumberInRange(0, puzzles.size() - 1)];
 }
 
 void Event::printPuzzleChances(const int &remainingChances) const {
@@ -252,7 +252,7 @@ void Event::foundItemEncouter(Player &p) {
 }
 
 Category Event::getRandomCategory() const {
-	int x = rand() % 10;
+	int x = getRandomNumberInRange(0, 9);
 	if(x < 2)
 		return Category::WEAPON;
 	else if(x < 6)
@@ -277,7 +277,7 @@ void Event::foundItem(Player &p, const std::vector<std::shared_ptr<Item>> &items
 	if(items.empty())
 		return;
 
-	int randomIndex = std::rand() % items.size();
+	int randomIndex = getRandomNumberInRange(0, items.size() - 1);
 	std::shared_ptr<Item> newItem = getFoundItem(items, randomIndex);
 	printMessageAboutFoundItem("FoundItemMessages.txt", newItem->getName());
 	p.getInventory().addItem(newItem);
@@ -305,12 +305,12 @@ void Event::printMessageAboutFoundItem(const std::string &fileName, const std::s
 
 	file.close();
 
-	std::string outputMessage = messages[std::rand() % messages.size()];
+	std::string outputMessage = messages[getRandomNumberInRange(0, messages.size() - 1)];
 	size_t tagPos = outputMessage.find("{}");
 
 	if(tagPos != std::string::npos)
 		outputMessage.replace(tagPos, 2, nameOfItem);
-	std::cout << outputMessage << std::endl;
+	std::cout << outputMessage << std::endl << std::endl;
 }
 
 void Event::fightEncouter(Player &p) const {
@@ -351,7 +351,7 @@ Enemy Event::generateRandomEnemy(Player &p) const {
 
 bool Event::handlePlayerFirstMoveDecision(bool isPlayerTurn, Enemy &enemy) const {
 	if(isPlayerTurn) {
-		int choice = getValidatedAnswer("\nI see an enemy, should I fight with him?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+		int choice = askYesNo("I see an enemy, should I fight with him?");
 		if(choice == 1) {
 			std::cout << "\nThen I attack" << std::endl;
 			return true;
@@ -482,7 +482,7 @@ void Event::handleCombatReward(Player &player, Enemy &enemy) const {
 	int expReward = getRandomNumberInRange(10 * enemy.getLevel(), 30 * enemy.getLevel());
 	player.setMoney(player.getMoney() + moneyReward);
 	player.setExp(player.getExp() + expReward);
-	std::cout << "\nI defeated " << enemy.getName() << " and won the battle!\n";
+	std::cout << "I defeated " << enemy.getName() << " and won the battle!\n";
 	std::cout << "I gained " << expReward << " experience points and " << moneyReward << " G.\n";
 
 	if(getRandomNumberInRange(1, 100) <= enemy.getDropChance()) {
@@ -490,11 +490,13 @@ void Event::handleCombatReward(Player &player, Enemy &enemy) const {
 		std::cout << "I received " << givenItem->getName() << " from the enemy corpse" << std::endl;
 		player.getInventory().addItem(givenItem);
 	}
+
+	std::cout << std::endl;
 }
 
 void Event::shop(Player &p) const {
 	CLEAR_SCREEN;
-	std::cout << "\nWelcome to the Golden street " << p.getName() << "!" << std::endl
+	std::cout << "Welcome to the Golden street " << p.getName() << "!" << std::endl
 		<< "In this street you can buy (almost) everything you want" << std::endl
 		<< "What type of items you want to view?" << std::endl;
 	ShopOption choice{};
@@ -641,7 +643,7 @@ void Event::sellItems(Player &p) const {
 	CLEAR_SCREEN;
 	Inventory &inventory = p.getInventory();
 	if(inventory.getItems().size() <= 0) {
-		std::cout << "\My inventory is empty" << std::endl;
+		std::cout << "My inventory is empty" << std::endl;
 		return;
 	}
 
@@ -649,12 +651,12 @@ void Event::sellItems(Player &p) const {
 	size_t choice{};
 	do {
 		if(inventory.getItems().size() <= 0) {
-			std::cout << "\My inventory is empty" << std::endl;
+			std::cout << "My inventory is empty" << std::endl;
 			return;
 		}
 		inventory.printInventory();
 		choice = getValidatedAnswer("Choose item that you want to sell: ", "Invalid choice", 0, inventory.getItems().size());
-
+		CLEAR_SCREEN;
 		if(choice == 0)
 			return;
 

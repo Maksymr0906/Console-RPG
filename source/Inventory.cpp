@@ -13,10 +13,10 @@ void Inventory::addItem(std::shared_ptr<Item> &item) {
 
 void Inventory::printInventory() const {
     if(this->items.empty()) {
-        std::cout << "\nMy inventory is empty" << std::endl;
+        std::cout << "My inventory is empty" << std::endl << std::endl;
         return;
     }
-    std::cout << "\nMy inventory" << std::endl;
+    std::cout << "My inventory" << std::endl << std::endl;
     std::cout << "(0) - Go back" << std::endl;
     for(size_t i = 0; i < this->items.size(); i++) {
         std::cout << "(" << i + 1 << ") - " << this->items.at(i)->getName();

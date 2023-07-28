@@ -5,6 +5,7 @@
 
 class Game {
 private:
+    static constexpr const int MAX_SIZE_OF_NAME = 15;
     //Methods
     void backstory() const;
     void explore();
@@ -38,7 +39,7 @@ public:
 
     //Methods
     void initialize();
-    void gameMenu();
     void mainMenu();
+    void gameMenu();
 };
 

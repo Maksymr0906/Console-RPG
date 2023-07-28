@@ -128,8 +128,8 @@ void Player::readFromTxtFile(std::ifstream &infile) {
 }
 
 void Player::printStats() const {
+    CLEAR_SCREEN;
     int labelSize{ 25 }, valueSize{ 30 };
-    std::cout << std::endl;
     printDivider('=', labelSize + valueSize + 4);
     std::cout << std::right << std::setw(labelSize) << std::setfill('=') << " " << std::setw(valueSize + 3) << std::left << "My stats " << std::endl;
     printDivider('=', labelSize + valueSize + 4);
@@ -159,7 +159,6 @@ void Player::printStats() const {
 }
 
 void Player::previewPlayer() const {
-    std::cout << std::endl;
     printDivider('=', 41);
     std::cout << std::left << std::setw(40) << "== " + this->name + " " << std::endl;
     std::cout << std::left << std::setw(40) << formatLabelValue("Level", std::to_string(this->level)) << std::endl;
@@ -183,10 +182,10 @@ void Player::sleep() {
         decreaseVitalAttribute(this->radiation, radiationDecrease);
         this->stamina = this->staminaMax;
         this->health = std::min(this->health + healthIncrease, this->maxHealth);
-        std::cout << "\nI slept well. My energy are restored" << std::endl;
+        std::cout << "I slept well. My energy are restored" << std::endl << std::endl;
     }
     else
-        std::cout << "\nI need to raise my hunger and thirst to " << MIN_ATTRIBUTE_VALUE_FOR_SLEEP << " or I won't be able to sleep" << std::endl;
+        std::cout << "I need to raise my hunger and thirst to " << MIN_ATTRIBUTE_VALUE_FOR_SLEEP << " or I won't be able to sleep" << std::endl << std::endl;
 }
 
 void Player::explore() {
@@ -244,16 +243,17 @@ void Player::restoreVitalAttributes() {
 }
 
 void Player::printLevelUpMessage() const {
-    std::cout << std::endl;
     printDivider('=', 110);
     std::cout << "LEVEL UP!" << std::endl;
     std::cout << "Congratulations! My level has increased to " << this->level << ". I've also received 5 extra stat points to allocate." << std::endl;
     std::cout << "I now have a total of " << this->statPoints << " stat points available for further improvement." << std::endl;
     std::cout << "All my vital parameters have been fully restored." << std::endl;
     printDivider('=', 110);
+    std::cout << std::endl;
 }
 
 void Player::increaseStatAttributes() {
+    CLEAR_SCREEN;
     int continueChoice{};
     do {
         if(this->statPoints > 0) {
@@ -269,12 +269,12 @@ void Player::increaseStatAttributes() {
             }
         }
         else {
-            std::cout << "I don't have enough points to update my attributes" << std::endl;
+            std::cout << "I don't have enough points to update my attributes" << std::endl << std::endl;
             return;
         }
 
         if(this->statPoints > 0) {
-            continueChoice = getValidatedAnswer("\nShould I continue? (1) - Yes (2) - No\n Your choice: ", "Invalid choice", 1, 2);
+            continueChoice = askYesNo("\nShould I continue?");
             if(continueChoice == 0)
                 return;
         }
@@ -465,7 +465,7 @@ void Player::restoreStaminaInCombat() {
 void Player::upgradeItem() {
     CLEAR_SCREEN;
     if(this->inventory.is_empty()) {
-        std::cout << "\nMy inventory is empty" << std::endl;
+        std::cout << "My inventory is empty" << std::endl << std::endl;
         return;
     }
     this->inventory.printInventory();
@@ -482,7 +482,7 @@ void Player::upgradeItem() {
     const int moneyToSpend = item->getPurchasePrice() / 10;
     std::cout << "To upgrade " << item->getName() << " I need to spend " << moneyToSpend << " G" << std::endl;
 
-    int choice = getValidatedAnswer("Should I do it?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+    int choice = askYesNo("Should I do it?");
     if(choice == 2)
         return;
     if(moneyToSpend > this->money) {
@@ -509,19 +509,22 @@ void Player::printInventory() {
 
     int selectedItemIndex{};
     do {
+        CLEAR_SCREEN;
         this->inventory.printInventory();
         if(this->inventory.is_empty())
             return;
         
         selectedItemIndex = getValidatedAnswer("Your choice: ", "Invalid choice", 0, this->inventory.getItems().size());
-        if(selectedItemIndex == 0)
+        if(selectedItemIndex == 0) {
+            CLEAR_SCREEN;
             return;
+        }
        
         std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
         std::cout << *selectedItem << std::endl;
         int choice{};
         if(selectedItem->getCategory() == Category::PRODUCT) {
-            choice = getValidatedAnswer("Do you want to use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+            choice = askYesNo("Should I use this item?");
             if(choice == 1) {
                 this->useProduct(selectedItem);
                 this->getInventory().removeItem(selectedItemIndex - 1);
@@ -530,13 +533,13 @@ void Player::printInventory() {
         else {
             std::string status = selectedItem->getStatus();
             if(status == "Equipped") {
-                choice = getValidatedAnswer("Do you want to unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                choice = askYesNo("Should I unequip this item?");
                 if(choice == 1) 
                     unequipItem(selectedItem);
             }
             else {
-                choice = getValidatedAnswer("Do you want to equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
-                if(choice == 1) 
+                choice = askYesNo("Should I equip this item?");
+                if(choice == 1)
                     equipItem(selectedItem);
             }
         }
@@ -559,11 +562,12 @@ bool Player::useItemInCombat() {
 
     int choice{};
     do {
+        CLEAR_SCREEN;
         std::shared_ptr<Item> &selectedItem = this->inventory.getItems().at(selectedItemIndex - 1);
         std::cout << *selectedItem << std::endl;
 
         if(selectedItem->getCategory() == Category::PRODUCT) {
-            choice = getValidatedAnswer("Should I use this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+            choice = askYesNo("Should I use this item?");
             if(choice == 1) {
                 this->useProduct(selectedItem);
                 this->getInventory().removeItem(selectedItemIndex - 1);
@@ -572,7 +576,7 @@ bool Player::useItemInCombat() {
         }
         else {
             if(selectedItem->getStatus() == "Equipped") {
-                choice = getValidatedAnswer("Should I unequip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                choice = askYesNo("Should I unequip this item?");
 
                 if(choice == 1) {
                     unequipItem(selectedItem);
@@ -580,7 +584,7 @@ bool Player::useItemInCombat() {
                 }
             }
             else {
-                choice = getValidatedAnswer("Should I equip this item?\n(1) - Yes\n(2) - No\nYour choice: ", "Invalid choice", 1, 2);
+                choice = askYesNo("Should I equip this item?");
 
                 if(choice == 1) {
                     equipItem(selectedItem);

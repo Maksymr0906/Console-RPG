@@ -21,9 +21,7 @@ void Entity::readFromTxtFile(std::ifstream &infile) {
 }
 
 int Entity::inflictDamage() const {
-	int givenDamage{};
-	givenDamage = rand() % (maxDamage - minDamage + 1) + minDamage;
-	return givenDamage;
+	return getRandomNumberInRange(minDamage, maxDamage);
 }
 
 void Entity::takeDamage(int damage) {
